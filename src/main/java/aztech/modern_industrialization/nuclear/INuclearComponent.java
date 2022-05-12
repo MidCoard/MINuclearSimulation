@@ -23,11 +23,9 @@
  */
 package aztech.modern_industrialization.nuclear;
 
-import aztech.modern_industrialization.MIFluids;
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.TransferVariant;
-import net.minecraft.world.level.material.Fluids;
-import top.focess.mc.mi.nuclear.mc.*;
+import top.focess.mc.mi.nuclear.mc.FluidVariant;
+import top.focess.mc.mi.nuclear.mc.Fluids;
+import top.focess.mc.mi.nuclear.mc.MatterVariant;
 
 public interface INuclearComponent<T extends MatterVariant> {
 

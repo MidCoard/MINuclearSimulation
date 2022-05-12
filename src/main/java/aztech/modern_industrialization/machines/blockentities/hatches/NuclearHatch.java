@@ -23,31 +23,20 @@
  */
 package aztech.modern_industrialization.machines.blockentities.hatches;
 
-import static net.minecraft.core.Direction.UP;
-
-import aztech.modern_industrialization.machines.BEP;
 import aztech.modern_industrialization.machines.components.NeutronHistoryComponent;
-import aztech.modern_industrialization.machines.components.OrientationComponent;
 import aztech.modern_industrialization.machines.components.SteamHeaterComponent;
 import aztech.modern_industrialization.machines.components.TemperatureComponent;
-import aztech.modern_industrialization.machines.components.sync.TemperatureBar;
-import aztech.modern_industrialization.machines.gui.MachineGuiParameters;
-import aztech.modern_industrialization.machines.multiblocks.HatchBlockEntity;
-import aztech.modern_industrialization.machines.multiblocks.HatchType;
 import aztech.modern_industrialization.nuclear.*;
 import com.google.common.base.Preconditions;
-import java.util.*;
-import java.util.stream.Collectors;
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
-import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.TransferVariant;
-import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import top.focess.mc.mi.nuclear.mc.*;
+import top.focess.mc.mi.nuclear.mc.FluidVariant;
+import top.focess.mc.mi.nuclear.mc.ItemVariant;
+import top.focess.mc.mi.nuclear.mc.MatterHolder;
+import top.focess.mc.mi.nuclear.mc.MatterVariant;
 import top.focess.mc.mi.nuclear.mi.MINuclearInventory;
+
+import java.util.Collections;
+import java.util.Optional;
+import java.util.Random;
 
 public class NuclearHatch implements INuclearTile {
 
@@ -206,15 +195,8 @@ public class NuclearHatch implements INuclearTile {
                 }
 
                 if (simul || actualRecipe > 0) {
-                    try (Transaction tx = Transaction.openOuter()) {
-                        long extracted = this.inventory.fluidStorage.extractAllSlot(component.getVariant(), actualRecipe, tx,
-                                AbstractConfigurableStack::canPipesInsert);
-                        this.inventory.output(component.getNeutronProduct(), extracted * component.getNeutronProductAmount());
-
-                        if (!simul) {
-                            tx.commit();
-                        }
-                    }
+                    long extracted = this.inventory.input().extract(component.getVariant(), actualRecipe);
+                    this.inventory.output(component.getNeutronProduct(), extracted * component.getNeutronProductAmount());
                 }
             }
         }
@@ -235,8 +217,7 @@ public class NuclearHatch implements INuclearTile {
         fluidNeutronProductTick(randIntFromDouble(neutronHistory.getAverageReceived(NeutronType.BOTH), RANDOM), false);
 
         if (isFluid) {
-            double euProduced = ((SteamHeaterComponent) nuclearReactorComponent).tick(Collections.singletonList(inventory.get(0)),
-                    inventory);
+            double euProduced = ((SteamHeaterComponent) nuclearReactorComponent).tick(inventory.input(), inventory);
             grid.registerEuProduction(euProduced);
         }
 

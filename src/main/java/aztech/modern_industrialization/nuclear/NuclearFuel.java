@@ -26,7 +26,6 @@ package aztech.modern_industrialization.nuclear;
 import top.focess.mc.mi.nuclear.mc.ItemVariant;
 import top.focess.mc.mi.nuclear.mc.MatterHolder;
 
-import java.util.List;
 import java.util.Random;
 
 public class NuclearFuel extends NuclearAbsorbable {
@@ -48,9 +47,9 @@ public class NuclearFuel extends NuclearAbsorbable {
             double neutronMultiplicationFactor, double directEnergyFactor, int size) {
     }
 
-    public NuclearFuel(Properties settings, NuclearFuelParams params, INeutronBehaviour neutronBehaviour, String depletedVersionId) {
+    public NuclearFuel(String name,int maxCount, NuclearFuelParams params, INeutronBehaviour neutronBehaviour, String depletedVersionId) {
 
-        this(settings, params.desintegrationMax, params.maxTemperature, params.tempLimitLow, params.tempLimitHigh, params.neutronMultiplicationFactor,
+        this(name,maxCount, params.desintegrationMax, params.maxTemperature, params.tempLimitLow, params.tempLimitHigh, params.neutronMultiplicationFactor,
                 params.directEnergyFactor, neutronBehaviour, params.size, depletedVersionId);
 
     }
@@ -59,10 +58,10 @@ public class NuclearFuel extends NuclearAbsorbable {
         return 25 * (int) (temperature / 25d);
     }
 
-    private NuclearFuel(Properties settings, int desintegrationMax, int maxTemperature, int tempLimitLow, int tempLimitHigh,
+    private NuclearFuel(String name,int maxCount, int desintegrationMax, int maxTemperature, int tempLimitLow, int tempLimitHigh,
                         double neutronMultiplicationFactor, double directEnergyFactor, INeutronBehaviour neutronBehaviour, int size, String depletedVersionId) {
 
-        super(settings, clampTemp(maxTemperature), 0.8 * NuclearConstant.BASE_HEAT_CONDUCTION, neutronBehaviour, desintegrationMax);
+        super(name, maxCount, clampTemp(maxTemperature), 0.8 * NuclearConstant.BASE_HEAT_CONDUCTION, neutronBehaviour, desintegrationMax);
 
         this.size = size;
         this.directEnergyFactor = directEnergyFactor;
@@ -79,7 +78,7 @@ public class NuclearFuel extends NuclearAbsorbable {
 
     public static NuclearFuel of(String id, NuclearFuelParams params, INeutronBehaviour neutronBehaviour, String depletedVersionId) {
 
-        return (NuclearFuel) MIItem.of((Properties settings) -> new NuclearFuel(settings, params, neutronBehaviour, depletedVersionId), id, 1);
+        return new NuclearFuel( id, 1, params, neutronBehaviour, depletedVersionId);
     }
 
     @Override
@@ -90,13 +89,6 @@ public class NuclearFuel extends NuclearAbsorbable {
     @Override
     public long getNeutronProductAmount() {
         return size;
-    }
-
-    @Override
-    public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag context) {
-        super.appendHoverText(stack, world, tooltip, context);
-        long totalEu = (long) totalEUbyDesintegration * desintegrationMax;
-        tooltip.add(TextHelper.getEuStorageTooltip(totalEu));
     }
 
     public double efficiencyFactor(double temperature) {

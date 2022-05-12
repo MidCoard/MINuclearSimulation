@@ -31,17 +31,17 @@ public class MatterHolder {
         this.amount.set(amount);
     }
 
-    public void setMatterVariant(@NonNull MatterVariant matter) {
-        this.matter = matter.getMatter();
-        this.tag = new HashMap<>(matter.getTag());
+    public void setMatterVariant(@NonNull MatterVariant matterVariant) {
+        this.matter = matterVariant.getMatter();
+        this.tag = new HashMap<>(matterVariant.getTag());
     }
 
-    public boolean addMatterVariant(@NonNull MatterVariant matter, long amount) {
+    public boolean addMatterVariant(@NonNull MatterVariant matterVariant, long amount) {
         if (this.matter == null) {
-            this.setMatterVariant(matter, amount);
+            this.setMatterVariant(matterVariant, amount);
             return true;
         }
-        else if (this.matter.equals(matter.getMatter())) {
+        else if (this.matter == matterVariant.getMatter() && this.tag.equals(matterVariant.getTag())) {
             this.amount.addAndGet(amount);
             return true;
         }
@@ -64,5 +64,12 @@ public class MatterHolder {
 
     public void empty() {
         this.amount.set(0);
+    }
+
+    public long extract(MatterVariant variant, long actual) {
+        if (this.matter != variant.getMatter() || this.tag.equals(variant.getTag()))
+            return 0;
+        long amount = this.amount.get();
+        return Math.min(amount, actual);
     }
 }

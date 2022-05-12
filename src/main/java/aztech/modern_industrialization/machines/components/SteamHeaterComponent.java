@@ -23,14 +23,6 @@
  */
 package aztech.modern_industrialization.machines.components;
 
-import aztech.modern_industrialization.MIFluids;
-import aztech.modern_industrialization.inventory.ConfigurableFluidStack;
-import aztech.modern_industrialization.inventory.MIFluidStorage;
-import java.util.List;
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
-import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.Fluids;
 import top.focess.mc.mi.nuclear.mc.Fluid;
 import top.focess.mc.mi.nuclear.mc.FluidVariant;
 import top.focess.mc.mi.nuclear.mc.Fluids;
@@ -71,7 +63,7 @@ public class SteamHeaterComponent extends TemperatureComponent {
     }
 
     // return eu produced
-    public double tick(List<MatterHolder> fluidInputs, MINuclearInventory fluidOutputs) {
+    public double tick(MatterHolder fluidInputs, MINuclearInventory fluidOutputs) {
 
         double euProducedLowPressure = 0;
         if (acceptLowPressure) {
@@ -92,32 +84,15 @@ public class SteamHeaterComponent extends TemperatureComponent {
         return euProducedLowPressure + euProducedHighPressure;
     }
 
-    private double tryMakeSteam(List<MatterHolder> input, MINuclearInventory output, Fluid water, Fluid steam, int euPerSteamMb) {
+    private double tryMakeSteam(MatterHolder input, MINuclearInventory output, Fluid water, Fluid steam, int euPerSteamMb) {
         FluidVariant waterKey = FluidVariant.of(water);
         FluidVariant steamKey = FluidVariant.of(steam);
 
         if (getTemperature() > 100d) {
             long steamProduction = (long) (81 * (getTemperature() - 100d) / (temperatureMax - 100d) * maxEuProduction / euPerSteamMb);
-
-            try (Transaction tx = Transaction.openOuter()) {
-                long inserted;
-                try (Transaction simul = Transaction.openNested(tx)) { // insertion Simulation
-                    inserted = output.insertAllSlot(steamKey, steamProduction, simul);
-                }
-                if (inserted > 0) {
-                    long extracted = input.extractAllSlot(waterKey, inserted / STEAM_TO_WATER, tx);
-                    if (extracted > 0) {
-                        if (output.insertAllSlot(steamKey, extracted * STEAM_TO_WATER, tx) == extracted * STEAM_TO_WATER) {
-                            double euProduced = extracted * STEAM_TO_WATER * euPerSteamMb / 81d;
-                            decreaseTemperature(euProduced / euPerDegree);
-                            tx.commit();
-                            return euProduced;
-                        } else {
-                            throw new IllegalStateException("Steam Component : Logic bug: failed to insert");
-                        }
-                    }
-                }
-            }
+            long extracted = input.extract(waterKey, steamProduction / STEAM_TO_WATER);
+            if (output.output(steamKey, extracted * STEAM_TO_WATER) != extracted * STEAM_TO_WATER)
+                throw new IllegalStateException("Steam Component : Logic bug: failed to insert");
         }
         return 0;
 
