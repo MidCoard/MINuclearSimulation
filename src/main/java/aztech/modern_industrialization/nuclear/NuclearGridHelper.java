@@ -174,7 +174,6 @@ public class NuclearGridHelper {
                             for (int k = 0; k < 4; k++) {
                                 int i2 = i + dX[k];
                                 int j2 = j + dY[k];
-
                                 Optional<INuclearTile> maybeSecondTile = grid.getNuclearTile(i2, j2);
 
                                 if (maybeSecondTile.isPresent()) {

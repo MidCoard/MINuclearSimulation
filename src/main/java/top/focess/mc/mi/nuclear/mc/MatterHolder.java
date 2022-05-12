@@ -8,18 +8,21 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class MatterHolder {
 
+    private final boolean isFluid;
     private Matter matter;
     // seems like this is useless
     private final AtomicLong amount;
     private Map<String,Object> tag;
 
     public MatterHolder(@NonNull MatterVariant matterVariant) {
+        this.isFluid = matterVariant instanceof FluidVariant;
         this.matter = matterVariant.getMatter();
         this.amount = new AtomicLong(0);
         this.tag = new HashMap<>(matterVariant.getTag());
     }
 
     public MatterHolder(@NonNull MatterVariant matterVariant, long amount) {
+        this.isFluid = matterVariant instanceof FluidVariant;
         this.matter = matterVariant.getMatter();
         this.amount = new AtomicLong(amount);
         this.tag = new HashMap<>(matterVariant.getTag());
@@ -37,7 +40,7 @@ public class MatterHolder {
     }
 
     public boolean addMatterVariant(@NonNull MatterVariant matterVariant, long amount) {
-        if (this.matter == null) {
+        if (this.matter == null && isFluid == matterVariant instanceof FluidVariant) {
             this.setMatterVariant(matterVariant, amount);
             return true;
         }
@@ -49,9 +52,10 @@ public class MatterHolder {
     }
 
     public MatterVariant getMatterVariant() {
-        if (matter instanceof Item)
-            return ItemVariant.of((Item) matter, this.tag);
-        else return FluidVariant.of((Fluid) matter, this.tag);
+        if (isFluid)
+            return FluidVariant.of((Fluid) matter, tag);
+        else
+            return ItemVariant.of((Item) matter, tag);
     }
 
     public long getAmount() {

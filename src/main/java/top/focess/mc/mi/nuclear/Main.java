@@ -16,7 +16,7 @@ public class Main {
             if (i == 2 && j == 2) {
                 return ItemVariant.of(MIItems.HE_MOX_FUEL_ROD);
             } else return ItemVariant.blank();
-        });
+        }, NuclearSimulation.SIMULATION_3X3);
         scheduler.runTimer(simulation::tick, Duration.ZERO,Duration.ofMillis(50), "simulation", Throwable::printStackTrace);
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNext()) {
