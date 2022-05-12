@@ -26,8 +26,11 @@ package aztech.modern_industrialization.nuclear;
 import aztech.modern_industrialization.MIItem;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.minecraft.world.item.Item;
+import top.focess.mc.mi.nuclear.mc.Item;
 
-public class NuclearComponentItem extends Item implements INuclearComponent<ItemVariant> {
+import java.util.Properties;
+
+public class NuclearComponentItem extends Item implements INuclearComponent<Item> {
 
     public final int maxTemperature;
     public final double heatConduction;
@@ -60,7 +63,7 @@ public class NuclearComponentItem extends Item implements INuclearComponent<Item
     }
 
     @Override
-    public ItemVariant getVariant() {
-        return ItemVariant.of(this);
+    public Item getVariant() {
+        return this;
     }
 }

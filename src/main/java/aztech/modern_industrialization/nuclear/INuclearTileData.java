@@ -27,6 +27,10 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.TransferVariant;
 import net.minecraft.network.FriendlyByteBuf;
+import top.focess.mc.mi.nuclear.mc.Fluid;
+import top.focess.mc.mi.nuclear.mc.Item;
+import top.focess.mc.mi.nuclear.mc.Matter;
+import top.focess.mc.mi.nuclear.mc.MatterHolder;
 
 import java.util.Optional;
 
@@ -44,56 +48,27 @@ public interface INuclearTileData {
 
     double getMeanEuGeneration();
 
-    TransferVariant getVariant();
+    Matter getVariant();
 
     long getVariantAmount();
 
     boolean isFluid();
 
     default Optional<INuclearComponent> getComponent() {
-        TransferVariant variant = getVariant();
+        Matter variant = getVariant();
 
-        if (variant instanceof ItemVariant resource) {
-            if (!variant.isBlank() && getVariantAmount() > 0 && resource.getItem() instanceof INuclearComponent) {
-                return Optional.of((INuclearComponent) resource.getItem());
+        if (variant instanceof Item resource) {
+            if (!variant.isBlank() && getVariantAmount() > 0 && resource instanceof INuclearComponent) {
+                return Optional.of((INuclearComponent) resource);
             }
 
-        } else if (variant instanceof FluidVariant resource) {
+        } else if (variant instanceof Fluid resource) {
             if (!resource.isBlank() && getVariantAmount() > 0) {
                 return Optional.ofNullable(INuclearComponent.of(resource));
             }
         }
 
         return Optional.empty();
-    }
-
-    static void write(Optional<INuclearTileData> maybeData, FriendlyByteBuf buf) {
-
-        if (maybeData.isPresent()) {
-            INuclearTileData tile = maybeData.get();
-            buf.writeBoolean(true);
-
-            buf.writeDouble(tile.getTemperature());
-
-            buf.writeDouble(tile.getMeanNeutronAbsorption(NeutronType.FAST));
-            buf.writeDouble(tile.getMeanNeutronAbsorption(NeutronType.THERMAL));
-
-            buf.writeDouble(tile.getMeanNeutronFlux(NeutronType.FAST));
-            buf.writeDouble(tile.getMeanNeutronFlux(NeutronType.THERMAL));
-
-            buf.writeDouble(tile.getMeanNeutronGeneration());
-
-            buf.writeDouble(tile.getHeatTransferCoeff());
-            buf.writeDouble(tile.getMeanEuGeneration());
-
-            buf.writeBoolean(!tile.isFluid());
-            buf.writeNbt(tile.getVariant().toNbt());
-            buf.writeLong(tile.getVariantAmount());
-
-        } else {
-            buf.writeBoolean(false);
-        }
-
     }
 
     static Optional<INuclearTileData> read(FriendlyByteBuf buf) {
@@ -160,7 +135,7 @@ public interface INuclearTileData {
                 }
 
                 @Override
-                public TransferVariant getVariant() {
+                public Matter getVariant() {
                     return variant;
                 }
 

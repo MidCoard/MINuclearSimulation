@@ -25,12 +25,9 @@ package aztech.modern_industrialization.nuclear;
 
 import aztech.modern_industrialization.ModernIndustrialization;
 import net.minecraft.world.item.Item;
+import top.focess.mc.mi.nuclear.mc.Item;
 
 public class NuclearItem {
-
-    public static void init() {
-        ModernIndustrialization.LOGGER.info("Setting up Nuclear Items");
-    }
 
     public static final Item SMALL_HEAT_EXCHANGER = NuclearComponentItem.of("small_heat_exchanger", 2500, 15 * NuclearConstant.BASE_HEAT_CONDUCTION,
             INeutronBehaviour.NO_INTERACTION);

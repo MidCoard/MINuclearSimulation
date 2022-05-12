@@ -46,9 +46,13 @@ import net.fabricmc.fabric.api.transfer.v1.storage.TransferVariant;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import top.focess.mc.mi.nuclear.mc.Item;
+import top.focess.mc.mi.nuclear.mc.Matter;
 import top.focess.mc.mi.nuclear.mi.MINuclearInventory;
 
 public class NuclearHatch implements INuclearTile {
+
+    private static final Random RANDOM = new Random();
 
     private final MINuclearInventory inventory;
 
@@ -57,43 +61,22 @@ public class NuclearHatch implements INuclearTile {
     public final boolean isFluid;
     public static final long capacity = 64000 * 81;
 
-    public NuclearHatch(BEP bep, boolean isFluid) {
-
+    public NuclearHatch(boolean isFluid) {
         this.isFluid = isFluid;
-        SlotPositions slotPos = new SlotPositions.Builder().addSlot(68, 31).addSlots(98, 22, 2, 1).build();
-
+        inventory = new MINuclearInventory(isFluid);
         if (!isFluid) {
-            List<ConfigurableItemStack> itemStack = new ArrayList<>();
-            itemStack.add(ConfigurableItemStack.standardInputSlot());
-            itemStack.add(ConfigurableItemStack.standardOutputSlot());
-            itemStack.add(ConfigurableItemStack.standardOutputSlot());
-            inventory = new MINuclearInventory(itemStack, Collections.emptyList(), slotPos, SlotPositions.empty());
             nuclearReactorComponent = new TemperatureComponent(NuclearConstant.MAX_TEMPERATURE);
         } else {
-
-            List<ConfigurableFluidStack> fluidStack = new ArrayList<>();
-            fluidStack.add(ConfigurableFluidStack.standardInputSlot(capacity));
-            fluidStack.add(ConfigurableFluidStack.standardOutputSlot(capacity));
-            fluidStack.add(ConfigurableFluidStack.standardOutputSlot(capacity));
-            inventory = new MINuclearInventory(Collections.emptyList(), fluidStack, SlotPositions.empty(), slotPos);
             nuclearReactorComponent = new SteamHeaterComponent(NuclearConstant.MAX_TEMPERATURE, NuclearConstant.MAX_HATCH_EU_PRODUCTION,
                     NuclearConstant.EU_PER_DEGREE, true, true);
         }
-
         neutronHistory = new NeutronHistoryComponent();
-        registerComponents(inventory, nuclearReactorComponent, neutronHistory);
-
-        TemperatureBar.Parameters temperatureParams = new TemperatureBar.Parameters(43, 63, NuclearConstant.MAX_TEMPERATURE);
-        registerClientComponent(new TemperatureBar.Server(temperatureParams, () -> (int) nuclearReactorComponent.getTemperature()));
-
     }
 
-    @Override
     public MINuclearInventory getInventory() {
         return inventory;
     }
 
-    @Override
     public final void tick() {
         super.tick();
         this.clearMachineLock();
@@ -146,21 +129,13 @@ public class NuclearHatch implements INuclearTile {
     }
 
     @Override
-    public TransferVariant getVariant() {
-        if (isFluid) {
-            return this.inventory.getFluidStacks().get(0).getResource();
-        } else {
-            return this.inventory.getItemStacks().get(0).getResource();
-        }
+    public Matter getVariant() {
+        return this.inventory.get(0).getMatter();
     }
 
     @Override
     public long getVariantAmount() {
-        if (isFluid) {
-            return this.inventory.getFluidStacks().get(0).getAmount();
-        } else {
-            return this.inventory.getItemStacks().get(0).getAmount();
-        }
+        return this.inventory.get(0).getAmount();
     }
 
     @Override
@@ -186,7 +161,7 @@ public class NuclearHatch implements INuclearTile {
         int neutronsProduced = 0;
 
         if (!isFluid) {
-            ItemVariant itemVariant = (ItemVariant) this.getVariant();
+            Item itemVariant = (Item) this.getVariant();
 
             if (!itemVariant.isBlank() && itemVariant.getItem() instanceof NuclearAbsorbable abs) {
 
@@ -225,7 +200,7 @@ public class NuclearHatch implements INuclearTile {
                         }
                     }
                 } else {
-                    this.getInventory().getItemStacks().get(0).setKey(ItemVariant.of(stack));
+                    this.getInventory().get(0).setMatter(stack);
                 }
 
             }
@@ -282,7 +257,7 @@ public class NuclearHatch implements INuclearTile {
 
     public void nuclearTick(INuclearGrid grid) {
         neutronHistory.tick();
-        fluidNeutronProductTick(randIntFromDouble(neutronHistory.getAverageReceived(NeutronType.BOTH), this.getLevel().getRandom()), false);
+        fluidNeutronProductTick(randIntFromDouble(neutronHistory.getAverageReceived(NeutronType.BOTH), RANDOM), false);
 
         if (isFluid) {
             double euProduced = ((SteamHeaterComponent) nuclearReactorComponent).tick(Collections.singletonList(inventory.getFluidStacks().get(0)),

@@ -31,6 +31,7 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import top.focess.mc.mi.nuclear.mc.Fluids;
 
 public class SteamHeaterComponent extends TemperatureComponent {
 
