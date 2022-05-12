@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class MatterHolder {
 
     private Matter matter;
+    // seems like this is useless
     private final AtomicLong amount;
     private Map<String,Object> tag;
 
@@ -35,12 +36,16 @@ public class MatterHolder {
         this.tag = new HashMap<>(matter.getTag());
     }
 
-    public void addMatterVariant(@NonNull MatterVariant matter, long amount) {
-        if (this.matter == null)
+    public boolean addMatterVariant(@NonNull MatterVariant matter, long amount) {
+        if (this.matter == null) {
             this.setMatterVariant(matter, amount);
-        else if (this.matter.equals(matter.getMatter()))
+            return true;
+        }
+        else if (this.matter.equals(matter.getMatter())) {
             this.amount.addAndGet(amount);
-        throw new IllegalArgumentException("MatterVariant is not same!");
+            return true;
+        }
+        return false;
     }
 
     public MatterVariant getMatterVariant() {
@@ -55,5 +60,9 @@ public class MatterHolder {
 
     public Map<String, Object> getTag() {
         return this.tag;
+    }
+
+    public void empty() {
+        this.amount.set(0);
     }
 }

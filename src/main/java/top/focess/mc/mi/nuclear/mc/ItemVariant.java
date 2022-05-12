@@ -18,6 +18,10 @@ public class ItemVariant extends MatterVariant {
         return of ((Item) stack.getMatterVariant().getMatter(), stack.getTag());
     }
 
+    public static ItemVariant blank() {
+        return ItemVariant.of((Item) null);
+    }
+
     public Item getItem() {
         return (Item) this.getMatter();
     }

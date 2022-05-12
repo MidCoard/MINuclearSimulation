@@ -23,19 +23,9 @@
  */
 package aztech.modern_industrialization.nuclear;
 
-import aztech.modern_industrialization.MIItem;
-import aztech.modern_industrialization.util.TextHelper;
 import com.google.common.base.Preconditions;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.util.Mth;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
 import top.focess.mc.mi.nuclear.mc.MatterHolder;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -43,9 +33,9 @@ public class NuclearAbsorbable extends NuclearComponentItem {
 
     public final int desintegrationMax;
 
-    public NuclearAbsorbable(Properties settings, int maxTemperature, double heatConduction, INeutronBehaviour neutronBehaviour,
+    public NuclearAbsorbable(String name,int maxCount, int maxTemperature, double heatConduction, INeutronBehaviour neutronBehaviour,
             int desintegrationMax) {
-        super(settings, maxTemperature, heatConduction, neutronBehaviour);
+        super(name, maxCount,maxTemperature, heatConduction, neutronBehaviour);
         this.desintegrationMax = desintegrationMax;
     }
 
@@ -57,37 +47,12 @@ public class NuclearAbsorbable extends NuclearComponentItem {
 
     public static NuclearComponentItem of(String id, int maxTemperature, double heatConduction, INeutronBehaviour neutronBehaviour,
                                           int desintegrationMax) {
-        return (NuclearComponentItem) MIItem.of(
-                (Properties settings) -> new NuclearAbsorbable(settings, maxTemperature, heatConduction, neutronBehaviour, desintegrationMax), id, 1);
+        return new NuclearAbsorbable( id, 1, maxTemperature, heatConduction, neutronBehaviour, desintegrationMax);
     }
 
-    @Override
-    public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag context) {
-        super.appendHoverText(stack, world, tooltip, context);
-        tooltip.add(new TranslatableComponent("text.modern_industrialization.rem_absorption", getRemainingDesintegrations(stack), desintegrationMax)
-                .setStyle(TextHelper.GRAY_TEXT));
-
-    }
-
-    public double getDurabilityBarProgress(ItemStack stack) {
+    public double getDurabilityBarProgress(MatterHolder stack) {
         return (double) getRemainingDesintegrations(stack) / desintegrationMax;
 
-    }
-
-    @Override
-    public int getBarColor(ItemStack stack) {
-        float f = (float) getRemainingDesintegrations(stack) / desintegrationMax;
-        return Mth.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
-    }
-
-    @Override
-    public boolean isBarVisible(ItemStack stack) {
-        return getRemainingDesintegrations(stack) != desintegrationMax;
-    }
-
-    @Override
-    public int getBarWidth(ItemStack stack) {
-        return (int) Math.round(getDurabilityBarProgress(stack) * 13);
     }
 
     public int getRemainingDesintegrations(MatterHolder stack) {

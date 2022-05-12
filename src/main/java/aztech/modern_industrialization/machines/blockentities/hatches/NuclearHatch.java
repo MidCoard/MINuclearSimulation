@@ -84,7 +84,7 @@ public class NuclearHatch implements INuclearTile {
             ItemVariant itemVariant = (ItemVariant) this.getVariant();
             if (!itemVariant.isBlank() && itemVariant.getItem() instanceof NuclearAbsorbable abs) {
                 if (abs.getNeutronProduct() != null) {
-                    this.inventory.get(1).addMatterVariant(abs.getNeutronProduct(), abs.getNeutronProductAmount());
+                    this.inventory.output(abs.getNeutronProduct(), abs.getNeutronProductAmount());
                 }
             }
         }
@@ -123,12 +123,12 @@ public class NuclearHatch implements INuclearTile {
 
     @Override
     public MatterVariant getVariant() {
-        return this.inventory.get(0).getMatterVariant();
+        return this.inventory.input().getMatterVariant();
     }
 
     @Override
     public long getVariantAmount() {
-        return this.inventory.get(0).getAmount();
+        return this.inventory.input().getAmount();
     }
 
     @Override
@@ -173,27 +173,10 @@ public class NuclearHatch implements INuclearTile {
                 }
 
                 if (abs.getRemainingDesintegrations(stack) == 0) {
-                    try (Transaction tx = Transaction.openOuter()) {
-                        ConfigurableItemStack absStack = this.inventory.getItemStacks().get(0);
-                        absStack.updateSnapshots(tx);
-                        absStack.setAmount(0);
-                        absStack.setKey(ItemVariant.blank());
-
-                        if (abs.getNeutronProduct() != null) {
-                            long inserted = this.inventory.itemStorage.insert(abs.getNeutronProduct(), abs.getNeutronProductAmount(), tx,
-                                    AbstractConfigurableStack::canPipesExtract, true);
-
-                            if (inserted == abs.getNeutronProductAmount()) {
-                                tx.commit();
-                            } else {
-                                tx.abort();
-                            }
-                        } else {
-                            tx.commit();
-                        }
-                    }
+                    this.inventory.input().setMatterVariant(ItemVariant.blank(), 0);
+                    this.inventory.output(abs.getNeutronProduct(), abs.getNeutronProductAmount());
                 } else {
-                    this.getInventory().get(0).setMatterVariant(ItemVariant.of(stack));
+                    this.getInventory().input().setMatterVariant(ItemVariant.of(stack));
                 }
 
             }
@@ -216,7 +199,7 @@ public class NuclearHatch implements INuclearTile {
 
                 INuclearComponent<FluidVariant> component = maybeComponent.get();
 
-                int actualRecipe = randIntFromDouble(neutron * component.getNeutronProductProbability(), this.getLevel().getRandom());
+                int actualRecipe = randIntFromDouble(neutron * component.getNeutronProductProbability(), RANDOM);
 
                 if (simul) {
                     actualRecipe = neutron;
@@ -226,8 +209,7 @@ public class NuclearHatch implements INuclearTile {
                     try (Transaction tx = Transaction.openOuter()) {
                         long extracted = this.inventory.fluidStorage.extractAllSlot(component.getVariant(), actualRecipe, tx,
                                 AbstractConfigurableStack::canPipesInsert);
-                        this.inventory.fluidStorage.insert(component.getNeutronProduct(), extracted * component.getNeutronProductAmount(), tx,
-                                AbstractConfigurableStack::canPipesExtract, true);
+                        this.inventory.output(component.getNeutronProduct(), extracted * component.getNeutronProductAmount());
 
                         if (!simul) {
                             tx.commit();
@@ -242,7 +224,7 @@ public class NuclearHatch implements INuclearTile {
         if (!isFluid) {
             this.getComponent().ifPresent((component) -> {
                 if (component.getMaxTemperature() < this.getTemperature()) {
-                    this.inventory.getItemStacks().get(0).empty();
+                    this.inventory.input().empty();
                 }
             });
         }
@@ -253,8 +235,8 @@ public class NuclearHatch implements INuclearTile {
         fluidNeutronProductTick(randIntFromDouble(neutronHistory.getAverageReceived(NeutronType.BOTH), RANDOM), false);
 
         if (isFluid) {
-            double euProduced = ((SteamHeaterComponent) nuclearReactorComponent).tick(Collections.singletonList(inventory.getFluidStacks().get(0)),
-                    inventory.getFluidStacks().stream().filter(AbstractConfigurableStack::canPipesExtract).collect(Collectors.toList()));
+            double euProduced = ((SteamHeaterComponent) nuclearReactorComponent).tick(Collections.singletonList(inventory.get(0)),
+                    inventory);
             grid.registerEuProduction(euProduced);
         }
 

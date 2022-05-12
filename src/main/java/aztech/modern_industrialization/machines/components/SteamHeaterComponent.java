@@ -34,6 +34,8 @@ import net.minecraft.world.level.material.Fluids;
 import top.focess.mc.mi.nuclear.mc.Fluid;
 import top.focess.mc.mi.nuclear.mc.FluidVariant;
 import top.focess.mc.mi.nuclear.mc.Fluids;
+import top.focess.mc.mi.nuclear.mc.MatterHolder;
+import top.focess.mc.mi.nuclear.mi.MINuclearInventory;
 
 public class SteamHeaterComponent extends TemperatureComponent {
 
@@ -69,34 +71,28 @@ public class SteamHeaterComponent extends TemperatureComponent {
     }
 
     // return eu produced
-    public double tick(List<ConfigurableFluidStack> fluidInputs, List<ConfigurableFluidStack> fluidOutputs) {
+    public double tick(List<MatterHolder> fluidInputs, MINuclearInventory fluidOutputs) {
 
         double euProducedLowPressure = 0;
         if (acceptLowPressure) {
-            euProducedLowPressure = tryMakeSteam(fluidInputs, fluidOutputs, Fluids.WATER, MIFluids.STEAM, 1);
+            euProducedLowPressure = tryMakeSteam(fluidInputs, fluidOutputs, Fluids.WATER, Fluids.STEAM, 1);
             if (euProducedLowPressure == 0) {
-                euProducedLowPressure = tryMakeSteam(fluidInputs, fluidOutputs, MIFluids.HEAVY_WATER, MIFluids.HEAVY_WATER_STEAM, 1);
+                euProducedLowPressure = tryMakeSteam(fluidInputs, fluidOutputs, Fluids.HEAVY_WATER, Fluids.HEAVY_WATER_STEAM, 1);
             }
         }
 
         double euProducedHighPressure = 0;
         if (acceptHighPressure) {
-            euProducedHighPressure = tryMakeSteam(fluidInputs, fluidOutputs, MIFluids.HIGH_PRESSURE_WATER, MIFluids.HIGH_PRESSURE_STEAM, 8);
+            euProducedHighPressure = tryMakeSteam(fluidInputs, fluidOutputs, Fluids.HIGH_PRESSURE_WATER, Fluids.HIGH_PRESSURE_STEAM, 8);
             if (euProducedHighPressure == 0) {
-                euProducedHighPressure = tryMakeSteam(fluidInputs, fluidOutputs, MIFluids.HIGH_PRESSURE_HEAVY_WATER,
-                        MIFluids.HIGH_PRESSURE_HEAVY_WATER_STEAM, 8);
+                euProducedHighPressure = tryMakeSteam(fluidInputs, fluidOutputs, Fluids.HIGH_PRESSURE_HEAVY_WATER,
+                        Fluids.HIGH_PRESSURE_HEAVY_WATER_STEAM, 8);
             }
         }
         return euProducedLowPressure + euProducedHighPressure;
     }
 
-    private double tryMakeSteam(List<ConfigurableFluidStack> input, List<ConfigurableFluidStack> output, Fluid water, Fluid steam, int euPerSteamMb) {
-        return tryMakeSteam(new MIFluidStorage(input), new MIFluidStorage(output), water, steam, euPerSteamMb);
-
-    }
-
-    private double tryMakeSteam(MIFluidStorage input, MIFluidStorage output, Fluid water, Fluid steam, int euPerSteamMb) {
-
+    private double tryMakeSteam(List<MatterHolder> input, MINuclearInventory output, Fluid water, Fluid steam, int euPerSteamMb) {
         FluidVariant waterKey = FluidVariant.of(water);
         FluidVariant steamKey = FluidVariant.of(steam);
 
@@ -124,5 +120,6 @@ public class SteamHeaterComponent extends TemperatureComponent {
             }
         }
         return 0;
+
     }
 }

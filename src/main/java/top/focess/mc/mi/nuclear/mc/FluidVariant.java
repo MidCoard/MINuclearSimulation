@@ -13,6 +13,10 @@ public class FluidVariant extends MatterVariant{
         super(matter);
     }
 
+    public static MatterVariant blank() {
+        return FluidVariant.of(null);
+    }
+
     public Fluid getFluid() {
         return (Fluid) this.getMatter();
     }
