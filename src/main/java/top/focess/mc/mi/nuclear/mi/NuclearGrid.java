@@ -52,6 +52,13 @@ public class NuclearGrid implements INuclearGrid {
     @Override
     public void registerEuProduction(double eu) {
         efficiencyHistory.addValue("euProduction", (int) eu);
+    }
 
+    public void tick() {
+        this.efficiencyHistory.tick();
+    }
+
+    public IntegerHistoryComponent getEfficiencyHistory() {
+        return efficiencyHistory;
     }
 }
