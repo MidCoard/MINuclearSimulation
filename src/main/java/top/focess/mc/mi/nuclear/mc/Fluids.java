@@ -4,8 +4,6 @@ public class Fluids {
 
     public static final Fluid WATER = new Fluid("minecraft","water");
 
-    public static final Fluid BLANK_FLUID = new Fluid("minecraft","blank", true);
-
     public static final Fluid DEUTERIUM = new Fluid("modern-industrialization","deuterium");
 
     public static final Fluid HEAVY_WATER = new Fluid("modern-industrialization","heavy_water");

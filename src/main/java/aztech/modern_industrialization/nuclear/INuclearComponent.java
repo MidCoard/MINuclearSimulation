@@ -27,11 +27,9 @@ import aztech.modern_industrialization.MIFluids;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.TransferVariant;
 import net.minecraft.world.level.material.Fluids;
-import top.focess.mc.mi.nuclear.mc.Fluid;
-import top.focess.mc.mi.nuclear.mc.Fluids;
-import top.focess.mc.mi.nuclear.mc.Matter;
+import top.focess.mc.mi.nuclear.mc.*;
 
-public interface INuclearComponent<T extends Matter> {
+public interface INuclearComponent<T extends MatterVariant> {
 
     double getHeatConduction();
 
@@ -55,10 +53,10 @@ public interface INuclearComponent<T extends Matter> {
         return Integer.MAX_VALUE;
     }
 
-    static INuclearComponent of(Fluid variant, double heatConduction, double density, NuclearConstant.ScatteringType type,
-                                NuclearConstant.IsotopeParams params, Fluid neutronProduct, boolean highPressure) {
+    static INuclearComponent of(FluidVariant variant, double heatConduction, double density, NuclearConstant.ScatteringType type,
+                                NuclearConstant.IsotopeParams params, FluidVariant neutronProduct, boolean highPressure) {
 
-        return new INuclearComponent<Fluid>() {
+        return new INuclearComponent<FluidVariant>() {
             @Override
             public double getHeatConduction() {
                 return heatConduction * density;
@@ -69,11 +67,11 @@ public interface INuclearComponent<T extends Matter> {
                 return INeutronBehaviour.of(type, params, density);
             }
 
-            public Fluid getVariant() {
+            public FluidVariant getVariant() {
                 return variant;
             }
 
-            public Fluid getNeutronProduct() {
+            public FluidVariant getNeutronProduct() {
                 return neutronProduct;
             }
 
@@ -87,19 +85,19 @@ public interface INuclearComponent<T extends Matter> {
         };
     }
 
-    public static INuclearComponent of(Fluid fluid) {
-        if (fluid.equals(Fluids.WATER)) {
+    public static INuclearComponent of(FluidVariant fluid) {
+        if (fluid.equals(FluidVariant.of(Fluids.WATER))) {
             return INuclearComponent.of(fluid, NuclearConstant.BASE_HEAT_CONDUCTION * 5, 1, NuclearConstant.ScatteringType.ULTRA_LIGHT,
-                    NuclearConstant.HYDROGEN, Fluids.DEUTERIUM, false);
-        } else if (fluid.equals(Fluids.HEAVY_WATER)) {
+                    NuclearConstant.HYDROGEN, FluidVariant.of(Fluids.DEUTERIUM), false);
+        } else if (fluid.equals(FluidVariant.of(Fluids.HEAVY_WATER))) {
             return INuclearComponent.of(fluid, NuclearConstant.BASE_HEAT_CONDUCTION * 6, 1, NuclearConstant.ScatteringType.LIGHT,
-                    NuclearConstant.DEUTERIUM, Fluids.TRITIUM, false);
-        } else if (fluid.equals(Fluids.HIGH_PRESSURE_WATER)) {
+                    NuclearConstant.DEUTERIUM, FluidVariant.of(Fluids.TRITIUM), false);
+        } else if (fluid.equals(FluidVariant.of(Fluids.HIGH_PRESSURE_WATER))) {
             return INuclearComponent.of(fluid, NuclearConstant.BASE_HEAT_CONDUCTION * 5, 4, NuclearConstant.ScatteringType.ULTRA_LIGHT,
-                    NuclearConstant.HYDROGEN, Fluids.DEUTERIUM, true);
-        } else if (fluid.equals(Fluids.HIGH_PRESSURE_HEAVY_WATER)) {
+                    NuclearConstant.HYDROGEN, FluidVariant.of(Fluids.DEUTERIUM), true);
+        } else if (fluid.equals(FluidVariant.of(Fluids.HIGH_PRESSURE_HEAVY_WATER))) {
             return INuclearComponent.of(fluid, NuclearConstant.BASE_HEAT_CONDUCTION * 6, 4, NuclearConstant.ScatteringType.LIGHT,
-                    NuclearConstant.DEUTERIUM, Fluids.TRITIUM, true);
+                    NuclearConstant.DEUTERIUM, FluidVariant.of(Fluids.TRITIUM), true);
         }
         return null;
     }

@@ -32,6 +32,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import top.focess.mc.mi.nuclear.mc.MatterHolder;
 
 import java.util.List;
 import java.util.Random;
@@ -114,7 +115,7 @@ public class NuclearFuel extends NuclearAbsorbable {
         return factor;
     }
 
-    public int simulateDesintegration(double neutronsReceived, ItemStack stack, double temperature, Random rand, INuclearGrid grid) {
+    public int simulateDesintegration(double neutronsReceived, MatterHolder stack, double temperature, Random rand, INuclearGrid grid) {
         int absorption = simulateAbsorption(neutronsReceived, stack, rand);
         double fuelEuConsumed = absorption * totalEUbyDesintegration;
         grid.registerEuFuelConsumption(fuelEuConsumed);

@@ -4,29 +4,30 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class MatterHolder {
 
-    private Matter matter;
+    private MatterVariant matterVariant;
     private long amount;
 
-    public MatterHolder(@NonNull Matter matter, long amount) {
-        this.matter = matter;
+    public MatterHolder(MatterVariant matterVariant, long amount) {
+        this.matterVariant = matterVariant;
         this.amount = amount;
     }
 
-    public void setMatter(@NonNull Matter matter, long amount) {
-        this.matter = matter;
+    public void setMatterVariant(@NonNull MatterVariant matterVariant, long amount) {
+        this.matterVariant = matterVariant;
         this.amount = amount;
     }
 
-    public void setMatter(Matter matter) {
-        this.matter = matter;
+    public void setMatterVariant(MatterVariant matter) {
+        this.matterVariant = matter;
         this.amount = 1;
     }
 
-    public Matter getMatter() {
-        return matter;
+    public MatterVariant getMatterVariant() {
+        return matterVariant;
     }
 
     public long getAmount() {
         return amount;
     }
+
 }

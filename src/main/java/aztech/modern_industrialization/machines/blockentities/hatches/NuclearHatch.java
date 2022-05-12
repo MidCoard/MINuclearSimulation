@@ -46,8 +46,7 @@ import net.fabricmc.fabric.api.transfer.v1.storage.TransferVariant;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import top.focess.mc.mi.nuclear.mc.Item;
-import top.focess.mc.mi.nuclear.mc.Matter;
+import top.focess.mc.mi.nuclear.mc.*;
 import top.focess.mc.mi.nuclear.mi.MINuclearInventory;
 
 public class NuclearHatch implements INuclearTile {
@@ -129,8 +128,8 @@ public class NuclearHatch implements INuclearTile {
     }
 
     @Override
-    public Matter getVariant() {
-        return this.inventory.get(0).getMatter();
+    public MatterVariant getVariant() {
+        return this.inventory.get(0).getMatterVariant();
     }
 
     @Override
@@ -161,17 +160,17 @@ public class NuclearHatch implements INuclearTile {
         int neutronsProduced = 0;
 
         if (!isFluid) {
-            Item itemVariant = (Item) this.getVariant();
+            ItemVariant itemVariant = (ItemVariant) this.getVariant();
 
-            if (!itemVariant.isBlank() && itemVariant.getItem() instanceof NuclearAbsorbable abs) {
+            if (!itemVariant.isBlank() && itemVariant instanceof NuclearAbsorbable abs) {
 
-                if (itemVariant.getItem() instanceof NuclearFuel) {
+                if (itemVariant instanceof NuclearFuel) {
                     meanNeutron += NuclearConstant.BASE_NEUTRON;
                 }
 
-                ItemStack stack = itemVariant.toStack((int) getVariantAmount());
+                MatterHolder stack = itemVariant.toStack((int) getVariantAmount());
 
-                Random rand = this.level.getRandom();
+                Random rand = RANDOM;
 
                 if (abs instanceof NuclearFuel fuel) {
                     neutronsProduced = fuel.simulateDesintegration(meanNeutron, stack, this.nuclearReactorComponent.getTemperature(), rand, grid);

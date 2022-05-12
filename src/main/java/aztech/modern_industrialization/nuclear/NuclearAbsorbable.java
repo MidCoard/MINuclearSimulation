@@ -33,6 +33,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import top.focess.mc.mi.nuclear.mc.MatterHolder;
 
 import java.util.List;
 import java.util.Random;
@@ -89,7 +90,7 @@ public class NuclearAbsorbable extends NuclearComponentItem {
         return (int) Math.round(getDurabilityBarProgress(stack) * 13);
     }
 
-    public int getRemainingDesintegrations(ItemStack stack) {
+    public int getRemainingDesintegrations(MatterHolder stack) {
         CompoundTag tag = stack.getTag();
         if (tag == null || !tag.contains("desRem")) {
             return desintegrationMax;
@@ -101,7 +102,7 @@ public class NuclearAbsorbable extends NuclearComponentItem {
         return (int) Math.floor(value) + (rand.nextDouble() < (value % 1) ? 1 : 0);
     }
 
-    public int simulateAbsorption(double neutronsReceived, ItemStack stack, Random rand) {
+    public int simulateAbsorption(double neutronsReceived, MatterHolder stack, Random rand) {
         int absorbNeutrons = Math.min(randIntFromDouble(neutronsReceived, rand), getRemainingDesintegrations(stack));
 
         setRemainingDesintegrations(stack, getRemainingDesintegrations(stack) - absorbNeutrons);

@@ -3,12 +3,10 @@ package top.focess.mc.mi.nuclear.mc;
 public abstract class Matter {
     private final String namespace;
     private final String name;
-    private final boolean blank;
 
-    public Matter(String namespace, String name, boolean blank) {
+    public Matter(String namespace, String name) {
         this.namespace = namespace;
         this.name = name;
-        this.blank = blank;
     }
 
     public String getNamespace() {
@@ -19,7 +17,4 @@ public abstract class Matter {
         return name;
     }
 
-    public boolean isBlank() {
-        return this.blank;
-    }
 }

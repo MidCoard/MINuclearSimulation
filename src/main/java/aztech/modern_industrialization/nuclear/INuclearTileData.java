@@ -27,10 +27,7 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.TransferVariant;
 import net.minecraft.network.FriendlyByteBuf;
-import top.focess.mc.mi.nuclear.mc.Fluid;
-import top.focess.mc.mi.nuclear.mc.Item;
-import top.focess.mc.mi.nuclear.mc.Matter;
-import top.focess.mc.mi.nuclear.mc.MatterHolder;
+import top.focess.mc.mi.nuclear.mc.*;
 
 import java.util.Optional;
 
@@ -48,21 +45,21 @@ public interface INuclearTileData {
 
     double getMeanEuGeneration();
 
-    Matter getVariant();
+    MatterVariant getVariant();
 
     long getVariantAmount();
 
     boolean isFluid();
 
     default Optional<INuclearComponent> getComponent() {
-        Matter variant = getVariant();
+        MatterVariant variant = getVariant();
 
-        if (variant instanceof Item resource) {
+        if (variant instanceof ItemVariant resource) {
             if (!variant.isBlank() && getVariantAmount() > 0 && resource instanceof INuclearComponent) {
                 return Optional.of((INuclearComponent) resource);
             }
 
-        } else if (variant instanceof Fluid resource) {
+        } else if (variant instanceof FluidVariant resource) {
             if (!resource.isBlank() && getVariantAmount() > 0) {
                 return Optional.ofNullable(INuclearComponent.of(resource));
             }
