@@ -56,11 +56,9 @@ public class NuclearGrid implements INuclearGrid {
 
     public void tick() {
         this.efficiencyHistory.tick();
-        for (int x = 0; x < size; x++) {
-            for (int y = 0; y < size; y++) {
+        for (int x = 0; x < size; x++)
+            for (int y = 0; y < size; y++)
                 hatchesGrid[x][y].tick();
-            }
-        }
     }
 
     public IntegerHistoryComponent getEfficiencyHistory() {
