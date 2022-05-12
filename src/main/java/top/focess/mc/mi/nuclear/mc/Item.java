@@ -13,6 +13,8 @@ public class Item extends Matter{
                 return item;
         throw new IllegalArgumentException("Item not found!");
     }
+
+    //ignore
     private final int maxCount;
 
     public Item(String namespace, String name) {
