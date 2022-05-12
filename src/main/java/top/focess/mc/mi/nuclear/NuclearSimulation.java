@@ -15,6 +15,6 @@ public class NuclearSimulation {
     }
 
     public void tick() {
-        
+
     }
 }
