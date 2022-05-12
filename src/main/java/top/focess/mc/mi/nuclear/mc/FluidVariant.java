@@ -13,11 +13,6 @@ public class FluidVariant extends MatterVariant{
         super(matter);
     }
 
-    @Override
-    public MatterVariant of(Map<String, Object> tag) {
-        return FluidVariant.of(this.getFluid(), tag);
-    }
-
     public Fluid getFluid() {
         return (Fluid) this.getMatter();
     }

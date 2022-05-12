@@ -2,6 +2,7 @@ package top.focess.mc.mi.nuclear.mc;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -13,7 +14,7 @@ public abstract class MatterVariant {
 
     public MatterVariant(Matter matter, @NonNull Map<String,Object> tag) {
         this.matter = matter;
-        this.tag = tag;
+        this.tag = new HashMap<>(tag);
     }
 
     public MatterVariant(Matter matter) {
@@ -30,9 +31,8 @@ public abstract class MatterVariant {
     }
 
     public Map<String, Object> getTag() {
-        return tag;
+        return Collections.unmodifiableMap(tag);
     }
-
 
     public MatterHolder toStack(long amount) {
         return new MatterHolder(this, amount);
@@ -45,13 +45,15 @@ public abstract class MatterVariant {
 
         MatterVariant variant = (MatterVariant) o;
 
-        return Objects.equals(matter, variant.matter);
+        if (!Objects.equals(matter, variant.matter)) return false;
+        return tag.equals(variant.tag);
     }
 
     @Override
     public int hashCode() {
-        return matter != null ? matter.hashCode() : 0;
+        int result = matter != null ? matter.hashCode() : 0;
+        result = 31 * result + tag.hashCode();
+        return result;
     }
 
-    public abstract MatterVariant of(Map<String, Object> tag);
 }

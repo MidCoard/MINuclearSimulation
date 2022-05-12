@@ -1,6 +1,7 @@
 package top.focess.mc.mi.nuclear.mi;
 
 import top.focess.mc.mi.nuclear.mc.FluidVariant;
+import top.focess.mc.mi.nuclear.mc.Item;
 import top.focess.mc.mi.nuclear.mc.ItemVariant;
 import top.focess.mc.mi.nuclear.mc.MatterHolder;
 
@@ -19,7 +20,7 @@ public class MINuclearInventory {
             if (isFluid)
                 matters.add(new MatterHolder(FluidVariant.of(null)));
             else
-                matters.add(new MatterHolder(ItemVariant.of(null)));
+                matters.add(new MatterHolder(ItemVariant.of((Item) null)));
     }
 
     public MatterHolder get(int index) {

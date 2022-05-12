@@ -8,42 +8,45 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class MatterHolder {
 
-    private MatterVariant matterVariant;
+    private Matter matter;
     private final AtomicLong amount;
-    private final Map<String,Object> tag;
+    private Map<String,Object> tag;
 
     public MatterHolder(@NonNull MatterVariant matterVariant) {
-        this.matterVariant = matterVariant;
+        this.matter = matterVariant.getMatter();
         this.amount = new AtomicLong(0);
         this.tag = new HashMap<>(matterVariant.getTag());
     }
 
-    public MatterHolder(MatterVariant matterVariant, long amount) {
-        this.matterVariant = matterVariant;
+    public MatterHolder(@NonNull MatterVariant matterVariant, long amount) {
+        this.matter = matterVariant.getMatter();
         this.amount = new AtomicLong(amount);
         this.tag = new HashMap<>(matterVariant.getTag());
     }
 
     public void setMatterVariant(@NonNull MatterVariant matterVariant, long amount) {
-        this.matterVariant = matterVariant;
+        this.matter = matterVariant.getMatter();
+        this.tag = new HashMap<>(matterVariant.getTag());
         this.amount.set(amount);
     }
 
     public void setMatterVariant(@NonNull MatterVariant matter) {
-        this.matterVariant = matter;
-        this.amount.set(1);
+        this.matter = matter.getMatter();
+        this.tag = new HashMap<>(matter.getTag());
     }
 
     public void addMatterVariant(@NonNull MatterVariant matter, long amount) {
-        if (this.matterVariant.isBlank())
-            this.matterVariant = matter;
-        else if (!this.matterVariant.equals(matter))
-            throw new IllegalArgumentException("MatterVariant is not same!");
-        this.amount.addAndGet(amount);
+        if (this.matter == null)
+            this.setMatterVariant(matter, amount);
+        else if (this.matter.equals(matter.getMatter()))
+            this.amount.addAndGet(amount);
+        throw new IllegalArgumentException("MatterVariant is not same!");
     }
 
     public MatterVariant getMatterVariant() {
-        return this.matterVariant.of(this.tag);
+        if (matter instanceof Item)
+            return ItemVariant.of((Item) matter, this.tag);
+        else return FluidVariant.of((Fluid) matter, this.tag);
     }
 
     public long getAmount() {

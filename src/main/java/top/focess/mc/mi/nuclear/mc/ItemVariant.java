@@ -30,8 +30,4 @@ public class ItemVariant extends MatterVariant {
         return new ItemVariant(item,tag);
     }
 
-    @Override
-    public MatterVariant of(Map<String, Object> tag) {
-        return ItemVariant.of(this.getItem(),tag);
-    }
 }

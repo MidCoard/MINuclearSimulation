@@ -23,15 +23,7 @@
  */
 package aztech.modern_industrialization.nuclear;
 
-import aztech.modern_industrialization.MIIdentifier;
-import aztech.modern_industrialization.MIItem;
-import aztech.modern_industrialization.util.TextHelper;
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.minecraft.core.Registry;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
+import top.focess.mc.mi.nuclear.mc.ItemVariant;
 import top.focess.mc.mi.nuclear.mc.MatterHolder;
 
 import java.util.List;
