@@ -34,7 +34,6 @@ import top.focess.mc.mi.nuclear.mc.MatterHolder;
 import top.focess.mc.mi.nuclear.mc.MatterVariant;
 import top.focess.mc.mi.nuclear.mi.MINuclearInventory;
 
-import java.util.Collections;
 import java.util.Optional;
 import java.util.Random;
 

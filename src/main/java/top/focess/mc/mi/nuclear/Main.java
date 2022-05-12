@@ -1,6 +1,5 @@
 package top.focess.mc.mi.nuclear;
 
-import top.focess.scheduler.FocessScheduler;
 import top.focess.scheduler.Scheduler;
 import top.focess.scheduler.ThreadPoolScheduler;
 
@@ -9,7 +8,8 @@ import java.util.Scanner;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ClassNotFoundException {
+        Class.forName("top.focess.mc.mi.nuclear.mi.MIItems");
         Scheduler scheduler = new ThreadPoolScheduler(1, false, "Tick");
         NuclearSimulation simulation = new NuclearSimulation(5);
         scheduler.runTimer(simulation::tick, Duration.ZERO,Duration.ofMillis(50));

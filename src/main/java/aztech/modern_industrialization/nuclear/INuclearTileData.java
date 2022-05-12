@@ -66,27 +66,4 @@ public interface INuclearTileData {
         return Optional.empty();
     }
 
-    static boolean areEquals(Optional<INuclearTileData> a, Optional<INuclearTileData> b) {
-        if (a.isPresent() != b.isPresent()) {
-            return false;
-        } else if (a.isPresent()) {
-            INuclearTileData A = a.get();
-            INuclearTileData B = b.get();
-            for (NeutronType type : NeutronType.TYPES) {
-                if (A.getMeanNeutronAbsorption(type) != B.getMeanNeutronAbsorption(type)) {
-                    return false;
-                }
-                if (A.getMeanNeutronFlux(type) != B.getMeanNeutronFlux(type)) {
-                    return false;
-                }
-            }
-            return A.getTemperature() == B.getTemperature() && A.getHeatTransferCoeff() == B.getTemperature()
-                    && A.getVariantAmount() == B.getVariantAmount() && A.getMeanNeutronGeneration() == B.getMeanNeutronGeneration()
-                    && A.getVariant().equals(B.getVariant()) && A.getMeanEuGeneration() == B.getMeanEuGeneration();
-        } else {
-            return true;
-        }
-
-    }
-
 }

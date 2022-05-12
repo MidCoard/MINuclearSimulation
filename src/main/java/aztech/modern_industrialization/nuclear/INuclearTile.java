@@ -50,4 +50,5 @@ public interface INuclearTile extends INuclearTileData {
 
     void nuclearTick(INuclearGrid grid);
 
+    void tick();
 }
