@@ -23,11 +23,9 @@
  */
 package aztech.modern_industrialization.nuclear;
 
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.TransferVariant;
-import net.minecraft.network.FriendlyByteBuf;
-import top.focess.mc.mi.nuclear.mc.*;
+import top.focess.mc.mi.nuclear.mc.FluidVariant;
+import top.focess.mc.mi.nuclear.mc.ItemVariant;
+import top.focess.mc.mi.nuclear.mc.MatterVariant;
 
 import java.util.Optional;
 
@@ -66,120 +64,6 @@ public interface INuclearTileData {
         }
 
         return Optional.empty();
-    }
-
-    static void write(Optional<INuclearTileData> maybeData, FriendlyByteBuf buf) {
-
-        if (maybeData.isPresent()) {
-            INuclearTileData tile = maybeData.get();
-            buf.writeBoolean(true);
-
-            buf.writeDouble(tile.getTemperature());
-
-            buf.writeDouble(tile.getMeanNeutronAbsorption(NeutronType.FAST));
-            buf.writeDouble(tile.getMeanNeutronAbsorption(NeutronType.THERMAL));
-
-            buf.writeDouble(tile.getMeanNeutronFlux(NeutronType.FAST));
-            buf.writeDouble(tile.getMeanNeutronFlux(NeutronType.THERMAL));
-
-            buf.writeDouble(tile.getMeanNeutronGeneration());
-
-            buf.writeDouble(tile.getHeatTransferCoeff());
-            buf.writeDouble(tile.getMeanEuGeneration());
-
-            buf.writeBoolean(!tile.isFluid());
-            buf.writeNbt(tile.getVariant().toNbt());
-            buf.writeLong(tile.getVariantAmount());
-
-        } else {
-            buf.writeBoolean(false);
-        }
-
-    }
-
-    static Optional<INuclearTileData> read(FriendlyByteBuf buf) {
-        boolean isPresent = buf.readBoolean();
-        if (isPresent) {
-
-            final double temperature = buf.readDouble();
-
-            final double meanFastNeutronAbsorption = buf.readDouble();
-            final double meanThermalNeutronAbsorption = buf.readDouble();
-
-            final double meanFastNeutronFlux = buf.readDouble();
-            final double meanThermalNeutronFlux = buf.readDouble();
-
-            final double meanNeutronGeneration = buf.readDouble();
-
-            final double heatTransferCoeff = buf.readDouble();
-            final double euGeneration = buf.readDouble();
-
-            final boolean isItem = buf.readBoolean();
-            final MatterVariant variant = isItem ? ItemVariant.fromNbt(buf.readNbt()) : FluidVariant.fromNbt(buf.readNbt());
-            final long amount = buf.readLong();
-
-            return Optional.of(new INuclearTileData() {
-
-                @Override
-                public double getTemperature() {
-                    return temperature;
-                }
-
-                @Override
-                public double getHeatTransferCoeff() {
-                    return heatTransferCoeff;
-                }
-
-                @Override
-                public double getMeanNeutronAbsorption(NeutronType type) {
-                    if (type == NeutronType.FAST)
-                        return meanFastNeutronAbsorption;
-                    else if (type == NeutronType.THERMAL)
-                        return meanThermalNeutronAbsorption;
-
-                    return meanThermalNeutronAbsorption + meanFastNeutronAbsorption;
-                }
-
-                @Override
-                public double getMeanNeutronFlux(NeutronType type) {
-                    if (type == NeutronType.FAST)
-                        return meanFastNeutronFlux;
-                    else if (type == NeutronType.THERMAL)
-                        return meanThermalNeutronFlux;
-
-                    return meanFastNeutronFlux + meanThermalNeutronFlux;
-                }
-
-                @Override
-                public double getMeanNeutronGeneration() {
-                    return meanNeutronGeneration;
-                }
-
-                @Override
-                public double getMeanEuGeneration() {
-                    return euGeneration;
-                }
-
-                @Override
-                public MatterVariant getVariant() {
-                    return variant;
-                }
-
-                @Override
-                public long getVariantAmount() {
-                    return amount;
-                }
-
-                @Override
-                public boolean isFluid() {
-                    return !isItem;
-                }
-
-            });
-
-        } else {
-            return Optional.empty();
-        }
     }
 
     static boolean areEquals(Optional<INuclearTileData> a, Optional<INuclearTileData> b) {

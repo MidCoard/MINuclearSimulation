@@ -23,6 +23,7 @@
  */
 package aztech.modern_industrialization.nuclear;
 
+import top.focess.mc.mi.nuclear.mc.Item;
 import top.focess.mc.mi.nuclear.mc.ItemVariant;
 import top.focess.mc.mi.nuclear.mc.MatterHolder;
 
@@ -43,8 +44,8 @@ public class NuclearFuel extends NuclearAbsorbable {
     public final int tempLimitLow;
     public final int tempLimitHigh;
 
-    public final static record NuclearFuelParams(int desintegrationMax, int maxTemperature, int tempLimitLow, int tempLimitHigh,
-            double neutronMultiplicationFactor, double directEnergyFactor, int size) {
+    public record NuclearFuelParams(int desintegrationMax, int maxTemperature, int tempLimitLow, int tempLimitHigh,
+                                    double neutronMultiplicationFactor, double directEnergyFactor, int size) {
     }
 
     public NuclearFuel(String name,int maxCount, NuclearFuelParams params, INeutronBehaviour neutronBehaviour, String depletedVersionId) {
@@ -83,7 +84,7 @@ public class NuclearFuel extends NuclearAbsorbable {
 
     @Override
     public ItemVariant getNeutronProduct() {
-        return ItemVariant.of(Registry.ITEM.getOptional(new MIIdentifier(depletedVersionId)).get());
+        return ItemVariant.of(Item.getItem("modern-industrialization",depletedVersionId));
     }
 
     @Override
