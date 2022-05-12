@@ -77,8 +77,6 @@ public class NuclearHatch implements INuclearTile {
     }
 
     public final void tick() {
-        super.tick();
-        this.clearMachineLock();
 
         if (isFluid) {
             fluidNeutronProductTick(1, true);
@@ -86,11 +84,7 @@ public class NuclearHatch implements INuclearTile {
             ItemVariant itemVariant = (ItemVariant) this.getVariant();
             if (!itemVariant.isBlank() && itemVariant.getItem() instanceof NuclearAbsorbable abs) {
                 if (abs.getNeutronProduct() != null) {
-                    try (Transaction tx = Transaction.openOuter()) {
-                        this.inventory.itemStorage.insert(abs.getNeutronProduct(), abs.getNeutronProductAmount(), tx,
-                                AbstractConfigurableStack::canPipesExtract, true);
-                        tx.abort();
-                    }
+                    this.inventory.get(1).addMatterVariant(abs.getNeutronProduct(), abs.getNeutronProductAmount());
                 }
             }
         }
@@ -162,9 +156,9 @@ public class NuclearHatch implements INuclearTile {
         if (!isFluid) {
             ItemVariant itemVariant = (ItemVariant) this.getVariant();
 
-            if (!itemVariant.isBlank() && itemVariant instanceof NuclearAbsorbable abs) {
+            if (!itemVariant.isBlank() && itemVariant.getItem() instanceof NuclearAbsorbable abs) {
 
-                if (itemVariant instanceof NuclearFuel) {
+                if (itemVariant.getItem() instanceof NuclearFuel) {
                     meanNeutron += NuclearConstant.BASE_NEUTRON;
                 }
 
@@ -199,7 +193,7 @@ public class NuclearHatch implements INuclearTile {
                         }
                     }
                 } else {
-                    this.getInventory().get(0).setMatter(stack);
+                    this.getInventory().get(0).setMatterVariant(ItemVariant.of(stack));
                 }
 
             }

@@ -36,6 +36,7 @@ import net.minecraft.world.level.Level;
 import top.focess.mc.mi.nuclear.mc.MatterHolder;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class NuclearAbsorbable extends NuclearComponentItem {
@@ -48,11 +49,10 @@ public class NuclearAbsorbable extends NuclearComponentItem {
         this.desintegrationMax = desintegrationMax;
     }
 
-    public void setRemainingDesintegrations(ItemStack stack, int value) {
+    public void setRemainingDesintegrations(MatterHolder stack, int value) {
         Preconditions.checkArgument(value >= 0 & value <= desintegrationMax,
                 String.format("Remaining desintegration %d must be between 0 and max desintegration = %d", value, desintegrationMax));
-        CompoundTag tag = stack.getOrCreateTag();
-        tag.putInt("desRem", value);
+        stack.getTag().put("desRem", value);
     }
 
     public static NuclearComponentItem of(String id, int maxTemperature, double heatConduction, INeutronBehaviour neutronBehaviour,
@@ -91,11 +91,11 @@ public class NuclearAbsorbable extends NuclearComponentItem {
     }
 
     public int getRemainingDesintegrations(MatterHolder stack) {
-        CompoundTag tag = stack.getTag();
-        if (tag == null || !tag.contains("desRem")) {
+        Map<String,Object> tag = stack.getTag();
+        if (tag == null || !tag.containsKey("desRem")) {
             return desintegrationMax;
         }
-        return tag.getInt("desRem");
+        return (int) tag.get("desRem");
     }
 
     protected static int randIntFromDouble(double value, Random rand) {

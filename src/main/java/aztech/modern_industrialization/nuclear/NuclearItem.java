@@ -23,8 +23,6 @@
  */
 package aztech.modern_industrialization.nuclear;
 
-import aztech.modern_industrialization.ModernIndustrialization;
-import net.minecraft.world.item.Item;
 import top.focess.mc.mi.nuclear.mc.Item;
 
 public class NuclearItem {

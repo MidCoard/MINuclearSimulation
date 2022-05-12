@@ -1,6 +1,7 @@
 package top.focess.mc.mi.nuclear.mi;
 
-import top.focess.mc.mi.nuclear.mc.Matter;
+import top.focess.mc.mi.nuclear.mc.FluidVariant;
+import top.focess.mc.mi.nuclear.mc.ItemVariant;
 import top.focess.mc.mi.nuclear.mc.MatterHolder;
 
 import java.util.ArrayList;
@@ -14,9 +15,16 @@ public class MINuclearInventory {
 
     public MINuclearInventory(boolean isFluid) {
         this.isFluid = isFluid;
+        for (int i = 0;i < 2;i ++)
+            if (isFluid)
+                matters.add(new MatterHolder(FluidVariant.of(null)));
+            else
+                matters.add(new MatterHolder(ItemVariant.of(null)));
     }
 
     public MatterHolder get(int index) {
         return matters.get(index);
     }
+
+
 }

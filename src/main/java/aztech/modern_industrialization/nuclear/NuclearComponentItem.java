@@ -23,29 +23,24 @@
  */
 package aztech.modern_industrialization.nuclear;
 
-import aztech.modern_industrialization.MIItem;
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.minecraft.world.item.Item;
 import top.focess.mc.mi.nuclear.mc.Item;
+import top.focess.mc.mi.nuclear.mc.ItemVariant;
 
-import java.util.Properties;
-
-public class NuclearComponentItem extends Item implements INuclearComponent<Item> {
+public class NuclearComponentItem extends Item implements INuclearComponent<ItemVariant> {
 
     public final int maxTemperature;
     public final double heatConduction;
     public final INeutronBehaviour neutronBehaviour;
 
-    public NuclearComponentItem(Properties settings, int maxTemperature, double heatConduction, INeutronBehaviour neutronBehaviour) {
-        super(settings);
+    public NuclearComponentItem(String name, int maxCount, int maxTemperature, double heatConduction, INeutronBehaviour neutronBehaviour) {
+        super("modern-industrialization", name, maxCount);
         this.maxTemperature = maxTemperature;
         this.heatConduction = heatConduction;
         this.neutronBehaviour = neutronBehaviour;
     }
 
     public static NuclearComponentItem of(String id, int maxTemperature, double heatConduction, INeutronBehaviour neutronBehaviour) {
-        return (NuclearComponentItem) MIItem
-                .of((Properties settings) -> new NuclearComponentItem(settings, maxTemperature, heatConduction, neutronBehaviour), id, 1);
+        return new NuclearComponentItem(id, 1, maxTemperature, heatConduction, neutronBehaviour);
     }
 
     public int getMaxTemperature() {
@@ -63,7 +58,7 @@ public class NuclearComponentItem extends Item implements INuclearComponent<Item
     }
 
     @Override
-    public Item getVariant() {
-        return this;
+    public ItemVariant getVariant() {
+        return ItemVariant.of(this);
     }
 }

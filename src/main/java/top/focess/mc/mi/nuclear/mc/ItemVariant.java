@@ -2,7 +2,6 @@ package top.focess.mc.mi.nuclear.mc;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class ItemVariant extends MatterVariant {
@@ -15,8 +14,24 @@ public class ItemVariant extends MatterVariant {
         super(item);
     }
 
+    public static ItemVariant of(MatterHolder stack) {
+        return of ((Item) stack.getMatterVariant().getMatter(), stack.getTag());
+    }
+
     public Item getItem() {
         return (Item) this.getMatter();
     }
 
+    public static ItemVariant of(Item item) {
+        return new ItemVariant(item);
+    }
+
+    public static ItemVariant of(Item item,@NonNull Map<String,Object> tag) {
+        return new ItemVariant(item,tag);
+    }
+
+    @Override
+    public MatterVariant of(Map<String, Object> tag) {
+        return ItemVariant.of(this.getItem(),tag);
+    }
 }
