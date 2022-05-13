@@ -1,3 +1,8 @@
 .idea
 MINuclearSimulation.iml
 target
+gradlew
+gradlew.bat
+build
+gradle
+.gradle
