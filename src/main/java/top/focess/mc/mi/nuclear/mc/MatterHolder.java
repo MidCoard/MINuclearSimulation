@@ -76,4 +76,9 @@ public class MatterHolder {
         long amount = this.amount.get();
         return Math.min(amount, actual);
     }
+
+    @Override
+    public String toString() {
+        return matter + ":" + amount + ":" + this.tag;
+    }
 }

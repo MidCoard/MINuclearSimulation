@@ -53,8 +53,8 @@ public interface INuclearTileData {
         MatterVariant variant = getVariant();
 
         if (variant instanceof ItemVariant resource) {
-            if (!variant.isBlank() && getVariantAmount() > 0 && resource instanceof INuclearComponent) {
-                return Optional.of((INuclearComponent) resource);
+            if (!variant.isBlank() && getVariantAmount() > 0 && resource.getItem() instanceof INuclearComponent) {
+                return Optional.of((INuclearComponent) resource.getItem());
             }
 
         } else if (variant instanceof FluidVariant resource) {

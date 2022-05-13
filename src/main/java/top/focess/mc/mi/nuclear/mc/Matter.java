@@ -17,4 +17,8 @@ public abstract class Matter {
         return name;
     }
 
+    @Override
+    public String toString() {
+        return namespace + ":" + name;
+    }
 }

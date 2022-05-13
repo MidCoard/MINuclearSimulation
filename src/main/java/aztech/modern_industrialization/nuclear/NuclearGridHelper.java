@@ -23,6 +23,8 @@
  */
 package aztech.modern_industrialization.nuclear;
 
+import aztech.modern_industrialization.machines.blockentities.hatches.NuclearHatch;
+
 import java.util.Optional;
 import java.util.Random;
 
@@ -48,23 +50,21 @@ public class NuclearGridHelper {
         for (int i = 0; i < sizeX; i++) {
             for (int j = 0; j < sizeY; j++) {
 
-                final int x = i;
-                final int y = j;
-
                 Optional<INuclearTile> maybeTile = grid.getNuclearTile(i, j);
-
                 if (maybeTile.isPresent()) {
+                    System.out.println("Tile at " + i + "," + j + " is present");
                     INuclearTile tile = maybeTile.get();
+                    NuclearHatch hatch = (NuclearHatch) tile;
+                    System.out.println(hatch.getInventory().input());
                     Optional<NuclearFuel> maybeFuel = tile.getFuel();
                     int neutronNumberPrime = tile.neutronGenerationTick(grid);
-
+                    System.out.println("Neutron number prime: " + neutronNumberPrime);
                     if (neutronNumberPrime > 0) {
                         if (maybeFuel.isEmpty()) {
                             throw new IllegalStateException("Neutron generated without fuel");
                         }
                         hasFuel = true;
                         NuclearFuel fuel = maybeFuel.get();
-
                         tile.putHeat(neutronNumberPrime * fuel.directEUbyDesintegration / fuel.neutronMultiplicationFactor);
 
                         int split = Math.min(neutronNumberPrime, MAX_SPLIT);
@@ -80,8 +80,8 @@ public class NuclearGridHelper {
 
                                 int dir = rand.nextInt(4);
                                 int step = 0;
-                                int posX = x;
-                                int posY = y;
+                                int posX = i;
+                                int posY = j;
 
                                 while (step < MAX_STEP) {
                                     step++;
