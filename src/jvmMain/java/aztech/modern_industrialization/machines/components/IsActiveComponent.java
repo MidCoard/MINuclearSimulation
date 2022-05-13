@@ -24,7 +24,9 @@
 package aztech.modern_industrialization.machines.components;
 
 
-public class IsActiveComponent {
+import top.focess.util.serialize.FocessSerializable;
+
+public class IsActiveComponent implements FocessSerializable {
     public boolean isActive = false;
 
     public void updateActive(boolean newActive) {

@@ -23,9 +23,11 @@
  */
 package aztech.modern_industrialization.nuclear;
 
+import top.focess.util.serialize.FocessSerializable;
+
 import java.util.Optional;
 
-public interface INuclearTile extends INuclearTileData {
+public interface INuclearTile extends INuclearTileData, FocessSerializable {
 
     void setTemperature(double temp);
 

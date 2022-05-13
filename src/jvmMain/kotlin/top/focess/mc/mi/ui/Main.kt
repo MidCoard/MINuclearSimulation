@@ -10,16 +10,16 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.foundation.Image
 import androidx.compose.runtime.*
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.window.Tray
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import java.io.IOException
+import top.focess.mc.mi.nuclear.NuclearSimulation
+import kotlin.reflect.KProperty
 
 @Composable
 @Preview
-fun App() {
+fun Simulation() {
+
+    var nuclearSimulation : NuclearSimulation? = null
+
     var text by remember { mutableStateOf("Hello, World!") }
     Image(
         painter = painterResource("icon.jpeg"),
@@ -50,6 +50,6 @@ fun main() =
             title = "MINuclear Simulation",
             onCloseRequest = ::exitApplication
         ) {
-            App()
+            Simulation()
         }
     }

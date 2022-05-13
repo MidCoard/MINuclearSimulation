@@ -2,6 +2,7 @@ package top.focess.mc.mi.nuclear.mc;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Item extends Matter{
 
@@ -31,5 +32,11 @@ public class Item extends Matter{
 
     public int getMaxCount() {
         return maxCount;
+    }
+
+    public static Item deserialize(Map<String,Object> map) {
+        String namespace = (String) map.get("namespace");
+        String name = (String) map.get("name");
+        return Item.getItem(namespace, name);
     }
 }

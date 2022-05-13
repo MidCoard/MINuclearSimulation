@@ -4,11 +4,12 @@ import top.focess.mc.mi.nuclear.mc.FluidVariant;
 import top.focess.mc.mi.nuclear.mc.ItemVariant;
 import top.focess.mc.mi.nuclear.mc.MatterHolder;
 import top.focess.mc.mi.nuclear.mc.MatterVariant;
+import top.focess.util.serialize.FocessSerializable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MINuclearInventory {
+public class MINuclearInventory implements FocessSerializable {
 
     private final List<MatterHolder> matters = new ArrayList<>();
 

@@ -1,6 +1,12 @@
 package top.focess.mc.mi.nuclear.mc;
 
-public abstract class Matter {
+import com.google.common.collect.Maps;
+import org.jetbrains.annotations.Nullable;
+import top.focess.util.serialize.FocessSerializable;
+
+import java.util.Map;
+
+public abstract class Matter implements FocessSerializable {
     private final String namespace;
     private final String name;
 
@@ -20,5 +26,14 @@ public abstract class Matter {
     @Override
     public String toString() {
         return namespace + ":" + name;
+    }
+
+    @Nullable
+    @Override
+    public Map<String, Object> serialize() {
+        Map<String, Object> map = Maps.newHashMap();
+        map.put("namespace", namespace);
+        map.put("name", name);
+        return map;
     }
 }

@@ -1,37 +1,37 @@
 package top.focess.mc.mi.nuclear.mc;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+import top.focess.util.serialize.FocessSerializable;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 
-public class MatterHolder {
+public class MatterHolder implements FocessSerializable {
 
     private final boolean isFluid;
     private Matter matter;
     // seems like this is useless
-    private final AtomicLong amount;
+    private long amount;
     private Map<String,Object> tag;
 
     public MatterHolder(@NonNull MatterVariant matterVariant) {
         this.isFluid = matterVariant instanceof FluidVariant;
         this.matter = matterVariant.getMatter();
-        this.amount = new AtomicLong(0);
+        this.amount = 0;
         this.tag = new HashMap<>(matterVariant.getTag());
     }
 
     public MatterHolder(@NonNull MatterVariant matterVariant, long amount) {
         this.isFluid = matterVariant instanceof FluidVariant;
         this.matter = matterVariant.getMatter();
-        this.amount = new AtomicLong(amount);
+        this.amount = amount;
         this.tag = new HashMap<>(matterVariant.getTag());
     }
 
     public void setMatterVariant(@NonNull MatterVariant matterVariant, long amount) {
         this.matter = matterVariant.getMatter();
         this.tag = new HashMap<>(matterVariant.getTag());
-        this.amount.set(amount);
+        this.amount = amount;
     }
 
     public void setMatterVariant(@NonNull MatterVariant matterVariant) {
@@ -45,7 +45,7 @@ public class MatterHolder {
             return true;
         }
         else if (this.matter == matterVariant.getMatter() && this.tag.equals(matterVariant.getTag())) {
-            this.amount.addAndGet(amount);
+            this.amount += amount;
             return true;
         }
         return false;
@@ -59,7 +59,7 @@ public class MatterHolder {
     }
 
     public long getAmount() {
-        return amount.get();
+        return amount;
     }
 
     public Map<String, Object> getTag() {
@@ -67,13 +67,13 @@ public class MatterHolder {
     }
 
     public void empty() {
-        this.amount.set(0);
+        this.amount = 0;
     }
 
     public long extract(MatterVariant variant, long actual) {
         if (this.matter != variant.getMatter() || this.tag.equals(variant.getTag()))
             return 0;
-        long amount = this.amount.get();
+        long amount = this.amount;
         return Math.min(amount, actual);
     }
 

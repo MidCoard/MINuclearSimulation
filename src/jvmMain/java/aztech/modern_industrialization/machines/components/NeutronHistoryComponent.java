@@ -23,12 +23,33 @@
  */
 package aztech.modern_industrialization.machines.components;
 
+import aztech.modern_industrialization.nuclear.NeutronType;
+import com.google.common.collect.Maps;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
+
 import static aztech.modern_industrialization.nuclear.NeutronType.FAST;
 import static aztech.modern_industrialization.nuclear.NeutronType.THERMAL;
 
-import aztech.modern_industrialization.nuclear.NeutronType;
-
 public class NeutronHistoryComponent extends IntegerHistoryComponent {
+
+    @Nullable
+    @Override
+    public Map<String, Object> serialize() {
+        Map<String, Object> data = Maps.newHashMap();
+        data.put("histories", super.histories);
+        data.put("updatingValue", super.updatingValue);
+        return data;
+    }
+
+    public static NeutronHistoryComponent deserialize(Map<String, Object> data) {
+        return new NeutronHistoryComponent(){
+            {
+                this.histories = (Map<String, int[]>) data.get("histories");
+                this.updatingValue = (Map<String, Integer>) data.get("updatingValue");
+            }};
+    }
 
     public NeutronHistoryComponent() {
         super(new String[] { "fastNeutronReceived", "fastNeutronFlux", "thermalNeutronReceived", "thermalNeutronFlux", "neutronGeneration",

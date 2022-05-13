@@ -23,7 +23,9 @@
  */
 package aztech.modern_industrialization.machines.components;
 
-public class TemperatureComponent {
+import top.focess.util.serialize.FocessSerializable;
+
+public class TemperatureComponent implements FocessSerializable {
 
     private double temperature;
     public final double temperatureMax;

@@ -5,10 +5,11 @@ import aztech.modern_industrialization.nuclear.INuclearGrid;
 import aztech.modern_industrialization.nuclear.INuclearTile;
 import aztech.modern_industrialization.nuclear.NeutronFate;
 import aztech.modern_industrialization.nuclear.NeutronType;
+import top.focess.util.serialize.FocessSerializable;
 
 import java.util.Optional;
 
-public class NuclearGrid implements INuclearGrid {
+public class NuclearGrid implements INuclearGrid, FocessSerializable {
 
     private final int size;
     private final IntegerHistoryComponent efficiencyHistory;

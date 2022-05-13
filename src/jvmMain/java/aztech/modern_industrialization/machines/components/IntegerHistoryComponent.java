@@ -23,13 +23,15 @@
  */
 package aztech.modern_industrialization.machines.components;
 
+import top.focess.util.serialize.FocessSerializable;
+
 import java.util.HashMap;
 import java.util.Map;
 
-public class IntegerHistoryComponent {
+public class IntegerHistoryComponent implements FocessSerializable {
 
-    protected final Map<String, int[]> histories = new HashMap<>();
-    protected final Map<String, Integer> updatingValue = new HashMap<>();
+    protected Map<String, int[]> histories = new HashMap<>();
+    protected Map<String, Integer> updatingValue = new HashMap<>();
 
     public final String[] KEYS;
     public final int TICK_HISTORY_SIZE;

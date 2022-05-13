@@ -46,7 +46,6 @@ public class NuclearHatch implements INuclearTile {
     public final NeutronHistoryComponent neutronHistory;
     public final TemperatureComponent nuclearReactorComponent;
     public final boolean isFluid;
-    public static final long capacity = 64000 * 81;
 
     public NuclearHatch(boolean isFluid) {
         this.isFluid = isFluid;
