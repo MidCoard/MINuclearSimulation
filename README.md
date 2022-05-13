@@ -30,3 +30,5 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ```
+
+The assets are all from **Modern-Industrialization**. They are under the CC0 license.

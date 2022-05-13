@@ -9,6 +9,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.*
 import androidx.compose.ui.window.Tray
 import top.focess.mc.mi.nuclear.NuclearSimulation
@@ -21,32 +22,46 @@ fun Simulation() {
     var nuclearSimulation : NuclearSimulation? = null
 
     var text by remember { mutableStateOf("Hello, World!") }
-    Image(
-        painter = painterResource("icon.jpeg"),
-        modifier = Modifier.fillMaxSize(),
-        contentDescription = "Sample image"
-    )
-    MaterialTheme {
-        Button(onClick = {
-            text = "Hello, Desktop!"
-        }) {
-            Text(text)
+    MaterialTheme () {
+        Row {
+
+            Button(onClick = {
+                text = "Hello, Desktop!"
+            }) {
+                Text(text)
+            }
+        }
+        Row {
+
+            Button(onClick = {
+                text = "Hello, Desktop!"
+            }) {
+                Text(text)
+            }
+        }
+        Row {
+
+            Button(onClick = {
+                text = "Hello, Desktop!"
+            }) {
+                Text(text)
+            }
         }
     }
 }
 
 fun main() =
     application {
-
+        val icon = painterResource("logo.png")
         Tray(
-            icon = painterResource("icon.jpeg"),
+            icon,
             menu = {
                 Item("Quit", onClick = ::exitApplication)
             }
         )
 
         Window(
-            icon = painterResource("icon.jpeg"),
+            icon,
             title = "MINuclear Simulation",
             onCloseRequest = ::exitApplication
         ) {
