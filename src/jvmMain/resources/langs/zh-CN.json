@@ -1,1 +1,13 @@
-{}
+{
+  "quit": "退出",
+  "menu-bar": {
+    "file": {
+      "name": "文件"
+    },
+    "language": {
+      "name": "语言",
+      "english": "英语",
+      "chinese": "中文"
+    }
+  }
+}

@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    commonMainImplementation(group = "top.focess", name = "focess-util", version = "1.1.6")
+    commonMainImplementation(group = "top.focess", name = "focess-util", version = "1.1.7")
     commonMainImplementation(group = "top.focess", name = "focess-scheduler", version = "1.1.5")
 }
 
