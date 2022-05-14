@@ -31,5 +31,9 @@
   },
   "simulation": {
     "no-simulation": "没有打开任何模拟文件"
+  },
+  "general": {
+    "start": "开始",
+    "stop": "停止"
   }
 }
