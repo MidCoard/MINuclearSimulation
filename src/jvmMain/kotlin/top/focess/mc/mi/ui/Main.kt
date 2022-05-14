@@ -36,18 +36,16 @@ fun main() =
         val globalState = remember { GlobalState(lang) }
         val globalAction = GlobalAction(lang, globalState)
 
-        if (state.isMinimized) {
-            println("Hello?")
-            Tray(
-                icon,
-                menu = {
-                    Item(lang.get("maximize")) {
-                        state.isMinimized = false
-                    }
-                    Item(lang.get("quit"), onClick = ::exitApplication)
+        Tray(
+            icon,
+            menu = {
+                Item(lang.get("tray","maximize")) {
+                    state.isMinimized = false
+                    state.placement = WindowPlacement.Maximized
                 }
-            )
-        }
+                Item(lang.get("quit"), onClick = ::exitApplication)
+            }
+        )
 
         Window(
             onCloseRequest = ::exitApplication,

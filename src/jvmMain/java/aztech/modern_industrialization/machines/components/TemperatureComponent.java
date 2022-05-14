@@ -50,4 +50,26 @@ public class TemperatureComponent implements FocessSerializable {
     public double getTemperature() {
         return temperature;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TemperatureComponent that = (TemperatureComponent) o;
+
+        if (Double.compare(that.temperature, temperature) != 0) return false;
+        return Double.compare(that.temperatureMax, temperatureMax) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        temp = Double.doubleToLongBits(temperature);
+        result = (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(temperatureMax);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
 }

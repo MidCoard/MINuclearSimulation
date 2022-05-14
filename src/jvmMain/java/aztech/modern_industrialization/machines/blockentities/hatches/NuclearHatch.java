@@ -241,4 +241,26 @@ public class NuclearHatch implements INuclearTile {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        NuclearHatch that = (NuclearHatch) o;
+
+        if (isFluid != that.isFluid) return false;
+        if (!inventory.equals(that.inventory)) return false;
+        if (!neutronHistory.equals(that.neutronHistory)) return false;
+
+        return nuclearReactorComponent.equals(that.nuclearReactorComponent);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = inventory.hashCode();
+        result = 31 * result + neutronHistory.hashCode();
+        result = 31 * result + nuclearReactorComponent.hashCode();
+        result = 31 * result + (isFluid ? 1 : 0);
+        return result;
+    }
 }

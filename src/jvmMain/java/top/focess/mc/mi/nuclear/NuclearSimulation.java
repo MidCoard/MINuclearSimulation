@@ -69,4 +69,24 @@ public class NuclearSimulation implements FocessSerializable {
         IsActiveComponent isActive = (IsActiveComponent) map.get("isActive");
         return new NuclearSimulation(nuclearGrid,isActive,tickCount);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        NuclearSimulation that = (NuclearSimulation) o;
+
+        if (tickCount != that.tickCount) return false;
+        if (!nuclearGrid.equals(that.nuclearGrid)) return false;
+        return isActive.equals(that.isActive);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = nuclearGrid.hashCode();
+        result = 31 * result + isActive.hashCode();
+        result = 31 * result + tickCount;
+        return result;
+    }
 }

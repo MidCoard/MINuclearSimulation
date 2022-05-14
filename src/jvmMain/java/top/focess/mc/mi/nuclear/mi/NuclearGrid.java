@@ -7,6 +7,7 @@ import aztech.modern_industrialization.nuclear.NeutronFate;
 import aztech.modern_industrialization.nuclear.NeutronType;
 import top.focess.util.serialize.FocessSerializable;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 public class NuclearGrid implements INuclearGrid, FocessSerializable {
@@ -65,5 +66,25 @@ public class NuclearGrid implements INuclearGrid, FocessSerializable {
 
     public IntegerHistoryComponent getEfficiencyHistory() {
         return efficiencyHistory;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        NuclearGrid that = (NuclearGrid) o;
+
+        if (size != that.size) return false;
+        if (!efficiencyHistory.equals(that.efficiencyHistory)) return false;
+        return Arrays.deepEquals(hatchesGrid, that.hatchesGrid);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = size;
+        result = 31 * result + efficiencyHistory.hashCode();
+        result = 31 * result + Arrays.deepHashCode(hatchesGrid);
+        return result;
     }
 }

@@ -38,4 +38,19 @@ public class IsActiveComponent implements FocessSerializable {
     public boolean isActive() {
         return isActive;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        IsActiveComponent that = (IsActiveComponent) o;
+
+        return isActive == that.isActive;
+    }
+
+    @Override
+    public int hashCode() {
+        return (isActive ? 1 : 0);
+    }
 }

@@ -88,4 +88,6 @@ public class NeutronHistoryComponent extends IntegerHistoryComponent {
         return getAverage("euGeneration");
     }
 
+
+
 }

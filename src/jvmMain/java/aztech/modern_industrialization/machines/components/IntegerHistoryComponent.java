@@ -25,6 +25,7 @@ package aztech.modern_industrialization.machines.components;
 
 import top.focess.util.serialize.FocessSerializable;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,5 +77,29 @@ public class IntegerHistoryComponent implements FocessSerializable {
         } else {
             updatingValue.put(key, updatingValue.get(key) + delta);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || !getClass().isAssignableFrom(o.getClass())) return false;
+
+        IntegerHistoryComponent that = (IntegerHistoryComponent) o;
+
+        if (TICK_HISTORY_SIZE != that.TICK_HISTORY_SIZE) return false;
+        for (String key : KEYS)
+            if (!Arrays.equals(histories.get(key), that.histories.get(key)))
+                return false;
+        if (!updatingValue.equals(that.updatingValue)) return false;
+        return Arrays.equals(KEYS, that.KEYS);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = histories.hashCode();
+        result = 31 * result + updatingValue.hashCode();
+        result = 31 * result + Arrays.hashCode(KEYS);
+        result = 31 * result + TICK_HISTORY_SIZE;
+        return result;
     }
 }

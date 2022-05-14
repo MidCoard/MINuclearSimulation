@@ -4,6 +4,9 @@
   "unopened": "未打开文件",
   "unsaved": "未保存文件",
   "open-fail": "打开文件失败",
+  "tray":{
+    "maximize": "最大化"
+  },
   "menu-bar": {
     "simulation": {
       "name": "模拟",

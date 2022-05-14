@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 public class Main {
 
-    public static void main(String[] args) throws ClassNotFoundException {
+    public static void main(String[] args) throws Exception {
         Class.forName("top.focess.mc.mi.nuclear.mi.MIItems");
         ThreadPoolScheduler scheduler = new ThreadPoolScheduler(1, false, "Tick");
         NuclearSimulation simulation = new NuclearSimulation((i, j)->{
@@ -32,5 +32,8 @@ public class Main {
         YamlConfiguration yamlConfiguration = new YamlConfiguration(null);
         yamlConfiguration.set("simulation", simulation);
         yamlConfiguration.save(new File("test.yml"));
+        YamlConfiguration yamlConfiguration1 = YamlConfiguration.loadFile(new File("test.yml"));
+        NuclearSimulation simulation1 = yamlConfiguration1.get("simulation");
+        System.out.println(simulation.equals(simulation1));
     }
 }

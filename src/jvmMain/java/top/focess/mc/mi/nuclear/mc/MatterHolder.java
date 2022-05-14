@@ -5,12 +5,12 @@ import top.focess.util.serialize.FocessSerializable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class MatterHolder implements FocessSerializable {
 
     private final boolean isFluid;
     private Matter matter;
-    // seems like this is useless
     private long amount;
     private Map<String,Object> tag;
 
@@ -80,5 +80,27 @@ public class MatterHolder implements FocessSerializable {
     @Override
     public String toString() {
         return matter + ":" + amount + ":" + this.tag;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MatterHolder that = (MatterHolder) o;
+
+        if (isFluid != that.isFluid) return false;
+        if (amount != that.amount) return false;
+        if (!Objects.equals(matter, that.matter)) return false;
+        return tag.equals(that.tag);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (isFluid ? 1 : 0);
+        result = 31 * result + (matter != null ? matter.hashCode() : 0);
+        result = 31 * result + (int) (amount ^ (amount >>> 32));
+        result = 31 * result + tag.hashCode();
+        return result;
     }
 }

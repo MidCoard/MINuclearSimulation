@@ -33,5 +33,18 @@ public class MINuclearInventory implements FocessSerializable {
         return amount;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
+        MINuclearInventory that = (MINuclearInventory) o;
+
+        return matters.equals(that.matters);
+    }
+
+    @Override
+    public int hashCode() {
+        return matters.hashCode();
+    }
 }
