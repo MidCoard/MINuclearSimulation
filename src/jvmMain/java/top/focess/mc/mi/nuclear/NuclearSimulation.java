@@ -24,7 +24,8 @@ public class NuclearSimulation implements FocessSerializable {
     private int tickCount = 0;
     private final long startTime = System.nanoTime();
 
-    public NuclearSimulation(int size, BiFunction<Integer,Integer, MatterVariant> variantSupplier, NuclearReactionType nuclearReactionType) {
+    public NuclearSimulation(BiFunction<Integer,Integer, MatterVariant> variantSupplier, NuclearReactionType nuclearReactionType) {
+        int size = nuclearReactionType.getSize();
         BiPredicate<Integer, Integer> isValid = nuclearReactionType.getReaction();
         INuclearTile[][] tiles = new NuclearHatch[size][size];
         for (int i = 0; i < size; i++)
@@ -57,9 +58,15 @@ public class NuclearSimulation implements FocessSerializable {
     public Map<String, Object> serialize() {
         Map<String,Object> map = Maps.newHashMap();
         map.put("tickCount",tickCount);
-        map.put("nuclearGrid",nuclearGrid.serialize());
-        map.put("isActive",isActive.serialize());
-        return FocessSerializable.super.serialize();
+        map.put("nuclearGrid",nuclearGrid);
+        map.put("isActive",isActive);
+        return map;
+    }
+
+    public static NuclearSimulation deserialize(Map<String,Object> map) {
+        int tickCount = (int) map.get("tickCount");
+        NuclearGrid nuclearGrid = (NuclearGrid) map.get("nuclearGrid");
+        IsActiveComponent isActive = (IsActiveComponent) map.get("isActive");
+        return new NuclearSimulation(nuclearGrid,isActive,tickCount);
     }
 }
-//stop

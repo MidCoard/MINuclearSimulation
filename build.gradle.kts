@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "top.focess.mc.mi"
-version = "1.0-SNAPSHOT"
+version = "1.0.1"
 
 repositories {
     google()
@@ -41,11 +41,20 @@ kotlin {
 
 compose.desktop {
     application {
-        mainClass = "MainKt"
+        mainClass = "top.focess.mc.mi.ui.MainKt"
         nativeDistributions {
+            linux {
+                iconFile.set(project.file("src/jvmMain/resources").resolve("logo.png"))
+            }
+            macOS {
+                iconFile.set(project.file("src/jvmMain/resources").resolve("logo.icns"))
+            }
+            windows {
+                iconFile.set(project.file("src/jvmMain/resources").resolve("logo.ico"))
+            }
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "MINuclearSimulationGUI"
-            packageVersion = "1.0.0"
+            packageName = "MINuclearSimulator"
+            packageVersion = project.version.toString()
         }
     }
 }

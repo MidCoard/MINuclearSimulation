@@ -1,13 +1,29 @@
 {
+  "title": "MINuclearSimulator",
   "quit": "退出",
+  "unopened": "未打开文件",
+  "unsaved": "未保存文件",
+  "open-fail": "打开文件失败",
   "menu-bar": {
-    "file": {
-      "name": "文件"
+    "simulation": {
+      "name": "模拟",
+      "new": "新建",
+      "open": "打开",
+      "save": "保存"
     },
     "language": {
       "name": "语言",
       "english": "英语",
       "chinese": "中文"
+    }
+  },
+  "dialog": {
+    "file": {
+      "choose-file": "选择文件"
+    },
+    "simulation": {
+      "name": "请选择一个合适的模拟类型",
+      "title": "选择模拟类型"
     }
   }
 }

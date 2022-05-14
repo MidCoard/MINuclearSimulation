@@ -13,5 +13,5 @@ pluginManagement {
     }
 }
 
-rootProject.name = "MINuclearSimulation"
+rootProject.name = "MINuclearSimulator"
 

@@ -8,7 +8,14 @@ public enum NuclearReactionType {
         public BiPredicate<Integer, Integer> getReaction() {
             return (x, y) -> x >= 1 && x <= 3 && y >= 1 && y <= 3;
         }
+
+        @Override
+        public int getSize() {
+            return 5;
+        }
     }
     ;
     public abstract BiPredicate<Integer,Integer> getReaction();
+
+    public abstract int getSize();
 }

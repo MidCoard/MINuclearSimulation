@@ -1,3 +1,13 @@
 {
-  "quit": "Quit"
+  "quit": "Quit",
+  "menu-bar": {
+    "file": {
+      "name": "File"
+    },
+    "language": {
+      "name": "Language",
+      "english": "English",
+      "chinese": "Chinese"
+    }
+  }
 }
