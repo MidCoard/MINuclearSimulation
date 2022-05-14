@@ -15,7 +15,7 @@ public enum NuclearReactionType implements FocessSerializable {
         }
 
         @Override
-        public Predicate<Integer> getRow() {
+        public Predicate<Integer> getColumn() {
             return x -> x >= 1 && x <= 3;
         }
 
@@ -27,7 +27,7 @@ public enum NuclearReactionType implements FocessSerializable {
     ;
     public abstract BiPredicate<Integer,Integer> getReaction();
 
-    public abstract Predicate<Integer> getRow();
+    public abstract Predicate<Integer> getColumn();
 
     public abstract int getSize();
 }

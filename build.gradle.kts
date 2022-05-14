@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    commonMainImplementation(group = "top.focess", name = "focess-util", version = "1.1.10")
+    commonMainImplementation(group = "top.focess", name = "focess-util", version = "1.1.11")
     commonMainImplementation(group = "top.focess", name = "focess-scheduler", version = "1.1.5")
 }
 
@@ -41,6 +41,8 @@ kotlin {
 compose.desktop {
     application {
         mainClass = "top.focess.mc.mi.ui.MainKt"
+        jvmArgs.add("--add-opens")
+        jvmArgs.add("java.base/java.io=ALL-UNNAMED")
         nativeDistributions {
             linux {
                 iconFile.set(project.file("src/jvmMain/resources").resolve("logo.png"))

@@ -36,15 +36,16 @@ fun main() =
         Tray(
             icon,
             menu = {
-                Item(lang.get("tray","maximize")) {
+                Item(lang.get("tray","maximize"), onClick = {
                     state.isMinimized = false
                     state.placement = WindowPlacement.Maximized
-                }
+                })
                 Item(lang.get("quit"), onClick = ::exitApplication)
             }
         )
 
         Window(
+            resizable = false,
             onCloseRequest = ::exitApplication,
             title = "${lang.get("title")} ${globalState.name} ${if (globalState.isSaved) "" else "*"}",
             icon = icon,
