@@ -21,10 +21,12 @@ public class NuclearSimulation implements FocessSerializable {
     private final NuclearGrid nuclearGrid;
 
     private final IsActiveComponent isActive;
+    private final NuclearReactionType nuclearType;
     private int tickCount = 0;
     private final long startTime = System.nanoTime();
 
     public NuclearSimulation(BiFunction<Integer,Integer, MatterVariant> variantSupplier, NuclearReactionType nuclearReactionType) {
+        this.nuclearType = nuclearReactionType;
         int size = nuclearReactionType.getSize();
         BiPredicate<Integer, Integer> isValid = nuclearReactionType.getReaction();
         INuclearTile[][] tiles = new NuclearHatch[size][size];
@@ -40,10 +42,11 @@ public class NuclearSimulation implements FocessSerializable {
         this.isActive = new IsActiveComponent();
     }
 
-    private NuclearSimulation(NuclearGrid grid, IsActiveComponent isActive, int tickCount) {
+    private NuclearSimulation(NuclearGrid grid, IsActiveComponent isActive, int tickCount,NuclearReactionType nuclearType) {
         this.nuclearGrid = grid;
         this.isActive = isActive;
         this.tickCount = tickCount;
+        this.nuclearType = nuclearType;
     }
 
     public void tick() {
@@ -60,6 +63,7 @@ public class NuclearSimulation implements FocessSerializable {
         map.put("tickCount",tickCount);
         map.put("nuclearGrid",nuclearGrid);
         map.put("isActive",isActive);
+        map.put("nuclearType",nuclearType);
         return map;
     }
 
@@ -67,7 +71,8 @@ public class NuclearSimulation implements FocessSerializable {
         int tickCount = (int) map.get("tickCount");
         NuclearGrid nuclearGrid = (NuclearGrid) map.get("nuclearGrid");
         IsActiveComponent isActive = (IsActiveComponent) map.get("isActive");
-        return new NuclearSimulation(nuclearGrid,isActive,tickCount);
+        NuclearReactionType nuclearType = (NuclearReactionType) map.get("nuclearType");
+        return new NuclearSimulation(nuclearGrid,isActive,tickCount,nuclearType);
     }
 
     @Override
@@ -88,5 +93,25 @@ public class NuclearSimulation implements FocessSerializable {
         result = 31 * result + isActive.hashCode();
         result = 31 * result + tickCount;
         return result;
+    }
+
+    public NuclearReactionType getNuclearType() {
+        return nuclearType;
+    }
+
+    public NuclearGrid getNuclearGrid() {
+        return nuclearGrid;
+    }
+
+    public IsActiveComponent getIsActive() {
+        return isActive;
+    }
+
+    public int getTickCount() {
+        return tickCount;
+    }
+
+    public long getStartTime() {
+        return startTime;
     }
 }

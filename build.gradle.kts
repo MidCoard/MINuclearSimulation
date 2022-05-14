@@ -1,7 +1,6 @@
+
 import org.jetbrains.compose.compose
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.gradle.api.artifacts.Dependency
-import java.util.stream.Collectors
 
 plugins {
     kotlin("multiplatform")
@@ -18,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    commonMainImplementation(group = "top.focess", name = "focess-util", version = "1.1.7")
+    commonMainImplementation(group = "top.focess", name = "focess-util", version = "1.1.10")
     commonMainImplementation(group = "top.focess", name = "focess-scheduler", version = "1.1.5")
 }
 

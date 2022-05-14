@@ -28,5 +28,8 @@
       "name": "请选择一个合适的模拟类型",
       "title": "选择模拟类型"
     }
+  },
+  "simulation": {
+    "no-simulation": "没有打开任何模拟文件"
   }
 }

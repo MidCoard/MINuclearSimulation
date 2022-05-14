@@ -10,16 +10,13 @@ import top.focess.mc.mi.ui.lang.Lang
 
 @Composable
 @Preview
-fun Simulation() {
-
+fun Simulator(lang: Lang, globalState: GlobalState) {
 
     MaterialTheme() {
         GeneralPanel() {
 
         }
-        SimulationChamber() {
-
-        }
+        SimulationChamber(lang, globalState.simulation)
         ObserverPanel() {
 
         }
@@ -52,7 +49,7 @@ fun main() =
             title = "${lang.get("title")} ${globalState.name} ${if (globalState.isSaved) "" else "*"}",
             icon = icon,
         ) {
-            Simulation()
+            Simulator(lang, globalState)
 
             if (globalState.saveDialog.isAwaiting) {
                 FileDialog(

@@ -3,13 +3,9 @@ package top.focess.mc.mi.ui.lang
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.res.ResourceLoader
 import com.google.common.io.CharStreams
-import com.google.common.primitives.Bytes
 import top.focess.util.json.JSON
-import java.io.File
 import java.io.InputStream
 import java.io.InputStreamReader
-import java.nio.file.Files
-import java.util.*
 
 @OptIn(ExperimentalComposeUiApi::class)
 class Lang(inputStream :InputStream) {
