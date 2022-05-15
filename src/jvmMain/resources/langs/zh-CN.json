@@ -30,7 +30,10 @@
     }
   },
   "simulation": {
-    "no-simulation": "没有打开任何模拟文件"
+    "no-simulation": "没有打开任何模拟文件",
+    "empty": "空",
+    "input": "输入",
+    "output": "输出"
   },
   "general": {
     "start": "开始",

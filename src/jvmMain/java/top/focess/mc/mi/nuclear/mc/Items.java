@@ -10,7 +10,6 @@ public class Items {
     public static final Item CARBON_LARGE_PLATE =  NuclearAbsorbable.of("carbon_large_plate", 2500, 2 *NuclearConstant.BASE_HEAT_CONDUCTION,
                                                             INeutronBehaviour.of(NuclearConstant.ScatteringType.MEDIUM, NuclearConstant.CARBON,
                                                                         2));
-
     public static final Item CADMIUM_FUEL_ROD =  NuclearAbsorbable.of("cadmium_fuel_rod", 1900, 0.5 * NuclearConstant.BASE_HEAT_CONDUCTION,
                     INeutronBehaviour.of(NuclearConstant.ScatteringType.HEAVY, NuclearConstant.CADMIUM,
                             1));

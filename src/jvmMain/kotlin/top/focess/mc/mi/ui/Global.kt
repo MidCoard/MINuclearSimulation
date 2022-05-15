@@ -28,7 +28,7 @@ class GlobalState(lang: Lang) {
     var isSaved by mutableStateOf(true)
     var name by mutableStateOf(lang.get("unopened"))
     var file :File? by mutableStateOf(null)
-
+    var isStart by mutableStateOf(false)
 }
 
 class GlobalAction(private val lang: Lang, private val state: GlobalState) {

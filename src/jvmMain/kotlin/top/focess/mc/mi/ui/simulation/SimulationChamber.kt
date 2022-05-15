@@ -1,5 +1,6 @@
 package top.focess.mc.mi.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -18,18 +19,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.Placeable
+import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import aztech.modern_industrialization.machines.blockentities.hatches.NuclearHatch
 import top.focess.mc.mi.nuclear.NuclearSimulation
+import top.focess.mc.mi.nuclear.mi.Texture
 import top.focess.mc.mi.ui.lang.Lang
 import top.focess.mc.mi.ui.theme.DefaultTheme
 
 @Composable
 fun SimulationChamber(lang: Lang, simulation: NuclearSimulation?) {
     if (simulation != null)
-        nuclearSimulationView(simulation)
+        nuclearSimulationView(lang, simulation)
     else
         emptyView(lang)
 
@@ -47,7 +50,7 @@ fun nuclearSimulationLayout(
 }
 
 @Composable
-fun nuclearSimulationView(simulation: NuclearSimulation) {
+fun nuclearSimulationView(lang: Lang, simulation: NuclearSimulation) {
     nuclearSimulationLayout(Modifier.fillMaxSize(), {measurables, constraints ->
         measurables.forEachIndexed { index, measurable ->
             measurable.measure(Constraints(
@@ -77,6 +80,7 @@ fun nuclearSimulationView(simulation: NuclearSimulation) {
                         repeat(simulation.nuclearType.size) { y: Int ->
                             if (simulation.nuclearGrid.getNuclearTile(x, y).isPresent) {
                                 nuclearSimulationCell(
+                                    lang,
                                     simulation.nuclearGrid.getNuclearTile(x, y).get() as NuclearHatch,
                                 )
                             }
@@ -109,12 +113,22 @@ fun emptyView(lang: Lang) {
 }
 
 @Composable
-fun nuclearSimulationCell(nuclearHatch: NuclearHatch) = Surface {
+fun nuclearSimulationCell(lang: Lang, nuclearHatch: NuclearHatch) = Surface {
     Box(
         modifier = Modifier.fillMaxSize().background(DefaultTheme.simulationCell)
             .border(1.dp, LocalContentColor.current.copy(alpha = 0.60f))
     ) {
-        Text("hello")
+        if (!nuclearHatch.inventory.input().matterVariant.isBlank) {
+            val texture = Texture.get(nuclearHatch.inventory.input().matterVariant.matter)
+            Image(
+                bitmap = loadImageBitmap(texture.inputStream),
+                lang.get("simulation", "input"),
+                modifier = Modifier.fillMaxSize(),
+            )
+            Text(nuclearHatch.inventory.input().toString())
+        } else {
+            Text(lang.get("simulation", "empty"))
+        }
 
     }
 }

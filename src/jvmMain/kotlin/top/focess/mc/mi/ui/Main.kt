@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.window.*
 import kotlinx.coroutines.launch
 import top.focess.mc.mi.ui.lang.Lang
+import top.focess.mc.mi.ui.theme.DefaultTheme
 
 
 @Composable
@@ -30,7 +31,7 @@ fun simulatorLayout(
 @Composable
 fun Simulator(lang: Lang, globalState: GlobalState) {
 
-    MaterialTheme() {
+    MaterialTheme(colors = DefaultTheme.default) {
         simulatorLayout(Modifier.fillMaxSize(),{
                 generalPanel, simulationChamber, observerPanel, constraints ->
             val generalWidth = constraints.maxWidth / 6;
@@ -64,7 +65,7 @@ fun Simulator(lang: Lang, globalState: GlobalState) {
             ).place(generalWidth + simulationChamberWidth, 0)
 
         }) {
-            GeneralPanel(lang)
+            GeneralPanel(lang, globalState)
             SimulationChamber(lang, globalState.simulation)
             ObserverPanel(lang)
         }

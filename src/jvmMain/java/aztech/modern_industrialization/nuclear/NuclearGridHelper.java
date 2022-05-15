@@ -52,13 +52,10 @@ public class NuclearGridHelper {
 
                 Optional<INuclearTile> maybeTile = grid.getNuclearTile(i, j);
                 if (maybeTile.isPresent()) {
-                    System.out.println("Tile at " + i + "," + j + " is present");
                     INuclearTile tile = maybeTile.get();
                     NuclearHatch hatch = (NuclearHatch) tile;
-                    System.out.println(hatch.getInventory().input());
                     Optional<NuclearFuel> maybeFuel = tile.getFuel();
                     int neutronNumberPrime = tile.neutronGenerationTick(grid);
-                    System.out.println("Neutron number prime: " + neutronNumberPrime);
                     if (neutronNumberPrime > 0) {
                         if (maybeFuel.isEmpty()) {
                             throw new IllegalStateException("Neutron generated without fuel");

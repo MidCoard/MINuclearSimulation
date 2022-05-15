@@ -56,4 +56,11 @@ public abstract class MatterVariant {
         return result;
     }
 
+    @Override
+    public String toString() {
+        if (this.isBlank())
+            return "Empty";
+        else
+            return this.matter.toString() + ":" + this.tag;
+    }
 }
