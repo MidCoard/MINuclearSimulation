@@ -63,4 +63,12 @@ public abstract class MatterVariant {
         else
             return this.matter.toString() + ":" + this.tag;
     }
+
+    public static MatterVariant of(@NonNull Matter matter) {
+        if (matter instanceof Item)
+            return ItemVariant.of((Item) matter);
+        else if (matter instanceof Fluid)
+            return FluidVariant.of((Fluid) matter);
+        throw new IllegalArgumentException("Matter is not Item or Fluid");
+    }
 }

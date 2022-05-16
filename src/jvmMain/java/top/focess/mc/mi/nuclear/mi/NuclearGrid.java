@@ -37,6 +37,10 @@ public class NuclearGrid implements INuclearGrid, FocessSerializable {
         return Optional.ofNullable(hatchesGrid[x][y]);
     }
 
+    public void setNuclearTile(int x,int y, INuclearTile iNuclearTile) {
+        this.hatchesGrid[x][y] = iNuclearTile;
+    }
+
     @Override
     public void registerNeutronFate(int neutronNumber, NeutronType type, NeutronFate escape) {
     }

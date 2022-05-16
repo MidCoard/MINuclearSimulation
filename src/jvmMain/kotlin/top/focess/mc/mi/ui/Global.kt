@@ -9,6 +9,7 @@ import top.focess.mc.mi.nuclear.NuclearSimulation
 import top.focess.mc.mi.nuclear.mc.ItemVariant
 import top.focess.mc.mi.nuclear.mi.NuclearReactionType
 import top.focess.mc.mi.ui.lang.Lang
+import top.focess.mc.mi.ui.simulation.SimulationSelectorState
 import top.focess.util.yaml.YamlConfiguration
 import java.awt.FileDialog
 import java.io.File
@@ -17,6 +18,7 @@ import javax.swing.JOptionPane
 
 class GlobalState(lang: Lang) {
 
+    val selectors by mutableStateOf(SimulationSelectorState())
     val saveDialog = DialogState<Path?>()
     val newDialog = DialogState<NuclearReactionType?>()
     val openDialog = DialogState<Path?>()

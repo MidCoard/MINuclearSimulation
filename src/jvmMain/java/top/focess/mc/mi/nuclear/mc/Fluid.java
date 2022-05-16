@@ -1,5 +1,6 @@
 package top.focess.mc.mi.nuclear.mc;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -7,8 +8,11 @@ import java.util.Map;
 public class Fluid extends Matter{
 
     private static final List<Fluid> FLUIDS = new ArrayList<>();
-    public Fluid(String namespace, String name) {
+    private final Color color;
+
+    public Fluid(String namespace, String name, Color color) {
         super(namespace, name);
+        this.color = color;
         FLUIDS.add(this);
     }
 
@@ -23,5 +27,9 @@ public class Fluid extends Matter{
             if (fluid.getNamespace().equals(namespace) && fluid.getName().equals(name))
                 return fluid;
         return null;
+    }
+
+    public Color getColor() {
+        return color;
     }
 }

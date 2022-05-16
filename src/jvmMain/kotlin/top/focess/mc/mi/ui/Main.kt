@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.window.*
 import kotlinx.coroutines.launch
 import top.focess.mc.mi.ui.lang.Lang
+import top.focess.mc.mi.ui.simulation.simulationSelector
 import top.focess.mc.mi.ui.theme.DefaultTheme
 
 
@@ -66,7 +67,7 @@ fun Simulator(lang: Lang, globalState: GlobalState) {
 
         }) {
             GeneralPanel(lang, globalState)
-            SimulationChamber(lang, globalState.simulation)
+            SimulationChamber(lang, globalState)
             ObserverPanel(lang)
         }
     }
@@ -94,6 +95,12 @@ fun main() =
                     Item(lang.get("quit"), onClick = ::exitApplication)
                 }
             )
+
+        for (window in globalState.selectors.windows)
+            key(window) {
+                simulationSelector(window)
+            }
+
         if (!state.isMinimized)
             Window(
                 onCloseRequest = ::exitApplication,
