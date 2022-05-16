@@ -35,12 +35,12 @@ import top.focess.mc.mi.ui.theme.DefaultTheme
 fun SimulationChamber(
     lang: Lang,
     isStart: Boolean,
-    selectors: SimulationSelectorState,
+    selectorState: SimulationSelectorState,
     simulation: NuclearSimulation?,
     updateNuclearHatch: (Int, Int, NuclearHatch?) -> Unit
 ) {
     if (simulation != null)
-        nuclearSimulationView(lang, isStart, selectors, simulation, updateNuclearHatch)
+        nuclearSimulationView(lang, isStart, selectorState, simulation, updateNuclearHatch)
     else
         emptyView(lang)
 
@@ -61,7 +61,7 @@ fun nuclearSimulationLayout(
 fun nuclearSimulationView(
     lang: Lang,
     isStart: Boolean,
-    selectors: SimulationSelectorState,
+    selectorState: SimulationSelectorState,
     simulation: NuclearSimulation,
     updateNuclearHatch: (Int, Int, NuclearHatch?) -> Unit
 ) {
@@ -100,7 +100,7 @@ fun nuclearSimulationView(
                                     lang,
                                     x, y,
                                     isStart,
-                                    selectors,
+                                    selectorState,
                                     simulation.nuclearGrid.getNuclearTile(x, y).get() as NuclearHatch
                                 ) {
                                     updateNuclearHatch(x, y, it)
@@ -141,7 +141,7 @@ fun nuclearSimulationCell(
     x: Int,
     y: Int,
     isStart: Boolean,
-    selectors: SimulationSelectorState,
+    selectorState: SimulationSelectorState,
     nuclearHatch: NuclearHatch,
     updateNuclearHatch: (NuclearHatch?) -> Unit
 ) = Surface {
@@ -167,7 +167,7 @@ fun nuclearSimulationCell(
                 .border(1.dp, LocalContentColor.current.copy(alpha = 0.60f))
                 .clickable {
                     if (!isStart)
-                        selectors.newWindow(lang, x, y, nuclearHatch, updateNuclearHatch)
+                        selectorState.newWindow(lang, x, y, nuclearHatch, updateNuclearHatch)
                 }
         ) {
             if (!nuclearHatch.inventory.input().matterVariant.isBlank) {

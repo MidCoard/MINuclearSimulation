@@ -22,7 +22,7 @@ import javax.swing.JOptionPane
 class GlobalState(lang: Lang) {
 
     // selector window
-    val selectors by mutableStateOf(SimulationSelectorState())
+    val selectorState by mutableStateOf(SimulationSelectorState())
 
     val saveDialog = DialogState<Path?>()
     val newDialog = DialogState<NuclearReactionType?>()
@@ -67,7 +67,7 @@ class GlobalAction(private val lang: Lang, private val state: GlobalState) {
         state.file = null
         state.name = lang.get("unsaved")
         state.isSaved = false
-        state.selectors.windows.clear()
+        state.selectorState.windows.clear()
     }
 
     suspend fun open() {
@@ -80,7 +80,7 @@ class GlobalAction(private val lang: Lang, private val state: GlobalState) {
             state.file = path.toFile()
             state.name = path.fileName.toString()
             state.isSaved = true
-            state.selectors.windows.clear()
+            state.selectorState.windows.clear()
         } catch (e: Exception) {
             JOptionPane.showMessageDialog(null, e.message, lang.get("open-fail"), JOptionPane.ERROR_MESSAGE)
         }
@@ -88,10 +88,11 @@ class GlobalAction(private val lang: Lang, private val state: GlobalState) {
 
     fun start() {
         if (!state.isStart && state.simulation != null) {
-            state.selectors.windows.clear()
+            state.selectorState.windows.clear()
             state.tickTask = state.scheduler.runTimer(
                 {
                     state.simulation!!::tick
+                    state.simulation = state.simulation
                     state.isSaved = false
                 },
                 Duration.ZERO,

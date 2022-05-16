@@ -82,9 +82,11 @@ fun simulationCell(matter: Matter, window: SimulationSelectorWindowState) {
     val texture = Texture.get(matter)
     val nuclearHatch = window.nuclearHatch
     Box(modifier = Modifier.fillMaxSize().clickable {
-        if (nuclearHatch.isFluid != matter is Fluid)
-            window.updateNuclearHatch(NuclearHatch(matter is Fluid))
-        nuclearHatch.inventory.input().matterVariant = MatterVariant.of(matter)
+        if (nuclearHatch.isFluid != matter is Fluid) {
+            val newNuclearHatch = NuclearHatch(matter is Fluid)
+            window.updateNuclearHatch(newNuclearHatch)
+            newNuclearHatch.inventory.input().matterVariant = MatterVariant.of(matter)
+        } else nuclearHatch.inventory.input().matterVariant = MatterVariant.of(matter)
         window.close()
     }) {
         Image(
@@ -101,7 +103,9 @@ fun simulationCell(matter: Matter, window: SimulationSelectorWindowState) {
 fun simulationSelector(window: SimulationSelectorWindowState) = Window(
     resizable = false,
     title = window.lang.get("simulation", "selector", "name"),
-    onCloseRequest = { window.close() }
+    onCloseRequest = { window.close() },
+    focusable = true,
+    alwaysOnTop = true
 ) {
     MaterialTheme(colors = DefaultTheme.default) {
         val nuclearHatch = window.nuclearHatch

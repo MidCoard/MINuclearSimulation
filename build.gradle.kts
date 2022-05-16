@@ -17,8 +17,8 @@ repositories {
 }
 
 dependencies {
-    commonMainImplementation(group = "top.focess", name = "focess-util", version = "1.1.11")
-    commonMainImplementation(group = "top.focess", name = "focess-scheduler", version = "1.1.5")
+    commonMainImplementation(group = "top.focess", name = "focess-util", version = "1.1.12")
+    commonMainImplementation(group = "top.focess", name = "focess-scheduler", version = "1.1.6")
 }
 
 kotlin {

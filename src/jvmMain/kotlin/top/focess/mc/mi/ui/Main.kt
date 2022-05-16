@@ -16,7 +16,6 @@ import top.focess.mc.mi.ui.lang.Lang
 import top.focess.mc.mi.ui.simulation.simulationSelector
 import top.focess.mc.mi.ui.theme.DefaultTheme
 
-
 @Composable
 fun simulatorLayout(
     modifier: Modifier,
@@ -66,7 +65,7 @@ fun Simulator(lang: Lang, globalState: GlobalState, globalAction: GlobalAction) 
 
         }) {
             GeneralPanel(lang, globalState.isStart, globalState.simulation, globalState.tickTask, globalAction)
-            SimulationChamber(lang, globalState.isStart, globalState.selectors, globalState.simulation) { x, y, it ->
+            SimulationChamber(lang, globalState.isStart, globalState.selectorState, globalState.simulation) { x, y, it ->
                 if (it != null)
                     globalState.simulation!!.nuclearGrid.setNuclearTile(x, y, it)
             }
@@ -75,19 +74,19 @@ fun Simulator(lang: Lang, globalState: GlobalState, globalAction: GlobalAction) 
     }
 }
 
-
 @Preview
 fun main() =
     application {
 
-        val icon by remember { mutableStateOf(painterResource("logo.png")) }
+        val icon = painterResource("logo.png")
         var lang by remember { mutableStateOf(Lang.default) }
-        val state = rememberWindowState(width = Dp.Unspecified, height = Dp.Unspecified)
-        val scope = rememberCoroutineScope()
         val globalState by remember { mutableStateOf(GlobalState(lang)) }
         val globalAction by remember { mutableStateOf(GlobalAction(lang, globalState)) }
 
-        for (window in globalState.selectors.windows)
+        val state = rememberWindowState(width = Dp.Unspecified, height = Dp.Unspecified)
+        val scope = rememberCoroutineScope()
+
+        for (window in globalState.selectorState.windows)
             key(window) {
                 simulationSelector(window)
             }
