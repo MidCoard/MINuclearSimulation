@@ -19,7 +19,6 @@ import java.util.function.BiPredicate;
 
 public class NuclearSimulation implements FocessSerializable {
     private final NuclearGrid nuclearGrid;
-
     private final IsActiveComponent isActive;
     private final NuclearReactionType nuclearType;
     private int tickCount = 0;

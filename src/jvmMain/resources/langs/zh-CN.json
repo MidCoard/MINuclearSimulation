@@ -12,7 +12,9 @@
       "name": "模拟",
       "new": "新建",
       "open": "打开",
-      "save": "保存"
+      "save": "保存",
+      "start": "开始",
+      "stop": "停止"
     },
     "language": {
       "name": "语言",

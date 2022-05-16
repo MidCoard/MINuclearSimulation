@@ -30,7 +30,7 @@ fun simulatorLayout(
 }
 
 @Composable
-fun Simulator(lang: Lang, globalState: GlobalState) {
+fun Simulator(lang: Lang, globalState: GlobalState, globalAction: GlobalAction) {
 
     MaterialTheme(colors = DefaultTheme.default) {
         simulatorLayout(Modifier.fillMaxSize(),{
@@ -66,23 +66,29 @@ fun Simulator(lang: Lang, globalState: GlobalState) {
             ).place(generalWidth + simulationChamberWidth, 0)
 
         }) {
-            GeneralPanel(lang, globalState)
+            GeneralPanel(lang, globalState, globalAction)
             SimulationChamber(lang, globalState)
             ObserverPanel(lang)
         }
     }
 }
 
+
+val icon = painterResource("logo.png")
+var lang by remember { mutableStateOf(Lang.default) }
+val state = rememberWindowState(width = Dp.Unspecified, height = Dp.Unspecified)
+val scope = rememberCoroutineScope()
+val globalState = remember { GlobalState(lang) }
+val globalAction = GlobalAction(lang, globalState)
+
 @Preview
 fun main() =
     application {
-        val icon = painterResource("logo.png")
-        var lang by remember { mutableStateOf(Lang.default) }
-        val state = rememberWindowState(width = Dp.Unspecified, height = Dp.Unspecified)
-        val scope = rememberCoroutineScope()
 
-        val globalState = remember { GlobalState(lang) }
-        val globalAction = GlobalAction(lang, globalState)
+        for (window in globalState.selectors.windows)
+            key(window) {
+                simulationSelector(window)
+            }
 
         if (state.isMinimized)
             Tray(
@@ -96,11 +102,6 @@ fun main() =
                 }
             )
 
-        for (window in globalState.selectors.windows)
-            key(window) {
-                simulationSelector(window)
-            }
-
         if (!state.isMinimized)
             Window(
                 onCloseRequest = ::exitApplication,
@@ -108,7 +109,7 @@ fun main() =
                 icon = icon,
                 state = state
             ) {
-                Simulator(lang, globalState)
+                Simulator(lang, globalState, globalAction)
 
                 if (globalState.saveDialog.isAwaiting) {
                     FileDialog(
@@ -149,8 +150,14 @@ fun main() =
                         Item(lang.get("menu-bar", "simulation", "open"), mnemonic = 'O') {
                             open()
                         }
-                        Item(lang.get("menu-bar", "simulation", "save"), mnemonic = 'S') {
+                        Item(lang.get("menu-bar", "simulation", "save"), mnemonic = 'S', enabled = !globalState.isSaved) {
                             save()
+                        }
+                        Item(lang.get("menu-bar", "simulation", "start"), mnemonic = 'T', enabled = !globalState.isStart && globalState.simulation != null) {
+                            globalAction.start()
+                        }
+                        Item(lang.get("menu-bar", "simulation", "stop"), mnemonic = 'P', enabled = globalState.isStart && globalState.tickTask != null) {
+                            globalAction.stop()
                         }
                         Item(lang.get("quit"), mnemonic = 'Q', onClick = ::exitApplication)
                     }

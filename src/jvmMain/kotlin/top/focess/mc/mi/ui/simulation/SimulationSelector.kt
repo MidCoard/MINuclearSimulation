@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -31,13 +32,16 @@ import top.focess.mc.mi.nuclear.mc.MatterVariant
 import top.focess.mc.mi.nuclear.mi.Texture
 import top.focess.mc.mi.ui.GlobalState
 import top.focess.mc.mi.ui.lang.Lang
-
+import top.focess.mc.mi.ui.theme.DefaultTheme
 
 val ROW_CELL_COUNT = 5
 
 class SimulationSelectorState {
     val windows = mutableStateListOf<SimulationSelectorWindowState>()
-    fun newWindow(lang: Lang, state: GlobalState, x:Int, y:Int) { windows.add(SimulationSelectorWindowState(lang, state, x, y, windows::remove)) }
+    fun newWindow(lang: Lang, state: GlobalState, x:Int, y:Int) {
+        if (windows.firstOrNull { it.x == x && it.y == y } == null)
+            windows.add(SimulationSelectorWindowState(lang, state, x, y, windows::remove))
+    }
 }
 
 
@@ -99,106 +103,107 @@ fun simulationSelector(window: SimulationSelectorWindowState) = Window(
     title = window.lang.get("simulation","selector","name"),
     onCloseRequest = { window.close() }
 ) {
-
-    val nuclearHatch = window.state.simulation!!.nuclearGrid.getNuclearTile(window.x,window.y).get()
-    simulationSelectorLayout(Modifier.fillMaxSize(), {
-            measurables, constraints ->
-        measurables[0].measure(
-            Constraints(
-                minHeight = constraints.maxHeight,
-                maxHeight = constraints.maxHeight,
-                minWidth = constraints.maxWidth / 3,
-                maxWidth = constraints.maxWidth / 3
-            )
-        ).place(0,0)
-        measurables[1].measure(
-            Constraints(
-                minHeight = constraints.maxHeight,
-                maxHeight = constraints.maxHeight,
-                minWidth = constraints.maxWidth * 2 / 3,
-                maxWidth = constraints.maxWidth * 2 / 3
-            )
-        ).place(constraints.maxWidth / 3,0)
-    }) {
-        var isFluid by remember{ mutableStateOf(nuclearHatch.isFluid) }
-        Column() {
-            TooltipArea(tooltip = {
-                Surface(
-                    modifier = Modifier.shadow(4.dp),
-                    color = Color(255, 255, 210),
-                    shape = RoundedCornerShape(4.dp),
-                ) {
-                    if (nuclearHatch.isFluid)
-                    Text(
-                        text = window.lang.get("simulation", "selector", "tooltip", "item"),
-                        modifier = Modifier.padding(10.dp),
-                        color = Color.Red
+    MaterialTheme(colors = DefaultTheme.default) {
+        val nuclearHatch = window.state.simulation!!.nuclearGrid.getNuclearTile(window.x, window.y).get()
+        simulationSelectorLayout(Modifier.fillMaxSize(), { measurables, constraints ->
+            measurables[0].measure(
+                Constraints(
+                    minHeight = constraints.maxHeight,
+                    maxHeight = constraints.maxHeight,
+                    minWidth = constraints.maxWidth / 3,
+                    maxWidth = constraints.maxWidth / 3
+                )
+            ).place(0, 0)
+            measurables[1].measure(
+                Constraints(
+                    minHeight = constraints.maxHeight,
+                    maxHeight = constraints.maxHeight,
+                    minWidth = constraints.maxWidth * 2 / 3,
+                    maxWidth = constraints.maxWidth * 2 / 3
+                )
+            ).place(constraints.maxWidth / 3, 0)
+        }) {
+            var isFluid by remember { mutableStateOf(nuclearHatch.isFluid) }
+            Column() {
+                TooltipArea(tooltip = {
+                    Surface(
+                        modifier = Modifier.shadow(4.dp),
+                        color = Color(255, 255, 210),
+                        shape = RoundedCornerShape(4.dp),
+                    ) {
+                        if (nuclearHatch.isFluid)
+                            Text(
+                                text = window.lang.get("simulation", "selector", "tooltip", "fluid"),
+                                modifier = Modifier.padding(10.dp),
+                                color = Color.Red
+                            )
+                    }
+                }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                    Button(
+                        onClick = { isFluid = false },
+                        enabled = isFluid,
+                        content = { Text(window.lang.get("simulation", "selector", "item")) },
                     )
                 }
-            }) {
-                Button(
-                    onClick = { isFluid = false },
-                    enabled = isFluid,
+                TooltipArea(
+                    tooltip = {
+                        Surface(
+                            modifier = Modifier.shadow(4.dp),
+                            color = Color(255, 255, 210),
+                            shape = RoundedCornerShape(4.dp),
+                        ) {
+                            if (nuclearHatch.isFluid.not())
+                                Text(
+                                    text = window.lang.get("simulation", "selector", "tooltip", "item"),
+                                    modifier = Modifier.padding(10.dp),
+                                    color = Color.Red
+                                )
+                        }
+                    },
                     modifier = Modifier.align(Alignment.CenterHorizontally),
-                    content = { Text(window.lang.get("simulation","selector","item")) },
-                )
-            }
-            TooltipArea(tooltip = {
-                Surface(
-                    modifier = Modifier.shadow(4.dp),
-                    color = Color(255, 255, 210),
-                    shape = RoundedCornerShape(4.dp),
                 ) {
-                    if (nuclearHatch.isFluid.not())
-                        Text(
-                            text = window.lang.get("simulation", "selector", "tooltip", "fluid"),
-                            modifier = Modifier.padding(10.dp),
-                            color = Color.Red
-                        )
+                    Button(
+                        onClick = { isFluid = true },
+                        enabled = isFluid.not(),
+                        content = { Text(window.lang.get("simulation", "selector", "fluid")) }
+                    )
+                }
+            }
+
+            simulationSelectorCellLayout(Modifier.fillMaxSize(), { measurables, constraints ->
+                val row =
+                    if (measurables.size % ROW_CELL_COUNT == 0) measurables.size / ROW_CELL_COUNT else measurables.size / ROW_CELL_COUNT + 1
+                for (i in 0 until row) {
+                    for (j in 0 until ROW_CELL_COUNT) {
+                        val index = i * ROW_CELL_COUNT + j
+                        if (index < measurables.size) {
+                            measurables[index].measure(
+                                Constraints(
+                                    minHeight = constraints.maxHeight / row,
+                                    maxHeight = constraints.maxHeight / row,
+                                    minWidth = constraints.maxWidth / ROW_CELL_COUNT,
+                                    maxWidth = constraints.maxWidth / ROW_CELL_COUNT
+                                )
+                            ).place(j * constraints.maxWidth / ROW_CELL_COUNT, i * constraints.maxHeight / row)
+                        }
+                    }
                 }
             }) {
-                Button(
-                    onClick = { isFluid = true },
-                    enabled = isFluid.not(),
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    content = { Text(window.lang.get("simulation", "selector", "fluid")) }
-                )
+
+                if (isFluid.not())
+                    for (item in Constant.ITEMS) {
+                        key(item) {
+                            simulationCell(item, window)
+                        }
+                    }
+
+                if (isFluid)
+                    for (fluid in Constant.FLUIDS) {
+                        key(fluid) {
+                            simulationCell(fluid, window)
+                        }
+                    }
             }
-        }
-
-        simulationSelectorCellLayout(Modifier.fillMaxSize(),{
-            measurables, constraints ->
-            val row = if (measurables.size % ROW_CELL_COUNT == 0) measurables.size / ROW_CELL_COUNT else measurables.size / ROW_CELL_COUNT + 1
-            for (i in 0 until row) {
-                for (j in 0 until ROW_CELL_COUNT) {
-                    val index = i * ROW_CELL_COUNT + j
-                    if (index < measurables.size) {
-                        measurables[index].measure(
-                            Constraints(
-                                minHeight = constraints.maxHeight / row,
-                                maxHeight = constraints.maxHeight / row,
-                                minWidth = constraints.maxWidth / ROW_CELL_COUNT,
-                                maxWidth = constraints.maxWidth / ROW_CELL_COUNT
-                            )
-                        ).place(j * constraints.maxWidth / ROW_CELL_COUNT, i * constraints.maxHeight / row)
-                    }
-                }
-            }
-        }) {
-
-            if (isFluid.not())
-                for (item in Constant.ITEMS) {
-                    key(item) {
-                        simulationCell(item, window)
-                    }
-                }
-
-            if (isFluid)
-                for (fluid in Constant.FLUIDS) {
-                    key(fluid) {
-                        simulationCell(fluid, window)
-                    }
-                }
         }
     }
 }
