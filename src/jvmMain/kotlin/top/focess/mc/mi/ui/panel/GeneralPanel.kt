@@ -9,25 +9,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import top.focess.mc.mi.nuclear.NuclearSimulation
 import top.focess.mc.mi.ui.lang.Lang
+import top.focess.scheduler.Task
 
 @Composable
-fun GeneralPanel(lang: Lang, state: GlobalState, action: GlobalAction) {
+fun GeneralPanel(lang: Lang, isStart: Boolean, simulation: NuclearSimulation?, tickTask: Task?, action: GlobalAction) {
 
     Column {
         Row {
-            Button(modifier = Modifier.align(Alignment.CenterVertically).padding(10.dp,5.dp),
-                enabled = !state.isStart && state.simulation != null,
+            Button(modifier = Modifier.align(Alignment.CenterVertically).padding(10.dp, 5.dp),
+                enabled = !isStart && simulation != null,
                 onClick = {
-                    action.start();
+                    action.start()
                 }) {
                 Text(lang.get("general", "start"))
             }
 
             Button(modifier = Modifier.align(Alignment.CenterVertically),
-                enabled = state.isStart && state.tickTask != null,
+                enabled = isStart && tickTask != null,
                 onClick = {
-                    action.stop();
+                    action.stop()
                 }) {
                 Text(lang.get("general", "stop"))
             }

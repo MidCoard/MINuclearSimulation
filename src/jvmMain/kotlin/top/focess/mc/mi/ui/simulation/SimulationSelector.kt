@@ -30,26 +30,26 @@ import top.focess.mc.mi.nuclear.mc.Fluid
 import top.focess.mc.mi.nuclear.mc.Matter
 import top.focess.mc.mi.nuclear.mc.MatterVariant
 import top.focess.mc.mi.nuclear.mi.Texture
-import top.focess.mc.mi.ui.GlobalState
 import top.focess.mc.mi.ui.lang.Lang
 import top.focess.mc.mi.ui.theme.DefaultTheme
 
-val ROW_CELL_COUNT = 5
+const val ROW_CELL_COUNT = 5
 
 class SimulationSelectorState {
     val windows = mutableStateListOf<SimulationSelectorWindowState>()
-    fun newWindow(lang: Lang, state: GlobalState, x:Int, y:Int) {
+    fun newWindow(lang: Lang, x: Int, y: Int, nuclearHatch: NuclearHatch, updateNuclearHatch: (NuclearHatch?) -> Unit) {
         if (windows.firstOrNull { it.x == x && it.y == y } == null)
-            windows.add(SimulationSelectorWindowState(lang, state, x, y, windows::remove))
+            windows.add(SimulationSelectorWindowState(lang, x, y, nuclearHatch, updateNuclearHatch, windows::remove))
     }
 }
 
 
 class SimulationSelectorWindowState(
     val lang: Lang,
-    val state: GlobalState,
     val x: Int,
     val y: Int,
+    val nuclearHatch: NuclearHatch,
+    val updateNuclearHatch: (NuclearHatch?) -> Unit,
     private val close: (SimulationSelectorWindowState) -> Unit
 ) {
     fun close() = close(this)
@@ -59,8 +59,8 @@ class SimulationSelectorWindowState(
 fun simulationSelectorLayout(
     modifier: Modifier,
     how: Placeable.PlacementScope.(measurables: List<Measurable>, constraints: Constraints) -> Unit,
-    children: @Composable () -> Unit)
-        = Layout({ children() }, modifier) {measurables, constraints ->
+    children: @Composable () -> Unit
+) = Layout({ children() }, modifier) { measurables, constraints ->
     layout(constraints.maxWidth, constraints.maxHeight) {
         how(measurables, constraints)
     }
@@ -70,8 +70,8 @@ fun simulationSelectorLayout(
 fun simulationSelectorCellLayout(
     modifier: Modifier,
     how: Placeable.PlacementScope.(measurables: List<Measurable>, constraints: Constraints) -> Unit,
-    children: @Composable () -> Unit)
-        = Layout({ children() }, modifier) {measurables, constraints ->
+    children: @Composable () -> Unit
+) = Layout({ children() }, modifier) { measurables, constraints ->
     layout(constraints.maxWidth, constraints.maxHeight) {
         how(measurables, constraints)
     }
@@ -80,10 +80,10 @@ fun simulationSelectorCellLayout(
 @Composable
 fun simulationCell(matter: Matter, window: SimulationSelectorWindowState) {
     val texture = Texture.get(matter)
-    val nuclearHatch = window.state.simulation!!.nuclearGrid.getNuclearTile(window.x,window.y).get() as NuclearHatch
+    val nuclearHatch = window.nuclearHatch
     Box(modifier = Modifier.fillMaxSize().clickable {
         if (nuclearHatch.isFluid != matter is Fluid)
-            window.state.simulation!!.nuclearGrid.setNuclearTile(window.x, window.y, NuclearHatch(matter is Fluid))
+            window.updateNuclearHatch(NuclearHatch(matter is Fluid))
         nuclearHatch.inventory.input().matterVariant = MatterVariant.of(matter)
         window.close()
     }) {
@@ -100,11 +100,11 @@ fun simulationCell(matter: Matter, window: SimulationSelectorWindowState) {
 @Composable
 fun simulationSelector(window: SimulationSelectorWindowState) = Window(
     resizable = false,
-    title = window.lang.get("simulation","selector","name"),
+    title = window.lang.get("simulation", "selector", "name"),
     onCloseRequest = { window.close() }
 ) {
     MaterialTheme(colors = DefaultTheme.default) {
-        val nuclearHatch = window.state.simulation!!.nuclearGrid.getNuclearTile(window.x, window.y).get()
+        val nuclearHatch = window.nuclearHatch
         simulationSelectorLayout(Modifier.fillMaxSize(), { measurables, constraints ->
             measurables[0].measure(
                 Constraints(
@@ -124,7 +124,7 @@ fun simulationSelector(window: SimulationSelectorWindowState) = Window(
             ).place(constraints.maxWidth / 3, 0)
         }) {
             var isFluid by remember { mutableStateOf(nuclearHatch.isFluid) }
-            Column() {
+            Column {
                 TooltipArea(tooltip = {
                     Surface(
                         modifier = Modifier.shadow(4.dp),

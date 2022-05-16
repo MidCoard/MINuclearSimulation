@@ -4,17 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class Item extends Matter{
+public class Item extends Matter {
 
     private static final List<Item> ITEMS = new ArrayList<>();
-
-    public static Item getItem(String namespace, String name) {
-        for (Item item : ITEMS)
-            if (item.getNamespace().equals(namespace) && item.getName().equals(name))
-                return item;
-        throw new IllegalArgumentException("Item not found!");
-    }
-
     //ignore
     private final int maxCount;
 
@@ -30,13 +22,20 @@ public class Item extends Matter{
         this.maxCount = maxCount;
     }
 
-    public int getMaxCount() {
-        return maxCount;
+    public static Item getItem(String namespace, String name) {
+        for (Item item : ITEMS)
+            if (item.getNamespace().equals(namespace) && item.getName().equals(name))
+                return item;
+        throw new IllegalArgumentException("Item not found!");
     }
 
-    public static Item deserialize(Map<String,Object> map) {
+    public static Item deserialize(Map<String, Object> map) {
         String namespace = (String) map.get("namespace");
         String name = (String) map.get("name");
         return Item.getItem(namespace, name);
+    }
+
+    public int getMaxCount() {
+        return maxCount;
     }
 }

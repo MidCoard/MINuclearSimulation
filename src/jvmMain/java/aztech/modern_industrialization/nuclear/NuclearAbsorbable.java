@@ -33,10 +33,19 @@ public class NuclearAbsorbable extends NuclearComponentItem {
 
     public final int desintegrationMax;
 
-    public NuclearAbsorbable(String name,int maxCount, int maxTemperature, double heatConduction, INeutronBehaviour neutronBehaviour,
-            int desintegrationMax) {
-        super(name, maxCount,maxTemperature, heatConduction, neutronBehaviour);
+    public NuclearAbsorbable(String name, int maxCount, int maxTemperature, double heatConduction, INeutronBehaviour neutronBehaviour,
+                             int desintegrationMax) {
+        super(name, maxCount, maxTemperature, heatConduction, neutronBehaviour);
         this.desintegrationMax = desintegrationMax;
+    }
+
+    public static NuclearComponentItem of(String id, int maxTemperature, double heatConduction, INeutronBehaviour neutronBehaviour,
+                                          int desintegrationMax) {
+        return new NuclearAbsorbable(id, 1, maxTemperature, heatConduction, neutronBehaviour, desintegrationMax);
+    }
+
+    protected static int randIntFromDouble(double value, Random rand) {
+        return (int) Math.floor(value) + (rand.nextDouble() < (value % 1) ? 1 : 0);
     }
 
     public void setRemainingDesintegrations(MatterHolder stack, int value) {
@@ -45,26 +54,17 @@ public class NuclearAbsorbable extends NuclearComponentItem {
         stack.getTag().put("desRem", value);
     }
 
-    public static NuclearComponentItem of(String id, int maxTemperature, double heatConduction, INeutronBehaviour neutronBehaviour,
-                                          int desintegrationMax) {
-        return new NuclearAbsorbable( id, 1, maxTemperature, heatConduction, neutronBehaviour, desintegrationMax);
-    }
-
     public double getDurabilityBarProgress(MatterHolder stack) {
         return (double) getRemainingDesintegrations(stack) / desintegrationMax;
 
     }
 
     public int getRemainingDesintegrations(MatterHolder stack) {
-        Map<String,Object> tag = stack.getTag();
+        Map<String, Object> tag = stack.getTag();
         if (tag == null || !tag.containsKey("desRem")) {
             return desintegrationMax;
         }
         return (int) tag.get("desRem");
-    }
-
-    protected static int randIntFromDouble(double value, Random rand) {
-        return (int) Math.floor(value) + (rand.nextDouble() < (value % 1) ? 1 : 0);
     }
 
     public int simulateAbsorption(double neutronsReceived, MatterHolder stack, Random rand) {

@@ -40,12 +40,10 @@ import java.util.Random;
 public class NuclearHatch implements INuclearTile {
 
     private static final Random RANDOM = new Random();
-
-    private final MINuclearInventory inventory;
-
     public final NeutronHistoryComponent neutronHistory;
     public final TemperatureComponent nuclearReactorComponent;
     public final boolean isFluid;
+    private final MINuclearInventory inventory;
 
     public NuclearHatch(boolean isFluid) {
         this.isFluid = isFluid;
@@ -57,6 +55,10 @@ public class NuclearHatch implements INuclearTile {
                     NuclearConstant.EU_PER_DEGREE, true, true);
         }
         neutronHistory = new NeutronHistoryComponent();
+    }
+
+    private static int randIntFromDouble(double value, Random rand) {
+        return (int) Math.floor(value) + (rand.nextDouble() < (value % 1) ? 1 : 0);
     }
 
     public MINuclearInventory getInventory() {
@@ -81,6 +83,11 @@ public class NuclearHatch implements INuclearTile {
     @Override
     public double getTemperature() {
         return nuclearReactorComponent.getTemperature();
+    }
+
+    @Override
+    public void setTemperature(double temp) {
+        nuclearReactorComponent.setTemperature(temp);
     }
 
     @Override
@@ -121,11 +128,6 @@ public class NuclearHatch implements INuclearTile {
     @Override
     public boolean isFluid() {
         return isFluid;
-    }
-
-    @Override
-    public void setTemperature(double temp) {
-        nuclearReactorComponent.setTemperature(temp);
     }
 
     @Override
@@ -173,10 +175,6 @@ public class NuclearHatch implements INuclearTile {
         } else {
             return 0;
         }
-    }
-
-    private static int randIntFromDouble(double value, Random rand) {
-        return (int) Math.floor(value) + (rand.nextDouble() < (value % 1) ? 1 : 0);
     }
 
     public void fluidNeutronProductTick(int neutron, boolean simul) {

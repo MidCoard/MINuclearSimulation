@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class ItemVariant extends MatterVariant {
 
-    public ItemVariant(Item item,@NonNull Map<String,Object> tag) {
+    public ItemVariant(Item item, @NonNull Map<String, Object> tag) {
         super(item, tag);
     }
 
@@ -15,23 +15,23 @@ public class ItemVariant extends MatterVariant {
     }
 
     public static ItemVariant of(MatterHolder stack) {
-        return of ((Item) stack.getMatterVariant().getMatter(), stack.getTag());
+        return of((Item) stack.getMatterVariant().getMatter(), stack.getTag());
     }
 
     public static ItemVariant blank() {
         return ItemVariant.of((Item) null);
     }
 
-    public Item getItem() {
-        return (Item) this.getMatter();
-    }
-
     public static ItemVariant of(Item item) {
         return new ItemVariant(item);
     }
 
-    public static ItemVariant of(Item item,@NonNull Map<String,Object> tag) {
-        return new ItemVariant(item,tag);
+    public static ItemVariant of(Item item, @NonNull Map<String, Object> tag) {
+        return new ItemVariant(item, tag);
+    }
+
+    public Item getItem() {
+        return (Item) this.getMatter();
     }
 
 }

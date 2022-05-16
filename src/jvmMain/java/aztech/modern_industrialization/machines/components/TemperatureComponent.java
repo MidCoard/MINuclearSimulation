@@ -27,16 +27,11 @@ import top.focess.util.serialize.FocessSerializable;
 
 public class TemperatureComponent implements FocessSerializable {
 
-    private double temperature;
     public final double temperatureMax;
+    private double temperature;
 
     public TemperatureComponent(double temperatureMax) {
         this.temperatureMax = temperatureMax;
-    }
-
-    public void setTemperature(double temp) {
-        this.temperature = temp;
-        this.temperature = Math.min(Math.max(temperature, 0), temperatureMax);
     }
 
     public void increaseTemperature(double temp) {
@@ -49,6 +44,11 @@ public class TemperatureComponent implements FocessSerializable {
 
     public double getTemperature() {
         return temperature;
+    }
+
+    public void setTemperature(double temp) {
+        this.temperature = temp;
+        this.temperature = Math.min(Math.max(temperature, 0), temperatureMax);
     }
 
     @Override

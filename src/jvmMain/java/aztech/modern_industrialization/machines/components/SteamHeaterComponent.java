@@ -54,7 +54,7 @@ public class SteamHeaterComponent extends TemperatureComponent {
     }
 
     public SteamHeaterComponent(double temperatureMax, long maxEuProduction, long euPerDegree, boolean acceptLowPressure,
-            boolean acceptHighPressure) {
+                                boolean acceptHighPressure) {
         super(temperatureMax);
         this.maxEuProduction = maxEuProduction;
         this.euPerDegree = euPerDegree;

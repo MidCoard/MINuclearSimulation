@@ -29,28 +29,6 @@ import top.focess.mc.mi.nuclear.mc.MatterVariant;
 
 public interface INuclearComponent<T extends MatterVariant> {
 
-    double getHeatConduction();
-
-    INeutronBehaviour getNeutronBehaviour();
-
-    T getVariant();
-
-    default T getNeutronProduct() {
-        return null;
-    }
-
-    default long getNeutronProductAmount() {
-        return 0;
-    }
-
-    default double getNeutronProductProbability() {
-        return 1;
-    }
-
-    default int getMaxTemperature() {
-        return Integer.MAX_VALUE;
-    }
-
     static INuclearComponent of(FluidVariant variant, double heatConduction, double density, NuclearConstant.ScatteringType type,
                                 NuclearConstant.IsotopeParams params, FluidVariant neutronProduct, boolean highPressure) {
 
@@ -83,7 +61,7 @@ public interface INuclearComponent<T extends MatterVariant> {
         };
     }
 
-    public static INuclearComponent of(FluidVariant fluid) {
+    static INuclearComponent of(FluidVariant fluid) {
         if (fluid.equals(FluidVariant.of(Fluids.WATER))) {
             return INuclearComponent.of(fluid, NuclearConstant.BASE_HEAT_CONDUCTION * 5, 1, NuclearConstant.ScatteringType.ULTRA_LIGHT,
                     NuclearConstant.HYDROGEN, FluidVariant.of(Fluids.DEUTERIUM), false);
@@ -98,6 +76,28 @@ public interface INuclearComponent<T extends MatterVariant> {
                     NuclearConstant.DEUTERIUM, FluidVariant.of(Fluids.TRITIUM), true);
         }
         return null;
+    }
+
+    double getHeatConduction();
+
+    INeutronBehaviour getNeutronBehaviour();
+
+    T getVariant();
+
+    default T getNeutronProduct() {
+        return null;
+    }
+
+    default long getNeutronProductAmount() {
+        return 0;
+    }
+
+    default double getNeutronProductProbability() {
+        return 1;
+    }
+
+    default int getMaxTemperature() {
+        return Integer.MAX_VALUE;
     }
 
 }

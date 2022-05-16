@@ -32,20 +32,30 @@ public class NuclearConstant {
     public static final int MAX_TEMPERATURE = 3250;
     public static final int EU_PER_DEGREE = 64;
     public static final int MAX_HATCH_EU_PRODUCTION = 8192;
-
+    public static final IsotopeFuelParams U235 = new IsotopeFuelParams(0.6, 0.35, 2400, 900, 2300, 8, 0.5);
+    public static final IsotopeFuelParams U238 = new IsotopeFuelParams(0.6, 0.30, 3200, 1000, 3000, 6, 0.3);
+    public static final IsotopeFuelParams Pu239 = new IsotopeFuelParams(0.9, 0.25, 2100, 600, 2000, 9, 0.25);
+    public static final IsotopeFuelParams U = U238.mix(U235, 1.0 / 81);
+    public static final IsotopeFuelParams LEU = U238.mix(U235, 1.0 / 9);
+    public static final IsotopeFuelParams HEU = U238.mix(U235, 1.0 / 3);
+    public static final IsotopeFuelParams LE_MOX = U238.mix(Pu239, 1.0 / 9);
+    public static final IsotopeFuelParams HE_MOX = U238.mix(Pu239, 1.0 / 3);
+    public static final IsotopeParams HYDROGEN = new IsotopeParams(0.1, 0.05, 0.25, 0.75);
+    public static final IsotopeParams DEUTERIUM = new IsotopeParams(0.02, 0.01, 0.15, 0.65);
+    public static final IsotopeParams CADMIUM = new IsotopeParams(0.95, 0.9, 0.05, 0.1);
+    public static final IsotopeParams CARBON = new IsotopeParams(0.01, 0.005, 0.5, 0.85);
     public enum ScatteringType {
         ULTRA_LIGHT(0.05),
         LIGHT(0.2),
         MEDIUM(0.5),
         HEAVY(0.85);
 
+        public final double fastFraction;
+        public final double slowFraction;
         ScatteringType(double fastFraction) {
             this.fastFraction = fastFraction;
             this.slowFraction = 1 - this.fastFraction;
         }
-
-        public final double fastFraction;
-        public final double slowFraction;
     }
 
     public static class IsotopeParams {
@@ -71,7 +81,7 @@ public class NuclearConstant {
         public final int tempLimitHigh;
 
         public IsotopeFuelParams(double thermalAbsorbProba, double thermalScatterings, int maxTemp, int tempLimitLow, int tempLimitHigh,
-                double neutronsMultiplication, double directEnergyFactor) {
+                                 double neutronsMultiplication, double directEnergyFactor) {
 
             super(thermalAbsorbProba, INeutronBehaviour.reduceCrossProba(thermalAbsorbProba, 0.1), thermalScatterings,
                     INeutronBehaviour.reduceCrossProba(thermalScatterings, 0.5));
@@ -115,22 +125,4 @@ public class NuclearConstant {
         }
 
     }
-
-    public static final IsotopeFuelParams U235 = new IsotopeFuelParams(0.6, 0.35, 2400, 900, 2300, 8, 0.5);
-    public static final IsotopeFuelParams U238 = new IsotopeFuelParams(0.6, 0.30, 3200, 1000, 3000, 6, 0.3);
-    public static final IsotopeFuelParams Pu239 = new IsotopeFuelParams(0.9, 0.25, 2100, 600, 2000, 9, 0.25);
-
-    public static final IsotopeFuelParams U = U238.mix(U235, 1.0 / 81);
-
-    public static final IsotopeFuelParams LEU = U238.mix(U235, 1.0 / 9);
-    public static final IsotopeFuelParams HEU = U238.mix(U235, 1.0 / 3);
-
-    public static final IsotopeFuelParams LE_MOX = U238.mix(Pu239, 1.0 / 9);
-    public static final IsotopeFuelParams HE_MOX = U238.mix(Pu239, 1.0 / 3);
-
-    public static final IsotopeParams HYDROGEN = new IsotopeParams(0.1, 0.05, 0.25, 0.75);
-    public static final IsotopeParams DEUTERIUM = new IsotopeParams(0.02, 0.01, 0.15, 0.65);
-
-    public static final IsotopeParams CADMIUM = new IsotopeParams(0.95, 0.9, 0.05, 0.1);
-    public static final IsotopeParams CARBON = new IsotopeParams(0.01, 0.005, 0.5, 0.85);
 }

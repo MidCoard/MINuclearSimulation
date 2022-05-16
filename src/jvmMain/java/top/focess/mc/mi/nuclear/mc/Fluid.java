@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class Fluid extends Matter{
+public class Fluid extends Matter {
 
     private static final List<Fluid> FLUIDS = new ArrayList<>();
     private final Color color;
@@ -16,7 +16,7 @@ public class Fluid extends Matter{
         FLUIDS.add(this);
     }
 
-    public static Fluid deserialize(Map<String,Object> map){
+    public static Fluid deserialize(Map<String, Object> map) {
         String namespace = (String) map.get("namespace");
         String name = (String) map.get("name");
         return Fluid.getFluid(namespace, name);

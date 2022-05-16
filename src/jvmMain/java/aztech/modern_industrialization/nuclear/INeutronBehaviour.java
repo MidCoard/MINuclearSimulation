@@ -27,11 +27,23 @@ import com.google.common.base.Preconditions;
 
 public interface INeutronBehaviour {
 
-    double neutronSlowingProbability();
+    INeutronBehaviour NO_INTERACTION = new INeutronBehaviour() {
 
-    double interactionTotalProbability(NeutronType type);
+        @Override
+        public double neutronSlowingProbability() {
+            return 0.5;
+        }
 
-    double interactionRelativeProbability(NeutronType type, NeutronInteraction interaction);
+        @Override
+        public double interactionTotalProbability(NeutronType type) {
+            return 0;
+        }
+
+        @Override
+        public double interactionRelativeProbability(NeutronType type, NeutronInteraction interaction) {
+            return 0.5;
+        }
+    };
 
     static INeutronBehaviour of(NuclearConstant.ScatteringType scatteringType, double thermalNeutronAbsorptionBarn, double fastNeutronAbsorptionBarn,
                                 double thermalNeutronScatteringBarn, double fastNeutronScatteringBarn, double size) {
@@ -95,22 +107,10 @@ public interface INeutronBehaviour {
         return probaFromCrossSection(crossSectionFromProba(proba) * crossSectionFactor);
     }
 
-    INeutronBehaviour NO_INTERACTION = new INeutronBehaviour() {
+    double neutronSlowingProbability();
 
-        @Override
-        public double neutronSlowingProbability() {
-            return 0.5;
-        }
+    double interactionTotalProbability(NeutronType type);
 
-        @Override
-        public double interactionTotalProbability(NeutronType type) {
-            return 0;
-        }
-
-        @Override
-        public double interactionRelativeProbability(NeutronType type, NeutronInteraction interaction) {
-            return 0.5;
-        }
-    };
+    double interactionRelativeProbability(NeutronType type, NeutronInteraction interaction);
 
 }

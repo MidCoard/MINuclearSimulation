@@ -29,8 +29,8 @@ public enum NeutronType {
     THERMAL(1),
     BOTH(2);
 
+    public static final NeutronType[] TYPES = {FAST, THERMAL, BOTH};
     public final int index;
-    public static final NeutronType[] TYPES = { FAST, THERMAL, BOTH };
 
     NeutronType(int index) {
         this.index = index;

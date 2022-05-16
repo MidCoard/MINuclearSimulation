@@ -44,22 +44,14 @@ public class NuclearFuel extends NuclearAbsorbable {
     public final int tempLimitLow;
     public final int tempLimitHigh;
 
-    public record NuclearFuelParams(int desintegrationMax, int maxTemperature, int tempLimitLow, int tempLimitHigh,
-                                    double neutronMultiplicationFactor, double directEnergyFactor, int size) {
-    }
+    public NuclearFuel(String name, int maxCount, NuclearFuelParams params, INeutronBehaviour neutronBehaviour, String depletedVersionId) {
 
-    public NuclearFuel(String name,int maxCount, NuclearFuelParams params, INeutronBehaviour neutronBehaviour, String depletedVersionId) {
-
-        this(name,maxCount, params.desintegrationMax, params.maxTemperature, params.tempLimitLow, params.tempLimitHigh, params.neutronMultiplicationFactor,
+        this(name, maxCount, params.desintegrationMax, params.maxTemperature, params.tempLimitLow, params.tempLimitHigh, params.neutronMultiplicationFactor,
                 params.directEnergyFactor, neutronBehaviour, params.size, depletedVersionId);
 
     }
 
-    private static int clampTemp(int temperature) {
-        return 25 * (int) (temperature / 25d);
-    }
-
-    private NuclearFuel(String name,int maxCount, int desintegrationMax, int maxTemperature, int tempLimitLow, int tempLimitHigh,
+    private NuclearFuel(String name, int maxCount, int desintegrationMax, int maxTemperature, int tempLimitLow, int tempLimitHigh,
                         double neutronMultiplicationFactor, double directEnergyFactor, INeutronBehaviour neutronBehaviour, int size, String depletedVersionId) {
 
         super(name, maxCount, clampTemp(maxTemperature), 0.8 * NuclearConstant.BASE_HEAT_CONDUCTION, neutronBehaviour, desintegrationMax);
@@ -77,14 +69,18 @@ public class NuclearFuel extends NuclearAbsorbable {
 
     }
 
+    private static int clampTemp(int temperature) {
+        return 25 * (int) (temperature / 25d);
+    }
+
     public static NuclearFuel of(String id, NuclearFuelParams params, INeutronBehaviour neutronBehaviour, String depletedVersionId) {
 
-        return new NuclearFuel( id, 1, params, neutronBehaviour, depletedVersionId);
+        return new NuclearFuel(id, 1, params, neutronBehaviour, depletedVersionId);
     }
 
     @Override
     public ItemVariant getNeutronProduct() {
-        return ItemVariant.of(Item.getItem("modern-industrialization",depletedVersionId));
+        return ItemVariant.of(Item.getItem("modern-industrialization", depletedVersionId));
     }
 
     @Override
@@ -105,6 +101,10 @@ public class NuclearFuel extends NuclearAbsorbable {
         double fuelEuConsumed = absorption * totalEUbyDesintegration;
         grid.registerEuFuelConsumption(fuelEuConsumed);
         return randIntFromDouble(efficiencyFactor(temperature) * absorption * neutronMultiplicationFactor, rand);
+    }
+
+    public record NuclearFuelParams(int desintegrationMax, int maxTemperature, int tempLimitLow, int tempLimitHigh,
+                                    double neutronMultiplicationFactor, double directEnergyFactor, int size) {
     }
 
 }

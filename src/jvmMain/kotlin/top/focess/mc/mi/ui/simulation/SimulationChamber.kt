@@ -25,14 +25,22 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import aztech.modern_industrialization.machines.blockentities.hatches.NuclearHatch
+import top.focess.mc.mi.nuclear.NuclearSimulation
 import top.focess.mc.mi.nuclear.mi.Texture
 import top.focess.mc.mi.ui.lang.Lang
+import top.focess.mc.mi.ui.simulation.SimulationSelectorState
 import top.focess.mc.mi.ui.theme.DefaultTheme
 
 @Composable
-fun SimulationChamber(lang: Lang, state: GlobalState) {
-    if (state.simulation != null)
-        nuclearSimulationView(lang, state)
+fun SimulationChamber(
+    lang: Lang,
+    isStart: Boolean,
+    selectors: SimulationSelectorState,
+    simulation: NuclearSimulation?,
+    updateNuclearHatch: (Int, Int, NuclearHatch?) -> Unit
+) {
+    if (simulation != null)
+        nuclearSimulationView(lang, isStart, selectors, simulation, updateNuclearHatch)
     else
         emptyView(lang)
 
@@ -41,50 +49,62 @@ fun SimulationChamber(lang: Lang, state: GlobalState) {
 @Composable
 fun nuclearSimulationLayout(
     modifier: Modifier,
-    how: Placeable.PlacementScope.(measurables:List<Measurable>, constraints:Constraints) -> Unit,
-    children: @Composable () -> Unit)
-= Layout({ children() }, modifier) {measurables, constraints ->
+    how: Placeable.PlacementScope.(measurables: List<Measurable>, constraints: Constraints) -> Unit,
+    children: @Composable () -> Unit
+) = Layout({ children() }, modifier) { measurables, constraints ->
     layout(constraints.maxWidth, constraints.maxHeight) {
         how(measurables, constraints)
     }
 }
 
 @Composable
-fun nuclearSimulationView(lang: Lang, state: GlobalState) {
-    nuclearSimulationLayout(Modifier.fillMaxSize(), {measurables, constraints ->
+fun nuclearSimulationView(
+    lang: Lang,
+    isStart: Boolean,
+    selectors: SimulationSelectorState,
+    simulation: NuclearSimulation,
+    updateNuclearHatch: (Int, Int, NuclearHatch?) -> Unit
+) {
+    nuclearSimulationLayout(Modifier.fillMaxSize(), { measurables, constraints ->
         measurables.forEachIndexed { index, measurable ->
-            measurable.measure(Constraints(
-                minWidth = constraints.maxWidth / measurables.size,
-                maxWidth = constraints.maxWidth / measurables.size,
-                minHeight = constraints.maxHeight,
-                maxHeight = constraints.maxHeight
-            )).place(index * constraints.maxWidth / measurables.size,0)
+            measurable.measure(
+                Constraints(
+                    minWidth = constraints.maxWidth / measurables.size,
+                    maxWidth = constraints.maxWidth / measurables.size,
+                    minHeight = constraints.maxHeight,
+                    maxHeight = constraints.maxHeight
+                )
+            ).place(index * constraints.maxWidth / measurables.size, 0)
         }
     }) {
-        val simulation = state.simulation!!
         // one row and n Columns
         // each Column has n elements
         repeat(simulation.nuclearType.size) { x: Int ->
             if (simulation.nuclearType.column.test(x))
-                Column() {
-                    nuclearSimulationLayout(Modifier.fillMaxSize(), {
-                            measurables, constraints ->
+                Column {
+                    nuclearSimulationLayout(Modifier.fillMaxSize(), { measurables, constraints ->
                         measurables.forEachIndexed { index, measurable ->
-                            measurable.measure(Constraints(
-                                minWidth = constraints.maxWidth,
-                                maxWidth = constraints.maxWidth,
-                                minHeight = constraints.maxHeight / measurables.size,
-                                maxHeight = constraints.maxHeight / measurables.size
-                            )).place(0, constraints.maxHeight / measurables.size  * index)
+                            measurable.measure(
+                                Constraints(
+                                    minWidth = constraints.maxWidth,
+                                    maxWidth = constraints.maxWidth,
+                                    minHeight = constraints.maxHeight / measurables.size,
+                                    maxHeight = constraints.maxHeight / measurables.size
+                                )
+                            ).place(0, constraints.maxHeight / measurables.size * index)
                         }
                     }) {
                         repeat(simulation.nuclearType.size) { y: Int ->
                             if (simulation.nuclearGrid.getNuclearTile(x, y).isPresent) {
                                 nuclearSimulationCell(
                                     lang,
-                                    state,
-                                    x , y
-                                )
+                                    x, y,
+                                    isStart,
+                                    selectors,
+                                    simulation.nuclearGrid.getNuclearTile(x, y).get() as NuclearHatch
+                                ) {
+                                    updateNuclearHatch(x, y, it)
+                                }
                             }
                         }
                     }
@@ -116,8 +136,15 @@ fun emptyView(lang: Lang) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun nuclearSimulationCell(lang: Lang, state: GlobalState,x:Int,y:Int) = Surface {
-    val nuclearHatch = state.simulation!!.nuclearGrid.getNuclearTile(x, y).get() as NuclearHatch
+fun nuclearSimulationCell(
+    lang: Lang,
+    x: Int,
+    y: Int,
+    isStart: Boolean,
+    selectors: SimulationSelectorState,
+    nuclearHatch: NuclearHatch,
+    updateNuclearHatch: (NuclearHatch?) -> Unit
+) = Surface {
     TooltipArea(tooltip = {
         Surface(
             modifier = Modifier.shadow(4.dp),
@@ -125,9 +152,12 @@ fun nuclearSimulationCell(lang: Lang, state: GlobalState,x:Int,y:Int) = Surface 
             shape = RoundedCornerShape(4.dp)
         ) {
             Text(
-                text = lang.get("simulation", if (state.isStart) "nuclear-hatch-tooltip-disable" else "nuclear-hatch-tooltip-enable"),
+                text = lang.get(
+                    "simulation",
+                    if (isStart) "nuclear-hatch-tooltip-disable" else "nuclear-hatch-tooltip-enable"
+                ),
                 modifier = Modifier.padding(10.dp),
-                color = if (state.isStart) Color.Red else Color.Black
+                color = if (isStart) Color.Red else Color.Black
             )
         }
     }) {
@@ -136,8 +166,8 @@ fun nuclearSimulationCell(lang: Lang, state: GlobalState,x:Int,y:Int) = Surface 
                 .background(DefaultTheme.simulationCell)
                 .border(1.dp, LocalContentColor.current.copy(alpha = 0.60f))
                 .clickable {
-                    if (state.isStart.not())
-                        state.selectors.newWindow(lang, state, x, y)
+                    if (!isStart)
+                        selectors.newWindow(lang, x, y, nuclearHatch, updateNuclearHatch)
                 }
         ) {
             if (!nuclearHatch.inventory.input().matterVariant.isBlank) {

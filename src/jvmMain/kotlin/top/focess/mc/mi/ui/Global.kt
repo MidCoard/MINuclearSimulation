@@ -30,15 +30,16 @@ class GlobalState(lang: Lang) {
 
     var directory: String? = null
 
-    var simulation : NuclearSimulation? by  mutableStateOf(null)
+    var simulation: NuclearSimulation? by mutableStateOf(null)
+
     // should be false if anything changed
     var isSaved by mutableStateOf(true)
     var name by mutableStateOf(lang.get("unopened"))
-    var file :File? by mutableStateOf(null)
+    var file: File? by mutableStateOf(null)
 
     var isStart by mutableStateOf(false)
-    val scheduler = ThreadPoolScheduler(1,false,"TickManager")
-    var tickTask : Task? = null
+    val scheduler = ThreadPoolScheduler(1, false, "TickManager")
+    var tickTask: Task? = null
 }
 
 class GlobalAction(private val lang: Lang, private val state: GlobalState) {
@@ -51,7 +52,7 @@ class GlobalAction(private val lang: Lang, private val state: GlobalState) {
             state.file = path.toFile()
             state.name = path.fileName.toString()
         }
-        val yml = YamlConfiguration(null);
+        val yml = YamlConfiguration(null)
         yml.set("simulation", state.simulation!!)
         yml.save(state.file!!)
         state.isSaved = true
@@ -62,7 +63,7 @@ class GlobalAction(private val lang: Lang, private val state: GlobalState) {
             this.save()
         state.simulation = NuclearSimulation({ _: Int, _: Int ->
             ItemVariant.blank()
-        }, state.newDialog.awaitResult() ?: return);
+        }, state.newDialog.awaitResult() ?: return)
         state.file = null
         state.name = lang.get("unsaved")
         state.isSaved = false
@@ -80,8 +81,8 @@ class GlobalAction(private val lang: Lang, private val state: GlobalState) {
             state.name = path.fileName.toString()
             state.isSaved = true
             state.selectors.windows.clear()
-        } catch (e:Exception) {
-            JOptionPane.showMessageDialog(null, e.message,lang.get("open-fail"), JOptionPane.ERROR_MESSAGE)
+        } catch (e: Exception) {
+            JOptionPane.showMessageDialog(null, e.message, lang.get("open-fail"), JOptionPane.ERROR_MESSAGE)
         }
     }
 
@@ -132,25 +133,25 @@ fun FrameWindowScope.FileDialog(
     lang: Lang,
     isLoad: Boolean,
     file: String? = null,
-    globalState: GlobalState,
+    directory: String? = null,
+    updateDirectory: (String) -> Unit = {},
     state: DialogState<Path?>
 ) = AwtWindow(
     create = {
-        object : FileDialog(window,lang.get("dialog","file","choose-file") , if (isLoad) LOAD else SAVE) {
+        object : FileDialog(window, lang.get("dialog", "file", "choose-file"), if (isLoad) LOAD else SAVE) {
 
             init {
                 this.file = file
-                this.directory = globalState.directory ?: System.getProperty("user.home")
+                this.directory = directory ?: System.getProperty("user.home")
             }
 
             override fun setVisible(value: Boolean) {
                 super.setVisible(value)
                 if (value) {
-                    if (directory != null && file != null) {
-                        globalState.directory = directory
-                        state.onResult(File(directory).resolve(this.file).toPath())
-                    }
-                    else state.onResult(null)
+                    if (this.directory != null && this.file != null) {
+                        updateDirectory(this.directory)
+                        state.onResult(File(this.directory).resolve(this.file).toPath())
+                    } else state.onResult(null)
                 }
             }
         }
@@ -167,7 +168,13 @@ fun WindowScope.NuclearTypeDialog(
     DisposableEffect(Unit) {
         val job = GlobalScope.launch(Dispatchers.IO) {
             val result = JOptionPane.showInputDialog(
-                window, lang.get("dialog","simulation","name"), lang.get("dialog","simulation","title"), JOptionPane.INFORMATION_MESSAGE,null,NuclearReactionType.values(),NuclearReactionType.SIMULATION_3X3
+                window,
+                lang.get("dialog", "simulation", "name"),
+                lang.get("dialog", "simulation", "title"),
+                JOptionPane.INFORMATION_MESSAGE,
+                null,
+                NuclearReactionType.values(),
+                NuclearReactionType.SIMULATION_3X3
             )
             state.onResult(result as NuclearReactionType?)
         }

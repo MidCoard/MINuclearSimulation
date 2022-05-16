@@ -34,6 +34,20 @@ import static aztech.modern_industrialization.nuclear.NeutronType.THERMAL;
 
 public class NeutronHistoryComponent extends IntegerHistoryComponent {
 
+    public NeutronHistoryComponent() {
+        super(new String[]{"fastNeutronReceived", "fastNeutronFlux", "thermalNeutronReceived", "thermalNeutronFlux", "neutronGeneration",
+                "euGeneration"}, 100);
+    }
+
+    public static NeutronHistoryComponent deserialize(Map<String, Object> data) {
+        return new NeutronHistoryComponent() {
+            {
+                this.histories = (Map<String, int[]>) data.get("histories");
+                this.updatingValue = (Map<String, Integer>) data.get("updatingValue");
+            }
+        };
+    }
+
     @Nullable
     @Override
     public Map<String, Object> serialize() {
@@ -41,19 +55,6 @@ public class NeutronHistoryComponent extends IntegerHistoryComponent {
         data.put("histories", super.histories);
         data.put("updatingValue", super.updatingValue);
         return data;
-    }
-
-    public static NeutronHistoryComponent deserialize(Map<String, Object> data) {
-        return new NeutronHistoryComponent(){
-            {
-                this.histories = (Map<String, int[]>) data.get("histories");
-                this.updatingValue = (Map<String, Integer>) data.get("updatingValue");
-            }};
-    }
-
-    public NeutronHistoryComponent() {
-        super(new String[] { "fastNeutronReceived", "fastNeutronFlux", "thermalNeutronReceived", "thermalNeutronFlux", "neutronGeneration",
-                "euGeneration" }, 100);
     }
 
     public double getAverageReceived(NeutronType type) {
@@ -87,7 +88,6 @@ public class NeutronHistoryComponent extends IntegerHistoryComponent {
     public double getAverageEuGeneration() {
         return getAverage("euGeneration");
     }
-
 
 
 }

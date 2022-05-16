@@ -12,7 +12,7 @@ public abstract class MatterVariant {
     private final Matter matter;
     private final Map<String, Object> tag;
 
-    public MatterVariant(Matter matter, @NonNull Map<String,Object> tag) {
+    public MatterVariant(Matter matter, @NonNull Map<String, Object> tag) {
         this.matter = matter;
         this.tag = new HashMap<>(tag);
     }
@@ -20,6 +20,14 @@ public abstract class MatterVariant {
     public MatterVariant(Matter matter) {
         this.matter = matter;
         this.tag = new HashMap<>();
+    }
+
+    public static MatterVariant of(@NonNull Matter matter) {
+        if (matter instanceof Item)
+            return ItemVariant.of((Item) matter);
+        else if (matter instanceof Fluid)
+            return FluidVariant.of((Fluid) matter);
+        throw new IllegalArgumentException("Matter is not Item or Fluid");
     }
 
     public boolean isBlank() {
@@ -62,13 +70,5 @@ public abstract class MatterVariant {
             return "Empty";
         else
             return this.matter.toString() + ":" + this.tag;
-    }
-
-    public static MatterVariant of(@NonNull Matter matter) {
-        if (matter instanceof Item)
-            return ItemVariant.of((Item) matter);
-        else if (matter instanceof Fluid)
-            return FluidVariant.of((Fluid) matter);
-        throw new IllegalArgumentException("Matter is not Item or Fluid");
     }
 }

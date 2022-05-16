@@ -31,11 +31,10 @@ import java.util.Map;
 
 public class IntegerHistoryComponent implements FocessSerializable {
 
-    protected Map<String, int[]> histories = new HashMap<>();
-    protected Map<String, Integer> updatingValue = new HashMap<>();
-
     public final String[] KEYS;
     public final int TICK_HISTORY_SIZE;
+    protected Map<String, int[]> histories = new HashMap<>();
+    protected Map<String, Integer> updatingValue = new HashMap<>();
 
     public IntegerHistoryComponent(String[] keys, int tick_history_size) {
         KEYS = keys;

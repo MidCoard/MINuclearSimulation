@@ -32,8 +32,8 @@ import static aztech.modern_industrialization.nuclear.NeutronFate.*;
 
 public class NuclearGridHelper {
 
-    private static final int[] dX = { 1, 0, -1, 0 };
-    private static final int[] dY = { 0, 1, 0, -1 };
+    private static final int[] dX = {1, 0, -1, 0};
+    private static final int[] dY = {0, 1, 0, -1};
 
     private static final Random rand = new Random();
 

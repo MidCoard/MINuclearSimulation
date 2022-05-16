@@ -8,7 +8,7 @@ import java.io.InputStream
 import java.io.InputStreamReader
 
 @OptIn(ExperimentalComposeUiApi::class)
-class Lang(inputStream :InputStream) {
+class Lang(inputStream: InputStream) {
     private val lang = JSON(CharStreams.toString(InputStreamReader(inputStream)))
 
     fun get(vararg keys: String): String {

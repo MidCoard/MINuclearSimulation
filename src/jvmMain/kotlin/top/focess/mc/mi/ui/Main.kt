@@ -21,8 +21,8 @@ import top.focess.mc.mi.ui.theme.DefaultTheme
 fun simulatorLayout(
     modifier: Modifier,
     how: Placeable.PlacementScope.(generalPanel: Measurable, simulationChamber: Measurable, observerPanel: Measurable, constraints: Constraints) -> Unit,
-    children: @Composable () -> Unit)
-= Layout({ children() }, modifier) {measurables, constraints ->
+    children: @Composable () -> Unit
+) = Layout({ children() }, modifier) { measurables, constraints ->
     require(measurables.size == 3)
     layout(constraints.maxWidth, constraints.maxHeight) {
         how(measurables[0], measurables[1], measurables[2], constraints)
@@ -33,11 +33,10 @@ fun simulatorLayout(
 fun Simulator(lang: Lang, globalState: GlobalState, globalAction: GlobalAction) {
 
     MaterialTheme(colors = DefaultTheme.default) {
-        simulatorLayout(Modifier.fillMaxSize(),{
-                generalPanel, simulationChamber, observerPanel, constraints ->
-            val generalWidth = constraints.maxWidth / 6;
-            val observerWidth = constraints.maxWidth / 6;
-            val simulationChamberWidth = constraints.maxWidth - generalWidth - observerWidth;
+        simulatorLayout(Modifier.fillMaxSize(), { generalPanel, simulationChamber, observerPanel, constraints ->
+            val generalWidth = constraints.maxWidth / 6
+            val observerWidth = constraints.maxWidth / 6
+            val simulationChamberWidth = constraints.maxWidth - generalWidth - observerWidth
             generalPanel.measure(
                 Constraints(
                     maxWidth = generalWidth,
@@ -66,24 +65,27 @@ fun Simulator(lang: Lang, globalState: GlobalState, globalAction: GlobalAction) 
             ).place(generalWidth + simulationChamberWidth, 0)
 
         }) {
-            GeneralPanel(lang, globalState, globalAction)
-            SimulationChamber(lang, globalState)
+            GeneralPanel(lang, globalState.isStart, globalState.simulation, globalState.tickTask, globalAction)
+            SimulationChamber(lang, globalState.isStart, globalState.selectors, globalState.simulation) { x, y, it ->
+                if (it != null)
+                    globalState.simulation!!.nuclearGrid.setNuclearTile(x, y, it)
+            }
             ObserverPanel(lang)
         }
     }
 }
 
 
-val icon = painterResource("logo.png")
-var lang by remember { mutableStateOf(Lang.default) }
-val state = rememberWindowState(width = Dp.Unspecified, height = Dp.Unspecified)
-val scope = rememberCoroutineScope()
-val globalState = remember { GlobalState(lang) }
-val globalAction = GlobalAction(lang, globalState)
-
 @Preview
 fun main() =
     application {
+
+        val icon by remember { mutableStateOf(painterResource("logo.png")) }
+        var lang by remember { mutableStateOf(Lang.default) }
+        val state = rememberWindowState(width = Dp.Unspecified, height = Dp.Unspecified)
+        val scope = rememberCoroutineScope()
+        val globalState by remember { mutableStateOf(GlobalState(lang)) }
+        val globalAction by remember { mutableStateOf(GlobalAction(lang, globalState)) }
 
         for (window in globalState.selectors.windows)
             key(window) {
@@ -116,7 +118,8 @@ fun main() =
                         lang,
                         false,
                         "untitled.mins",
-                        globalState,
+                        globalState.directory,
+                        { globalState.directory = it },
                         globalState.saveDialog
                     )
                 }
@@ -126,7 +129,8 @@ fun main() =
                         lang,
                         true,
                         "",
-                        globalState,
+                        globalState.directory,
+                        { globalState.directory = it },
                         globalState.openDialog
                     )
                 }
@@ -150,13 +154,25 @@ fun main() =
                         Item(lang.get("menu-bar", "simulation", "open"), mnemonic = 'O') {
                             open()
                         }
-                        Item(lang.get("menu-bar", "simulation", "save"), mnemonic = 'S', enabled = !globalState.isSaved) {
+                        Item(
+                            lang.get("menu-bar", "simulation", "save"),
+                            mnemonic = 'S',
+                            enabled = !globalState.isSaved
+                        ) {
                             save()
                         }
-                        Item(lang.get("menu-bar", "simulation", "start"), mnemonic = 'T', enabled = !globalState.isStart && globalState.simulation != null) {
+                        Item(
+                            lang.get("menu-bar", "simulation", "start"),
+                            mnemonic = 'T',
+                            enabled = !globalState.isStart && globalState.simulation != null
+                        ) {
                             globalAction.start()
                         }
-                        Item(lang.get("menu-bar", "simulation", "stop"), mnemonic = 'P', enabled = globalState.isStart && globalState.tickTask != null) {
+                        Item(
+                            lang.get("menu-bar", "simulation", "stop"),
+                            mnemonic = 'P',
+                            enabled = globalState.isStart && globalState.tickTask != null
+                        ) {
                             globalAction.stop()
                         }
                         Item(lang.get("quit"), mnemonic = 'Q', onClick = ::exitApplication)
