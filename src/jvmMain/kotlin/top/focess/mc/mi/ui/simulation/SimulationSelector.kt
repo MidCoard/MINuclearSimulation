@@ -26,9 +26,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import aztech.modern_industrialization.machines.blockentities.hatches.NuclearHatch
-import top.focess.mc.mi.nuclear.mc.Fluid
-import top.focess.mc.mi.nuclear.mc.Matter
-import top.focess.mc.mi.nuclear.mc.MatterVariant
+import top.focess.mc.mi.nuclear.mc.*
 import top.focess.mc.mi.nuclear.mi.Texture
 import top.focess.mc.mi.ui.lang.Lang
 import top.focess.mc.mi.ui.theme.DefaultTheme
@@ -163,15 +161,23 @@ fun simulationSelector(window: SimulationSelectorWindowState) = Window(
                                     color = Color.Red
                                 )
                         }
-                    },
+                    }, modifier = Modifier.align(Alignment.CenterHorizontally),) {
+                        Button(
+                            onClick = { isFluid = true },
+                            enabled = isFluid.not(),
+                            content = { Text(window.lang.get("simulation", "selector", "fluid")) }
+                        )
+                    }
+
+                Button(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
-                ) {
-                    Button(
-                        onClick = { isFluid = true },
-                        enabled = isFluid.not(),
-                        content = { Text(window.lang.get("simulation", "selector", "fluid")) }
-                    )
-                }
+                    onClick = {
+                        window.nuclearHatch.inventory.input().matterVariant = if (window.nuclearHatch.isFluid) FluidVariant.blank() else ItemVariant.blank()
+                        window.close()
+                    },
+                    enabled = !nuclearHatch.inventory.input().matterVariant.isBlank,
+                    content = { Text(window.lang.get("simulation", "selector", "clear")) }
+                )
             }
 
             simulationSelectorCellLayout(Modifier.fillMaxSize(), { measurables, constraints ->

@@ -40,6 +40,7 @@ class GlobalState(lang: Lang) {
     var isStart by mutableStateOf(false)
     val scheduler = ThreadPoolScheduler(1, false, "TickManager")
     var tickTask: Task? = null
+    var updateTask: Task? = null
 }
 
 class GlobalAction(private val lang: Lang, private val state: GlobalState) {
@@ -91,13 +92,16 @@ class GlobalAction(private val lang: Lang, private val state: GlobalState) {
             state.selectorState.windows.clear()
             state.tickTask = state.scheduler.runTimer(
                 {
-                    state.simulation!!::tick
-                    state.simulation = state.simulation
+                    state.simulation!!.tick()
                     state.isSaved = false
                 },
                 Duration.ZERO,
                 Duration.ofMillis(50)
             )
+            state.updateTask = state.scheduler.runTimer({
+                state.isStart = false;
+                state.isStart = true;
+            }, Duration.ZERO, Duration.ofSeconds(1))
             state.isStart = true
         }
     }
@@ -105,9 +109,11 @@ class GlobalAction(private val lang: Lang, private val state: GlobalState) {
     fun stop() {
         if (state.tickTask != null && state.isStart) {
             state.tickTask!!.cancel()
+            state.updateTask!!.cancel()
             state.isSaved = false
             state.isStart = false
             state.tickTask = null
+            state.updateTask = null
         }
     }
 
