@@ -29,6 +29,8 @@ import top.focess.mc.mi.nuclear.mc.MatterHolder
 import top.focess.mc.mi.nuclear.mi.MINuclearInventory
 import top.focess.mc.mi.nuclear.mi.Texture
 import top.focess.mc.mi.ui.lang.Lang
+import top.focess.mc.mi.ui.showTag
+import top.focess.mc.mi.ui.substring
 import top.focess.mc.mi.ui.theme.DefaultTheme
 
 @Composable
@@ -268,7 +270,7 @@ fun inputView(lang: Lang, holder: MatterHolder) {
                     ).place(0,constraints.maxHeight * 3/4)
                 }) {
                 Text(
-                    lang.get("matter",holder.matterVariant.matter!!.namespace,holder.matterVariant.matter!!.name),
+                    lang.get("matter",holder.matterVariant.matter!!.namespace,holder.matterVariant.matter!!.name) + showTag(holder.matterVariant.tag),
                     style = TextStyle(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold),
@@ -287,8 +289,11 @@ fun inputView(lang: Lang, holder: MatterHolder) {
             }
         } else {
             Text(
-                modifier = Modifier.align(Alignment.Center).fillMaxSize(),
-                text = lang.get("simulation", "empty")
+                modifier = Modifier.align(Alignment.Center).padding(10.dp,5.dp),
+                text = lang.get("simulation", "empty"),
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold)
             )
         }
     }
@@ -338,7 +343,7 @@ fun outputView(lang: Lang, holders: List<MatterHolder>) {
                         ).place(0,constraints.maxHeight * 3/4)
                     }) {
                     Text(
-                        lang.get("matter",holder.matterVariant.matter!!.namespace,holder.matterVariant.matter!!.name),
+                        lang.get("matter",holder.matterVariant.matter!!.namespace,holder.matterVariant.matter!!.name) + showTag(holder.tag),
                         style = TextStyle(
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold),
@@ -429,7 +434,7 @@ fun NeutronView(lang: Lang, neutronHistory: NeutronHistoryComponent) {
                 text = lang.get(
                     "simulation",
                     "neutron","generation"
-                ) + ": " + neutronHistory.averageGeneration,
+                ) + ": " + substring(neutronHistory.averageGeneration.toString(), 6),
                 style = TextStyle(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold
@@ -440,15 +445,38 @@ fun NeutronView(lang: Lang, neutronHistory: NeutronHistoryComponent) {
                 text = lang.get(
                     "simulation",
                     "neutron","receive"
-                ) + ": " + neutronHistory.getAverageReceived(NeutronType.BOTH),
+                ) + ": " + substring(neutronHistory.getAverageReceived(NeutronType.BOTH).toString(), 6),
                 style = TextStyle(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold
                 ),
                 modifier = Modifier.padding(10.dp, 5.dp)
             )
+        }
 
-
+        Row {
+            Text(
+                text = lang.get(
+                    "simulation",
+                    "neutron","generation"
+                ) + ": " + substring(neutronHistory.averageGeneration.toString(), 6),
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold
+                ),
+                modifier = Modifier.padding(10.dp, 5.dp)
+            )
+            Text(
+                text = lang.get(
+                    "simulation",
+                    "neutron","receive"
+                ) + ": " + substring(neutronHistory.getAverageReceived(NeutronType.BOTH).toString(), 6),
+                style = TextStyle(
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold
+                ),
+                modifier = Modifier.padding(10.dp, 5.dp)
+            )
         }
     }
 }

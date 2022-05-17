@@ -26,10 +26,14 @@ public class MatterHolder implements FocessSerializable {
     public MatterHolder(@NonNull MatterVariant matterVariant, long amount) {
         this.isFluid = matterVariant instanceof FluidVariant;
         this.matter = matterVariant.getMatter();
+        this.tag = new HashMap<>(matterVariant.getTag());
         this.amount = amount;
         if (matterVariant instanceof ItemVariant && matterVariant.getMatter() != null)
             this.amount = Math.min(this.amount,((ItemVariant) matterVariant).getItem().getMaxCount());
-        this.tag = new HashMap<>(matterVariant.getTag());
+        if (this.amount == 0) {
+            this.matter = null;
+            this.tag.clear();
+        }
     }
 
     public void setMatterVariant(@NonNull MatterVariant matterVariant, long amount) {
@@ -40,6 +44,10 @@ public class MatterHolder implements FocessSerializable {
         this.amount = amount;
         if (matterVariant instanceof ItemVariant && matterVariant.getMatter() != null)
             this.amount = Math.min(this.amount,((ItemVariant) matterVariant).getItem().getMaxCount());
+        if (this.amount == 0) {
+            this.matter = null;
+            this.tag.clear();
+        }
     }
 
     public boolean addMatterVariant(@NonNull MatterVariant matterVariant, long amount) {

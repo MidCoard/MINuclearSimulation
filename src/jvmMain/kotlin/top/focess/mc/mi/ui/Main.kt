@@ -72,7 +72,7 @@ fun Simulator(lang: Lang, globalState: GlobalState, globalAction: GlobalAction) 
                 if (it != null)
                     globalState.simulation!!.nuclearGrid.setNuclearTile(x, y, it)
             }
-            ObserverPanel(lang)
+            ObserverPanel(lang, globalState.simulation)
         }
     }
 }
@@ -81,6 +81,7 @@ fun Simulator(lang: Lang, globalState: GlobalState, globalAction: GlobalAction) 
 fun main() =
     application {
 
+        Class.forName("top.focess.mc.mi.nuclear.mi.MIItems")
         val icon = painterResource("logo.png")
         var lang by remember { mutableStateOf(Lang.default) }
         val globalState by remember { mutableStateOf(GlobalState(lang)) }
@@ -94,6 +95,14 @@ fun main() =
                 simulationSelector(window)
             }
 
+        fun new() = scope.launch { globalAction.new() }
+        fun save() = scope.launch { globalAction.save() }
+        fun saveAndExit() = scope.launch {
+            globalAction.save()
+            exitApplication()
+        }
+        fun open() = scope.launch { globalAction.open() }
+
         if (state.isMinimized)
             Tray(
                 icon,
@@ -102,13 +111,17 @@ fun main() =
                         state.isMinimized = false
                         state.placement = WindowPlacement.Floating
                     })
-                    Item(lang.get("quit"), onClick = ::exitApplication)
+                    Item(lang.get("quit"), onClick = {
+                        saveAndExit()
+                    })
                 }
             )
 
         if (!state.isMinimized)
             Window(
-                onCloseRequest = ::exitApplication,
+                onCloseRequest = {
+                    saveAndExit()
+                },
                 title = "${lang.get("title")} ${globalState.name} ${if (globalState.isSaved) "" else "*"}",
                 icon = icon,
                 state = state
@@ -144,9 +157,6 @@ fun main() =
                     )
                 }
 
-                fun new() = scope.launch { globalAction.new() }
-                fun save() = scope.launch { globalAction.save() }
-                fun open() = scope.launch { globalAction.open() }
 
                 MenuBar {
                     Menu(lang.get("menu-bar", "simulation", "name"), mnemonic = 'S') {
@@ -177,7 +187,9 @@ fun main() =
                         ) {
                             globalAction.stop()
                         }
-                        Item(lang.get("quit"), mnemonic = 'Q', onClick = ::exitApplication)
+                        Item(lang.get("quit"), mnemonic = 'Q', onClick = {
+                            saveAndExit()
+                        })
                     }
                     Menu(lang.get("menu-bar", "language", "name"), mnemonic = 'L') {
                         Item(lang.get("menu-bar", "language", "chinese"), onClick = { lang = Lang.zh_CN })

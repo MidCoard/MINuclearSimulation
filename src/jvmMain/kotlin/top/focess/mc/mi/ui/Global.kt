@@ -83,6 +83,7 @@ class GlobalAction(private val lang: Lang, private val state: GlobalState) {
             state.isSaved = true
             state.selectorState.windows.clear()
         } catch (e: Exception) {
+            e.printStackTrace()
             JOptionPane.showMessageDialog(null, e.message, lang.get("open-fail"), JOptionPane.ERROR_MESSAGE)
         }
     }
