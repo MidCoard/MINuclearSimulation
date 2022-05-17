@@ -22,7 +22,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import aztech.modern_industrialization.machines.blockentities.hatches.NuclearHatch
-import top.focess.mc.mi.nuclear.mc.*
+import top.focess.mc.mi.nuclear.mc.FluidVariant
+import top.focess.mc.mi.nuclear.mc.Matter
+import top.focess.mc.mi.nuclear.mc.MatterVariant
 import top.focess.mc.mi.nuclear.mi.Texture
 import top.focess.mc.mi.ui.lang.Lang
 import top.focess.mc.mi.ui.theme.DefaultTheme
@@ -73,18 +75,12 @@ fun simulationSelectorCellLayout(
 }
 
 @Composable
-fun simulationCell(lang: Lang,matter: Matter, window: SimulationSelectorWindowState){
+fun simulationCell(lang: Lang,matter: Matter, selected: Boolean,updateMatterVariant: (MatterVariant) -> Unit){
     val texture = Texture.get(matter)
-    val nuclearHatch = window.nuclearHatch
     Box(modifier = Modifier.fillMaxSize()
         .background(DefaultTheme.simulationCell)
-        .border(1.dp, DefaultTheme.simulationCellBoarder).clickable {
-        if (nuclearHatch.isFluid != matter is Fluid) {
-            val newNuclearHatch = NuclearHatch(matter is Fluid)
-            window.updateNuclearHatch(newNuclearHatch)
-            newNuclearHatch.inventory.input().matterVariant = MatterVariant.of(matter)
-        } else nuclearHatch.inventory.input().matterVariant = MatterVariant.of(matter)
-        window.close()
+        .border(1.dp, if (selected)  DefaultTheme.simulationCellBoarder else DefaultTheme.simulationSelectedCellBoarder).clickable {
+            updateMatterVariant(MatterVariant.of(matter))
     }) {
         Column {
             simulationSelectorCellLayout(Modifier.fillMaxSize(), {
@@ -136,8 +132,15 @@ fun simulationSelector(window: SimulationSelectorWindowState) = Window(
     alwaysOnTop = true,
     state = window.state,
 ) {
+
+    val nuclearHatch = window.nuclearHatch
+    var matterVariant: MatterVariant by remember { mutableStateOf(window.nuclearHatch.inventory.input().matterVariant) }
+    var amount: Long by remember{mutableStateOf(window.nuclearHatch.inventory.input().amount)}
+    var isFluid by remember { mutableStateOf(nuclearHatch.isFluid) }
+    var isInfinite by remember { mutableStateOf(nuclearHatch.inventory.input().isInfinite) }
+
+
     MaterialTheme(colors = DefaultTheme.default) {
-        val nuclearHatch = window.nuclearHatch
         simulationSelectorLayout(Modifier.fillMaxSize(), { measurables, constraints ->
             measurables[0].measure(
                 Constraints(
@@ -156,7 +159,6 @@ fun simulationSelector(window: SimulationSelectorWindowState) = Window(
                 )
             ).place(constraints.maxWidth / 3, 0)
         }) {
-            var isFluid by remember { mutableStateOf(nuclearHatch.isFluid) }
             Column {
                 Row {
                     TooltipArea(tooltip = {
@@ -186,7 +188,7 @@ fun simulationSelector(window: SimulationSelectorWindowState) = Window(
                                 color = Color(255, 255, 210),
                                 shape = RoundedCornerShape(4.dp),
                             ) {
-                                if (nuclearHatch.isFluid.not())
+                                if (!nuclearHatch.isFluid)
                                     Text(
                                         text = window.lang.get("simulation", "selector", "tooltip", "item"),
                                         modifier = Modifier.padding(10.dp),
@@ -202,15 +204,56 @@ fun simulationSelector(window: SimulationSelectorWindowState) = Window(
                             content = { Text(window.lang.get("simulation", "selector", "fluid")) }
                         )
                     }
+                }
+
+                Row {
+                    OutlinedTextField(
+                        amount.toString(),
+                        modifier = Modifier.fillMaxWidth(0.6f).padding(horizontal = 10.dp).align(Alignment.CenterVertically),
+                        enabled = !isInfinite,
+                        onValueChange = {
+                            amount = if (it.trim().isEmpty()) 0 else try {
+                                it.trim().toLong()
+                            } catch (e: Exception) {
+                                amount
+                            }
+                        },
+                        colors = DefaultTheme.textFieldDefault()
+                    )
+
+                    Checkbox(
+                        checked = isInfinite,
+                        onCheckedChange = { isInfinite = it },
+                        modifier = Modifier.padding(horizontal = 10.dp).align(Alignment.CenterVertically),
+                        colors = DefaultTheme.checkboxDefault()
+                    )
+
+                    Text(
+                        text = window.lang.get("simulation", "selector", "infinite"),
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                        color = Color.Black
+                    )
+                }
+
+                Row {
+                    Button(
+                        modifier = Modifier.align(Alignment.CenterVertically).padding(10.dp, 5.dp),
+                        onClick = {
+                            val hatch = if (matterVariant is FluidVariant && window.nuclearHatch.isFluid) window.nuclearHatch else NuclearHatch(matterVariant is FluidVariant)
+                            hatch.inventory.input().setMatterVariant(matterVariant, amount)
+                            hatch.inventory.input().isInfinite = isInfinite
+                            window.updateNuclearHatch(hatch)
+                            window.close()
+                        },
+                        content = { Text(window.lang.get("simulation", "selector", "confirm")) }
+                    )
 
                     Button(
                         modifier = Modifier.align(Alignment.CenterVertically).padding(10.dp, 5.dp),
                         onClick = {
-                            window.nuclearHatch.inventory.input().matterVariant = if (window.nuclearHatch.isFluid) FluidVariant.blank() else ItemVariant.blank()
                             window.close()
                         },
-                        enabled = !nuclearHatch.inventory.input().matterVariant.isBlank,
-                        content = { Text(window.lang.get("simulation", "selector", "clear")) }
+                        content = { Text(window.lang.get("simulation", "selector", "cancel")) }
                     )
                 }
             }
@@ -238,13 +281,13 @@ fun simulationSelector(window: SimulationSelectorWindowState) = Window(
                 if (!isFluid)
                     for (item in Constant.ITEMS) {
                         key(item) {
-                            simulationCell(window.lang, item, window)
+                            simulationCell(window.lang, item, matterVariant.matter == item) { matterVariant = it }
                         }
                     }
                 else
                     for (fluid in Constant.FLUIDS) {
                         key(fluid) {
-                            simulationCell(window.lang, fluid, window)
+                            simulationCell(window.lang, fluid, matterVariant.matter == fluid) { matterVariant = it }
                         }
                     }
             }

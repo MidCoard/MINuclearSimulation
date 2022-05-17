@@ -14,6 +14,8 @@ public class MatterHolder implements FocessSerializable {
     private long amount;
     private Map<String, Object> tag;
 
+    private boolean infinite = false;
+
     public MatterHolder(@NonNull MatterVariant matterVariant) {
         this.isFluid = matterVariant instanceof FluidVariant;
         this.matter = matterVariant.getMatter();
@@ -25,13 +27,19 @@ public class MatterHolder implements FocessSerializable {
         this.isFluid = matterVariant instanceof FluidVariant;
         this.matter = matterVariant.getMatter();
         this.amount = amount;
+        if (matterVariant instanceof ItemVariant && matterVariant.getMatter() != null)
+            this.amount = Math.min(this.amount,((ItemVariant) matterVariant).getItem().getMaxCount());
         this.tag = new HashMap<>(matterVariant.getTag());
     }
 
     public void setMatterVariant(@NonNull MatterVariant matterVariant, long amount) {
         this.matter = matterVariant.getMatter();
         this.tag = new HashMap<>(matterVariant.getTag());
+        if (this.infinite)
+            return;
         this.amount = amount;
+        if (matterVariant instanceof ItemVariant && matterVariant.getMatter() != null)
+            this.amount = Math.min(this.amount,((ItemVariant) matterVariant).getItem().getMaxCount());
     }
 
     public boolean addMatterVariant(@NonNull MatterVariant matterVariant, long amount) {
@@ -39,6 +47,9 @@ public class MatterHolder implements FocessSerializable {
             this.setMatterVariant(matterVariant, amount);
             return true;
         } else if (this.matter == matterVariant.getMatter() && this.tag.equals(matterVariant.getTag())) {
+            if (matterVariant instanceof ItemVariant && matterVariant.getMatter() != null)
+                if (this.amount + amount > ((ItemVariant) matterVariant).getItem().getMaxCount())
+                    return false;
             this.amount += amount;
             return true;
         }
@@ -58,6 +69,11 @@ public class MatterHolder implements FocessSerializable {
     }
 
     public long getAmount() {
+        if (this.infinite)
+            if (this.getMatterVariant() instanceof ItemVariant)
+                return this.matter == null ? 0 : ((ItemVariant) this.getMatterVariant()).getItem().getMaxCount();
+            else
+                return this.matter == null ? 0 : 999999L;
         return amount;
     }
 
@@ -66,14 +82,19 @@ public class MatterHolder implements FocessSerializable {
     }
 
     public void empty() {
+        if (this.infinite)
+            return;
         this.amount = 0;
     }
 
     public long extract(MatterVariant variant, long actual) {
-        if (this.matter != variant.getMatter() || this.tag.equals(variant.getTag()))
+        if (this.matter != variant.getMatter() || !this.tag.equals(variant.getTag()))
             return 0;
-        long amount = this.amount;
-        return Math.min(amount, actual);
+        if (this.infinite)
+            return actual;
+        long amount = Math.min(this.amount, actual);
+        this.amount -= amount;
+        return amount;
     }
 
     @Override
@@ -101,5 +122,13 @@ public class MatterHolder implements FocessSerializable {
         result = 31 * result + (int) (amount ^ (amount >>> 32));
         result = 31 * result + tag.hashCode();
         return result;
+    }
+
+    public boolean isInfinite() {
+        return infinite;
+    }
+
+    public void setInfinite(boolean infinite) {
+        this.infinite = infinite;
     }
 }

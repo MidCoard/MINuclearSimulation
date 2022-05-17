@@ -58,7 +58,6 @@ public class NuclearSimulation implements FocessSerializable {
 
     public void tick() {
         tickCount++;
-        System.out.println((System.nanoTime() - startTime) / 1000000000d + ": " + tickCount + "tick(s)");
         isActive.updateActive(NuclearGridHelper.simulate(nuclearGrid));
         nuclearGrid.tick();
     }

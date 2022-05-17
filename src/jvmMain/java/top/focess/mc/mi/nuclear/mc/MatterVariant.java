@@ -1,6 +1,7 @@
 package top.focess.mc.mi.nuclear.mc;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,6 +35,7 @@ public abstract class MatterVariant {
         return matter == null;
     }
 
+    @Nullable
     public Matter getMatter() {
         return matter;
     }

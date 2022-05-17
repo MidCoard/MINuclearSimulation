@@ -66,7 +66,6 @@ public class NuclearHatch implements INuclearTile {
     }
 
     public final void tick() {
-
         if (isFluid) {
             fluidNeutronProductTick(1, true);
         } else {
@@ -77,7 +76,6 @@ public class NuclearHatch implements INuclearTile {
                 }
             }
         }
-
     }
 
     @Override

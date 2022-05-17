@@ -62,10 +62,10 @@ public class NuclearGrid implements INuclearGrid, FocessSerializable {
 
     public void tick() {
         this.efficiencyHistory.tick();
-        for (int x = 0; x < size; x++)
-            for (int y = 0; y < size; y++)
-                if (hatchesGrid[x][y] != null)
-                    hatchesGrid[x][y].tick();
+//        for (int x = 0; x < size; x++)
+//            for (int y = 0; y < size; y++)
+//                if (hatchesGrid[x][y] != null)
+//                    hatchesGrid[x][y].tick();
     }
 
     public IntegerHistoryComponent getEfficiencyHistory() {
