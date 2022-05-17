@@ -1,4 +1,4 @@
-package top.focess.mc.mi.ui
+package top.focess.mc.mi.ui.panel
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable

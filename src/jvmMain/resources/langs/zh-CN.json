@@ -53,5 +53,45 @@
   "general": {
     "start": "开始",
     "stop": "停止"
+  },
+  "matter": {
+    "minecraft": {
+      "water": "水"
+    },
+    "modern-industrialization": {
+      "steam": "蒸汽",
+      "heavy_water": "重水",
+      "heavy_water_steam": "重水蒸汽",
+      "high_pressure_water": "高压水",
+      "high_pressure_steam": "高压蒸汽",
+      "high_pressure_heavy_water": "高压重水",
+      "high_pressure_heavy_water_steam": "高压重水蒸汽",
+      "deuterium": "氘",
+      "tritium": "氚",
+      "large_heat_exchanger": "大型热交换器",
+      "small_heat_exchanger": "小型热交换器",
+      "carbon_large_plate": "大型碳板",
+      "cadmium_fuel_rod": "镉燃料棒",
+      "u_fuel_rod": "铀燃料棒",
+      "u_fuel_rod_depleted": "耗尽的铀燃料棒",
+      "u_fuel_rod_double": "双铀燃料棒",
+      "u_fuel_rod_quad": "四铀燃料棒",
+      "leu_fuel_rod": "低能铀燃料棒",
+      "leu_fuel_rod_depleted": "耗尽的低能铀燃料棒",
+      "leu_fuel_rod_double": "双低能铀燃料棒",
+      "leu_fuel_rod_quad": "四低能铀燃料棒",
+      "heu_fuel_rod": "高能铀燃料棒",
+      "heu_fuel_rod_depleted": "耗尽的高能铀燃料棒",
+      "heu_fuel_rod_double": "双高能铀燃料棒",
+      "heu_fuel_rod_quad": "四高能铀燃料棒",
+      "le_mox_fuel_rod": "低能MOX铀燃料棒",
+      "le_mox_fuel_rod_depleted": "耗尽的低能MOX铀燃料棒",
+      "le_mox_fuel_rod_double": "双低能MOX铀燃料棒",
+      "le_mox_fuel_rod_quad": "四低能MOX铀燃料棒",
+      "he_mox_fuel_rod": "高能MOX铀燃料棒",
+      "he_mox_fuel_rod_depleted": "耗尽的高能MOX铀燃料棒",
+      "he_mox_fuel_rod_double": "双高能MOX铀燃料棒",
+      "he_mox_fuel_rod_quad": "四高能MOX铀燃料棒"
+    }
   }
 }

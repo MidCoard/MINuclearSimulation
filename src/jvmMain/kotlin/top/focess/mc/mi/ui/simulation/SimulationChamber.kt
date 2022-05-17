@@ -1,4 +1,4 @@
-package top.focess.mc.mi.ui
+package top.focess.mc.mi.ui.simulation
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.Box
@@ -25,10 +25,13 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import aztech.modern_industrialization.machines.blockentities.hatches.NuclearHatch
+import aztech.modern_industrialization.machines.components.NeutronHistoryComponent
+import aztech.modern_industrialization.machines.components.TemperatureComponent
 import top.focess.mc.mi.nuclear.NuclearSimulation
+import top.focess.mc.mi.nuclear.mc.MatterHolder
+import top.focess.mc.mi.nuclear.mi.MINuclearInventory
 import top.focess.mc.mi.nuclear.mi.Texture
 import top.focess.mc.mi.ui.lang.Lang
-import top.focess.mc.mi.ui.simulation.SimulationSelectorState
 import top.focess.mc.mi.ui.theme.DefaultTheme
 
 @Composable
@@ -54,6 +57,19 @@ fun nuclearSimulationLayout(
 ) = Layout({ children() }, modifier) { measurables, constraints ->
     layout(constraints.maxWidth, constraints.maxHeight) {
         how(measurables, constraints)
+    }
+}
+
+@Composable
+fun nuclearSimulationCellLayout(
+    modifier: Modifier,
+    how: Placeable.PlacementScope.(inventory: Measurable, neutron: Measurable, temperature: Measurable, constraints: Constraints) -> Unit,
+    children: @Composable () -> Unit
+) = Layout({ children() }, modifier) {
+        measurables, constraints ->
+    require(measurables.size == 3)
+    layout(constraints.maxWidth, constraints.maxHeight) {
+        how(measurables[0],measurables[1],measurables[2], constraints)
     }
 }
 
@@ -134,6 +150,7 @@ fun emptyView(lang: Lang) {
     }
 }
 
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun nuclearSimulationCell(
@@ -164,27 +181,148 @@ fun nuclearSimulationCell(
         Box(
             modifier = Modifier.fillMaxSize()
                 .background(DefaultTheme.simulationCell)
-                .border(1.dp, LocalContentColor.current.copy(alpha = 0.60f))
+                .border(1.dp, DefaultTheme.simulationCellBoarder)
                 .clickable {
                     if (!isStart)
                         selectorState.newWindow(lang, x, y, nuclearHatch, updateNuclearHatch)
                 }
         ) {
-            if (!nuclearHatch.inventory.input().matterVariant.isBlank) {
-                val texture = Texture.get(nuclearHatch.inventory.input().matterVariant.matter)
+            nuclearSimulationCellLayout(
+                Modifier.fillMaxSize(),
+                {
+                    inventory, neutron, temperature, constraints ->
+                    inventory.measure(
+                        constraints.copy(
+                            minWidth = constraints.maxWidth,
+                            maxWidth = constraints.maxWidth,
+                            maxHeight = constraints.maxHeight / 2,
+                            minHeight = constraints.maxHeight / 2
+                        )
+                    ).place(0, 0)
+                    neutron.measure(
+                        constraints.copy(
+                            maxWidth = constraints.maxWidth,
+                            minWidth = constraints.maxWidth,
+                            maxHeight = constraints.maxHeight / 4,
+                            minHeight = constraints.maxHeight / 4
+                        )
+                    ).place(0, constraints.maxHeight / 2)
+                    temperature.measure(
+                        constraints.copy(
+                            maxWidth = constraints.maxWidth,
+                            minWidth = constraints.maxWidth,
+                            maxHeight = constraints.maxHeight / 4,
+                            minHeight = constraints.maxHeight / 4
+                        )
+                    ).place(0, constraints.maxHeight * 3 / 4)
+                }
+            ) {
+                InventoryView(lang, nuclearHatch.inventory)
+                NeutronView(lang, nuclearHatch.neutronHistory)
+                TemperatureView(lang, nuclearHatch.nuclearReactorComponent)
+            }
+        }
+    }
+}
+@Composable
+fun inventoryViewLayout(
+    modifier: Modifier,
+    how: Placeable.PlacementScope.(measurables: List<Measurable>, constraints: Constraints) -> Unit,
+    children: @Composable () -> Unit
+) = Layout({ children() }, modifier) {
+        measurables, constraints ->
+    layout(constraints.maxWidth, constraints.maxHeight) {
+        how(measurables, constraints)
+    }
+}
+
+@Composable
+fun inputView(lang: Lang, holder: MatterHolder) {
+
+    Box(Modifier.border(1.dp, DefaultTheme.inputBoarder).fillMaxSize()) {
+        if (!holder.matterVariant.isBlank && holder.amount != 0L) {
+            val texture = Texture.get(holder.matterVariant.matter)
+            Text(lang.get("matter",holder.matterVariant.matter.namespace,holder.matterVariant.matter.name))
+            Image(
+                bitmap = loadImageBitmap(texture.inputStream),
+                lang.get("simulation", "input"),
+                modifier = Modifier.align(Alignment.Center).fillMaxSize(0.5f),
+            )
+            Text(
+                modifier = Modifier.align(Alignment.Center).fillMaxSize(),
+                text = holder.amount.toString()
+            )
+        } else {
+            Text(
+                modifier = Modifier.align(Alignment.Center).fillMaxSize(),
+                text = lang.get("simulation", "empty")
+            )
+        }
+    }
+}
+
+@Composable
+fun outputView(lang: Lang, holders: List<MatterHolder>) {
+    for (holder in holders) {
+        if (!holder.matterVariant.isBlank && holder.amount != 0L)
+            Box(Modifier.border(1.dp, DefaultTheme.outputBoarder).fillMaxSize()) {
+                val texture = Texture.get(holder.matterVariant.matter)
+                Text(lang.get("matter",holder.matterVariant.matter.namespace,holder.matterVariant.matter.name))
                 Image(
                     bitmap = loadImageBitmap(texture.inputStream),
-                    lang.get("simulation", "input"),
-                    modifier = Modifier.fillMaxSize().align(Alignment.Center),
+                    lang.get("simulation", "output"),
+                    modifier = Modifier.align(Alignment.Center).fillMaxSize(0.5f),
                 )
-                Text(nuclearHatch.inventory.input().toString())
-            } else {
                 Text(
-                    modifier = Modifier.fillMaxSize().align(Alignment.Center),
-                    text = lang.get("simulation", "empty")
+                    modifier = Modifier.align(Alignment.Center).fillMaxSize(),
+                    text = holder.amount.toString()
                 )
             }
+    }
+}
 
+const val ROW_VIEW_COUNT = 5
+
+@Composable
+fun InventoryView(lang: Lang, inventory: MINuclearInventory) {
+    Box {
+        inventoryViewLayout(Modifier.fillMaxSize(),{
+            measurables, constraints ->
+            val rowCount = if (measurables.size % ROW_VIEW_COUNT == 0) measurables.size / ROW_VIEW_COUNT else measurables.size / ROW_VIEW_COUNT + 1
+            for (i in 0 until rowCount) {
+                for (j in 0 until ROW_VIEW_COUNT) {
+                    val index = i * ROW_VIEW_COUNT + j
+                    val nowRowViewCount = if (i == rowCount - 1) measurables.size - i * ROW_VIEW_COUNT else ROW_VIEW_COUNT
+                    if (index < measurables.size) {
+                        measurables[index].measure(
+                            Constraints(
+                                minWidth = constraints.maxWidth / nowRowViewCount,
+                                maxWidth = constraints.maxWidth / nowRowViewCount,
+                                minHeight = (constraints.maxWidth / nowRowViewCount).coerceAtMost(constraints.maxHeight / rowCount),
+                                maxHeight = (constraints.maxWidth / nowRowViewCount).coerceAtMost(constraints.maxHeight / rowCount)
+                            )
+                        ).place(
+                            j * constraints.maxWidth / nowRowViewCount,
+                            i * (constraints.maxWidth / nowRowViewCount).coerceAtMost(constraints.maxHeight / rowCount)
+                        )
+                    } else break
+                }
+            }
+        }) {
+            inputView(lang, inventory.input())
+            outputView(lang, inventory.output)
         }
+    }
+}
+
+@Composable
+fun TemperatureView(lang: Lang, temperatureComponent: TemperatureComponent) {
+    Box {}
+}
+
+@Composable
+fun NeutronView(lang: Lang, neutronHistory: NeutronHistoryComponent) {
+    Box {
+        neutronHistory.averageGeneration
     }
 }

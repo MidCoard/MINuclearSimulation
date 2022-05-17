@@ -1,4 +1,4 @@
-package top.focess.mc.mi.ui
+package top.focess.mc.mi.ui.panel
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import top.focess.mc.mi.nuclear.NuclearSimulation
+import top.focess.mc.mi.ui.GlobalAction
 import top.focess.mc.mi.ui.lang.Lang
 import top.focess.scheduler.Task
 
@@ -26,7 +27,7 @@ fun GeneralPanel(lang: Lang, isStart: Boolean, simulation: NuclearSimulation?, t
                 Text(lang.get("general", "start"))
             }
 
-            Button(modifier = Modifier.align(Alignment.CenterVertically),
+            Button(modifier = Modifier.align(Alignment.CenterVertically).padding(10.dp, 5.dp),
                 enabled = isStart && tickTask != null,
                 onClick = {
                     action.stop()

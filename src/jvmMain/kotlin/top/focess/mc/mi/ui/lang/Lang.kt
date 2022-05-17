@@ -19,7 +19,7 @@ class Lang(inputStream: InputStream) {
             }
             obj.get(keys[keys.size - 1]) as String
         } catch (e: Exception) {
-            throw IllegalArgumentException(keys.contentToString())
+            keys.joinToString(".")
         }
     }
 

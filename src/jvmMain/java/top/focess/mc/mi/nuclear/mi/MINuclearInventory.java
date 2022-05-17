@@ -25,6 +25,10 @@ public class MINuclearInventory implements FocessSerializable {
         return matters.get(0);
     }
 
+    public List<MatterHolder> getOutput() {
+        return this.matters.subList(1, matters.size());
+    }
+
     public long output(MatterVariant matterVariant, long amount) {
         for (int i = 1; i < matters.size(); i++)
             if (matters.get(i).addMatterVariant(matterVariant, amount))
