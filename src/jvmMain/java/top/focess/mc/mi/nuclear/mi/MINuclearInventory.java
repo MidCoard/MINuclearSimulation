@@ -46,7 +46,6 @@ public class MINuclearInventory implements FocessSerializable {
         return before - amount;
     }
 
-    // just output, ignore the amount
     public long output(MatterVariant matterVariant, long amount) {
         long before = amount;
         for (OutputMatterHolder outputMatterHolder : this.outputMatterHolders) {

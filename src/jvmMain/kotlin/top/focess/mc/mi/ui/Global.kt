@@ -7,6 +7,7 @@ import androidx.compose.ui.window.WindowScope
 import kotlinx.coroutines.*
 import top.focess.mc.mi.nuclear.NuclearSimulation
 import top.focess.mc.mi.nuclear.mc.ItemVariant
+import top.focess.mc.mi.nuclear.mi.MINuclearInventory
 import top.focess.mc.mi.nuclear.mi.NuclearReactionType
 import top.focess.mc.mi.ui.lang.Lang
 import top.focess.mc.mi.ui.simulation.SimulationSelectorState
@@ -41,6 +42,14 @@ class GlobalState(lang: Lang) {
     val scheduler = ThreadPoolScheduler(1, false, "TickManager")
     var tickTask: Task? = null
     var updateTask: Task? = null
+
+    val itemInventory by mutableStateOf(MINuclearInventory(false))
+    val fluidInventory by mutableStateOf(MINuclearInventory(true))
+
+    init {
+        itemInventory.outputCount = 100
+        fluidInventory.outputCount = 100
+    }
 }
 
 class GlobalAction(private val lang: Lang, private val state: GlobalState) {
@@ -94,6 +103,19 @@ class GlobalAction(private val lang: Lang, private val state: GlobalState) {
             state.tickTask = state.scheduler.runTimer(
                 {
                     state.simulation!!.tick()
+                    val nuclearGrid = state.simulation!!.nuclearGrid
+                    for (i in 0 until nuclearGrid.sizeX)
+                        for (j in 0 until nuclearGrid.sizeY)
+                            if (nuclearGrid.getNuclearTile(i, j).isPresent)
+                                for (holder in nuclearGrid.getNuclearTile(i, j).get().inventory.output) {
+                                    val variant = holder.matterVariant
+                                    val amount = holder.extractAmount(holder.takeout)
+                                    if (holder.isFluid) {
+                                        if (state.fluidInventory.output(variant, amount) != amount)
+                                            throw IllegalStateException("Failed to output")
+                                    } else if (state.itemInventory.output(variant, amount) != amount)
+                                        throw IllegalStateException("Failed to output")
+                                }
                     state.isSaved = false
                 },
                 Duration.ZERO,

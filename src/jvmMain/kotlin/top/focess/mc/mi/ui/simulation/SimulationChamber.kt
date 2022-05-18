@@ -312,9 +312,10 @@ fun matterViewLayout(modifier: Modifier,how: Placeable.PlacementScope.(name:Meas
 @Composable
 fun outputView(lang: Lang, holders: List<OutputMatterHolder>) {
     for (holder in holders) {
-        if (!holder.matterVariant.isBlank && holder.amount != 0L)
+        val matterVariant = holder.matterVariant
+        if (!matterVariant.isBlank && holder.amount != 0L)
             Box(Modifier.border(1.dp, DefaultTheme.outputBoarder).fillMaxSize()) {
-                val texture = Texture.get(holder.matterVariant.matter!!)
+                val texture = Texture.get(matterVariant.matter!!)
                 matterViewLayout(Modifier.fillMaxSize(),
                     {
                         name, image, amount, constraints ->
@@ -344,7 +345,7 @@ fun outputView(lang: Lang, holders: List<OutputMatterHolder>) {
                         ).place(0,constraints.maxHeight * 2/3)
                     }) {
                     Text(
-                        lang.get("matter",holder.matterVariant.matter!!.namespace,holder.matterVariant.matter!!.name) + showTag(holder.tag),
+                        lang.get("matter",matterVariant.matter!!.namespace, matterVariant.matter!!.name) + showTag(holder.tag),
                         style = TextStyle(
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold),

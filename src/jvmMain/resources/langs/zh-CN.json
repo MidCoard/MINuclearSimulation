@@ -67,7 +67,8 @@
     }
   },
   "observer": {
-    "tick": "已运行游戏刻"
+    "tick": "已运行游戏刻",
+    "clear": "清空"
   },
   "general": {
     "start": "开始",

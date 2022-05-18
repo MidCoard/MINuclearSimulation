@@ -9,7 +9,6 @@ import com.google.common.collect.Maps;
 import org.jetbrains.annotations.Nullable;
 import top.focess.mc.mi.nuclear.mc.FluidVariant;
 import top.focess.mc.mi.nuclear.mc.MatterVariant;
-import top.focess.mc.mi.nuclear.mc.OutputMatterHolder;
 import top.focess.mc.mi.nuclear.mi.NuclearGrid;
 import top.focess.mc.mi.nuclear.mi.NuclearReactionType;
 import top.focess.util.serialize.FocessSerializable;
@@ -61,12 +60,6 @@ public class NuclearSimulation implements FocessSerializable {
         tickCount++;
         isActive.updateActive(NuclearGridHelper.simulate(nuclearGrid));
         nuclearGrid.tick();
-        for (int i = 0; i < nuclearGrid.getSizeX(); i++)
-            for (int j = 0; j < nuclearGrid.getSizeY(); j++)
-                if (nuclearGrid.getNuclearTile(i, j).isPresent())
-                    for (OutputMatterHolder holder : nuclearGrid.getNuclearTile(i, j).get().getInventory().getOutput())
-                        holder.extractAmount(holder.getTakeout());
-
     }
 
     @Nullable

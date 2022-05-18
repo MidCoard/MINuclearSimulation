@@ -72,7 +72,7 @@ fun Simulator(lang: Lang, globalState: GlobalState, globalAction: GlobalAction) 
                 if (it != null)
                     globalState.simulation!!.nuclearGrid.setNuclearTile(x, y, it)
             }
-            ObserverPanel(lang, globalState.simulation)
+            ObserverPanel(lang, globalState.simulation, globalState.itemInventory, globalState.fluidInventory)
         }
     }
 }

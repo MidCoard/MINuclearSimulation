@@ -163,7 +163,7 @@ public class NuclearHatch implements INuclearTile {
                     long output = this.inventory.tryOutput(abs.getNeutronProduct(), abs.getNeutronProductAmount());
                     if (output == abs.getNeutronProductAmount()) {
                         this.inventory.getInput().setMatterVariant(ItemVariant.blank(), 0);
-                        if (output != this.inventory.output(abs.getNeutronProduct(), abs.getNeutronProductAmount()))
+                        if (output != this.inventory.output(abs.getNeutronProduct(), output))
                             throw new IllegalStateException("Output failed");
                     }
                 } else {

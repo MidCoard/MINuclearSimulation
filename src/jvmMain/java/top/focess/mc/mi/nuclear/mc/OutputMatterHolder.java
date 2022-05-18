@@ -63,7 +63,7 @@ public class OutputMatterHolder extends MatterHolder{
     @Override
     public void setAmount(long amount) {
         long temp = this.maxAmount;
-        this.maxAmount = outputMaxAmount == -1 ? this.maxAmount : outputMaxAmount;
+        this.maxAmount = (outputMaxAmount <= -1 ? this.maxAmount : outputMaxAmount);
         super.setAmount(amount);
         this.maxAmount = temp;
     }
@@ -85,7 +85,9 @@ public class OutputMatterHolder extends MatterHolder{
         return outputMaxAmount;
     }
 
-    public void extractAmount(long amount) {
+    public long extractAmount(long amount) {
+        long before = this.getAmount();
         this.setAmount(this.getAmount() - amount);
+        return before - this.getAmount();
     }
 }
