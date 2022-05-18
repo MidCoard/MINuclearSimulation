@@ -240,8 +240,8 @@ fun simulationSelector(window: SimulationSelectorWindowState) = Window(
                         modifier = Modifier.align(Alignment.CenterVertically).padding(10.dp, 5.dp),
                         onClick = {
                             val hatch = if (matterVariant is FluidVariant && window.nuclearHatch.isFluid) window.nuclearHatch else NuclearHatch(matterVariant is FluidVariant)
-                            hatch.inventory.input().setMatterVariant(matterVariant, amount)
                             hatch.inventory.input().isInfinite = isInfinite
+                            hatch.inventory.input().setMatterVariant(matterVariant, amount)
                             window.updateNuclearHatch(hatch)
                             window.close()
                         },

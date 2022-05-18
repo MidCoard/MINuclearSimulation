@@ -42,7 +42,9 @@
     "temperature": "温度",
     "neutron": {
       "generation": "生成",
+      "eu-generation": "EU生成",
       "receive": "吸收",
+      "flux": "通过",
       "fast": "快中子",
       "thermal": "热中子"
     },

@@ -194,18 +194,18 @@ fun nuclearSimulationCell(
                         constraints.copy(
                             minWidth = constraints.maxWidth,
                             maxWidth = constraints.maxWidth,
-                            maxHeight = constraints.maxHeight * 2 / 3,
-                            minHeight = constraints.maxHeight * 2 / 3
+                            maxHeight = constraints.maxHeight * 7 / 12,
+                            minHeight = constraints.maxHeight * 7 / 12
                         )
                     ).place(0, 0)
                     neutron.measure(
                         constraints.copy(
                             maxWidth = constraints.maxWidth,
                             minWidth = constraints.maxWidth,
-                            maxHeight = constraints.maxHeight / 6,
-                            minHeight = constraints.maxHeight / 6
+                            maxHeight = constraints.maxHeight / 4,
+                            minHeight = constraints.maxHeight / 4
                         )
-                    ).place(0, constraints.maxHeight * 2 / 3)
+                    ).place(0, constraints.maxHeight * 7 / 12)
                     temperature.measure(
                         constraints.copy(
                             maxWidth = constraints.maxWidth,
@@ -248,26 +248,26 @@ fun inputView(lang: Lang, holder: MatterHolder) {
                         Constraints(
                             minWidth = constraints.maxWidth,
                             maxWidth =  constraints.maxWidth,
-                            minHeight =  constraints.maxHeight / 4,
-                            maxHeight = constraints.maxHeight / 4
+                            minHeight =  constraints.maxHeight / 3,
+                            maxHeight = constraints.maxHeight / 3
                         )
                     ).place(0,0)
                     image.measure(
                         Constraints(
                             minWidth = constraints.maxWidth,
                             maxWidth =  constraints.maxWidth,
-                            minHeight =  constraints.maxHeight / 2,
-                            maxHeight = constraints.maxHeight / 2
+                            minHeight =  constraints.maxHeight / 3,
+                            maxHeight = constraints.maxHeight / 3
                         )
-                    ).place(0,constraints.maxHeight/4)
+                    ).place(0,constraints.maxHeight/3)
                     amount.measure(
                         Constraints(
                             minWidth = constraints.maxWidth,
                             maxWidth =  constraints.maxWidth,
-                            minHeight =  constraints.maxHeight / 4,
-                            maxHeight = constraints.maxHeight / 4
+                            minHeight =  constraints.maxHeight / 3,
+                            maxHeight = constraints.maxHeight / 3
                         )
-                    ).place(0,constraints.maxHeight * 3/4)
+                    ).place(0,constraints.maxHeight * 2/3)
                 }) {
                 Text(
                     lang.get("matter",holder.matterVariant.matter!!.namespace,holder.matterVariant.matter!!.name) + showTag(holder.matterVariant.tag),
@@ -321,26 +321,26 @@ fun outputView(lang: Lang, holders: List<MatterHolder>) {
                             Constraints(
                                 minWidth = constraints.maxWidth,
                                 maxWidth =  constraints.maxWidth,
-                                minHeight =  constraints.maxHeight / 4,
-                                maxHeight = constraints.maxHeight / 4
+                                minHeight =  constraints.maxHeight / 3,
+                                maxHeight = constraints.maxHeight / 3
                             )
                         ).place(0,0)
                         image.measure(
                             Constraints(
                                 minWidth = constraints.maxWidth,
                                 maxWidth =  constraints.maxWidth,
-                                minHeight =  constraints.maxHeight / 2,
-                                maxHeight = constraints.maxHeight / 2
+                                minHeight =  constraints.maxHeight / 3,
+                                maxHeight = constraints.maxHeight / 3
                             )
-                        ).place(0,constraints.maxHeight/4)
+                        ).place(0,constraints.maxHeight/3)
                         amount.measure(
                             Constraints(
                                 minWidth = constraints.maxWidth,
                                 maxWidth =  constraints.maxWidth,
-                                minHeight =  constraints.maxHeight / 4,
-                                maxHeight = constraints.maxHeight / 4
+                                minHeight =  constraints.maxHeight / 3,
+                                maxHeight = constraints.maxHeight / 3
                             )
-                        ).place(0,constraints.maxHeight * 3/4)
+                        ).place(0,constraints.maxHeight * 2/3)
                     }) {
                     Text(
                         lang.get("matter",holder.matterVariant.matter!!.namespace,holder.matterVariant.matter!!.name) + showTag(holder.tag),
@@ -364,7 +364,7 @@ fun outputView(lang: Lang, holders: List<MatterHolder>) {
     }
 }
 
-const val ROW_VIEW_COUNT = 5
+const val ROW_VIEW_COUNT = 3
 
 @Composable
 fun InventoryView(lang: Lang, inventory: MINuclearInventory) {
@@ -429,54 +429,76 @@ fun TemperatureView(lang: Lang, temperatureComponent: TemperatureComponent) {
 @Composable
 fun NeutronView(lang: Lang, neutronHistory: NeutronHistoryComponent) {
     Box {
-        Row {
-            Text(
-                text = lang.get(
-                    "simulation",
-                    "neutron","generation"
-                ) + ": " + substring(neutronHistory.averageGeneration.toString(), 6),
-                style = TextStyle(
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold
-                ),
-                modifier = Modifier.padding(10.dp, 5.dp)
-            )
-            Text(
-                text = lang.get(
-                    "simulation",
-                    "neutron","receive"
-                ) + ": " + substring(neutronHistory.getAverageReceived(NeutronType.BOTH).toString(), 6),
-                style = TextStyle(
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold
-                ),
-                modifier = Modifier.padding(10.dp, 5.dp)
-            )
-        }
+        Column {
+            Row(Modifier.fillMaxWidth()) {
+                Text(
+                    text = lang.get(
+                        "simulation",
+                        "neutron", "generation"
+                    ) + ": " + substring(neutronHistory.averageGeneration.toString(), 6),
+                    style = TextStyle(
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    modifier = Modifier.padding(10.dp, 5.dp)
+                )
+                Text(
+                    text = lang.get(
+                        "simulation",
+                        "neutron", "receive"
+                    ) + ": " + substring(neutronHistory.getAverageReceived(NeutronType.BOTH).toString(), 6)
+                            + "(" + lang.get(
+                        "simulation",
+                        "neutron",
+                        "fast"
+                    ) + ": " + substring(neutronHistory.getAverageReceived(NeutronType.FAST).toString(), 6)
+                            + "," + lang.get(
+                        "simulation",
+                        "neutron",
+                        "thermal"
+                    ) + ": " + substring(neutronHistory.getAverageReceived(NeutronType.THERMAL).toString(), 6) + ")",
+                    style = TextStyle(
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    modifier = Modifier.padding(10.dp, 5.dp)
+                )
+            }
 
-        Row {
-            Text(
-                text = lang.get(
-                    "simulation",
-                    "neutron","generation"
-                ) + ": " + substring(neutronHistory.averageGeneration.toString(), 6),
-                style = TextStyle(
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold
-                ),
-                modifier = Modifier.padding(10.dp, 5.dp)
-            )
-            Text(
-                text = lang.get(
-                    "simulation",
-                    "neutron","receive"
-                ) + ": " + substring(neutronHistory.getAverageReceived(NeutronType.BOTH).toString(), 6),
-                style = TextStyle(
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold
-                ),
-                modifier = Modifier.padding(10.dp, 5.dp)
-            )
+            Row(Modifier.fillMaxWidth()) {
+                Text(
+                    text = lang.get(
+                        "simulation",
+                        "neutron", "flux"
+                    ) + ": " + substring(neutronHistory.getAverageFlux(NeutronType.BOTH).toString(), 6)
+                            + "(" + lang.get(
+                        "simulation",
+                        "neutron",
+                        "fast"
+                    ) + ": " + substring(neutronHistory.getAverageFlux(NeutronType.FAST).toString(), 6)
+                            + "," + lang.get(
+                        "simulation",
+                        "neutron",
+                        "thermal"
+                    ) + ": " + substring(neutronHistory.getAverageFlux(NeutronType.THERMAL).toString(), 6) + ")",
+                    style = TextStyle(
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    modifier = Modifier.padding(10.dp, 5.dp)
+                )
+                Text(
+                    text = lang.get(
+                        "simulation",
+                        "neutron", "eu-generation"
+                    ) + ": " + substring(neutronHistory.averageEuGeneration.toString(), 6),
+                    style = TextStyle(
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    modifier = Modifier.padding(10.dp, 5.dp)
+                )
+            }
         }
     }
 }
