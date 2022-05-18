@@ -84,4 +84,8 @@ public class OutputMatterHolder extends MatterHolder{
     public long getOutputMaxAmount() {
         return outputMaxAmount;
     }
+
+    public void extractAmount(long amount) {
+        this.setAmount(this.getAmount() - amount);
+    }
 }

@@ -163,6 +163,7 @@ fun simulationSelector(window: SimulationSelectorWindowState) = Window(
             ).place(constraints.maxWidth / 3, 0)
         }) {
             Column {
+
                 Row {
                     TooltipArea(tooltip = {
                         Surface(
@@ -379,49 +380,47 @@ fun simulationSelector(window: SimulationSelectorWindowState) = Window(
 fun Item(lang:Lang, output:OutputMatterHolder) {
     var takeout by remember { mutableStateOf(output.takeout) }
     var maxAmount by remember { mutableStateOf(output.outputMaxAmount) }
-    Box{
-        Row{
-            Text(text = lang.get("simulation", "selector", "max-count"),
-                modifier = Modifier.padding(horizontal = 10.dp).align(Alignment.CenterVertically),
-                color = Color.Black)
-            OutlinedTextField(
-                if (output.isFluid)
-                (maxAmount / 81).toString() else maxAmount.toString(),
-                modifier = Modifier.padding(horizontal = 10.dp).align(Alignment.CenterVertically),
-                onValueChange = {
-                    maxAmount = if (it.trim().isEmpty()) 0 else try {
-                        if (output.isFluid)
-                            it.trim().toLong().coerceAtLeast(-1)  * 81
-                        else
-                            it.trim().toLong().coerceAtLeast(-1)
-                    } catch (e: Exception) {
-                        maxAmount
-                    }
-                    output.outputMaxAmount = maxAmount
-                },
-                colors = DefaultTheme.textFieldDefault()
-            )
-            Text(text = lang.get("simulation", "selector", "takeout"),
-                modifier = Modifier.padding(horizontal = 10.dp).align(Alignment.CenterVertically),
-                color = Color.Black)
-            OutlinedTextField(
-                if (output.isFluid)
-                    (takeout / 81).toString() else takeout.toString(),
-                modifier = Modifier.padding(horizontal = 10.dp).align(Alignment.CenterVertically),
-                onValueChange = {
-                    takeout = if (it.trim().isEmpty()) 0 else try {
-                        if (output.isFluid)
-                            it.trim().toLong().coerceAtLeast(0) * 81
-                        else
-                            it.trim().toLong().coerceAtLeast(0)
-                    } catch (e: Exception) {
-                        takeout
-                    }
-                    output.takeout = takeout
-                },
-                colors = DefaultTheme.textFieldDefault()
-            )
-        }
+    Row{
+        Text(text = lang.get("simulation", "selector", "max-count"),
+            modifier = Modifier.padding(horizontal = 10.dp).align(Alignment.CenterVertically),
+            color = Color.Black)
+        OutlinedTextField(
+            if (output.isFluid)
+            (maxAmount / 81).toString() else maxAmount.toString(),
+            modifier = Modifier.padding(horizontal = 10.dp).align(Alignment.CenterVertically).fillMaxWidth(0.3f),
+            onValueChange = {
+                maxAmount = if (it.trim().isEmpty()) 0 else try {
+                    if (output.isFluid)
+                        it.trim().toLong().coerceAtLeast(-1)  * 81
+                    else
+                        it.trim().toLong().coerceAtLeast(-1)
+                } catch (e: Exception) {
+                    maxAmount
+                }
+                output.outputMaxAmount = maxAmount
+            },
+            colors = DefaultTheme.textFieldDefault()
+        )
+        Text(text = lang.get("simulation", "selector", "takeout"),
+            modifier = Modifier.padding(horizontal = 10.dp).align(Alignment.CenterVertically),
+            color = Color.Black)
+        OutlinedTextField(
+            if (output.isFluid)
+                (takeout / 81).toString() else takeout.toString(),
+            modifier = Modifier.padding(horizontal = 10.dp).align(Alignment.CenterVertically),
+            onValueChange = {
+                takeout = if (it.trim().isEmpty()) 0 else try {
+                    if (output.isFluid)
+                        it.trim().toLong().coerceAtLeast(0) * 81
+                    else
+                        it.trim().toLong().coerceAtLeast(0)
+                } catch (e: Exception) {
+                    takeout
+                }
+                output.takeout = takeout
+            },
+            colors = DefaultTheme.textFieldDefault()
+        )
     }
 }
 

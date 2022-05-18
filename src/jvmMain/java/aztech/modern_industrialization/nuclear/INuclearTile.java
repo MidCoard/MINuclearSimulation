@@ -23,6 +23,7 @@
  */
 package aztech.modern_industrialization.nuclear;
 
+import top.focess.mc.mi.nuclear.mi.MINuclearInventory;
 import top.focess.util.serialize.FocessSerializable;
 
 import java.util.Optional;
@@ -51,4 +52,6 @@ public interface INuclearTile extends INuclearTileData, FocessSerializable {
     int neutronGenerationTick(INuclearGrid grid);
 
     void nuclearTick(INuclearGrid grid);
+
+    MINuclearInventory getInventory();
 }

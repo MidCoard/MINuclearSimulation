@@ -1,5 +1,6 @@
 package top.focess.mc.mi.nuclear.mc;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,8 +51,10 @@ public class InputMatterHolder extends MatterHolder {
 
     private void checkInfinite() {
         if (this.infinite) {
-            if (!this.getMatterVariant().isBlank())
+            if (!this.getMatterVariant().isBlank()) {
                 super.setAmount(this.maxAmount);
+                this.getTag().clear();
+            }
             else throw new IllegalStateException("Infinite matter can't have blank matter variant");
         }
     }
@@ -78,5 +81,11 @@ public class InputMatterHolder extends MatterHolder {
                 (MatterVariant) map.get("matterVariant"),
                 (long) map.get("amount")
         );
+    }
+
+    @Override
+    protected void setMatterVariant0(@NonNull MatterVariant matterVariant) {
+        super.setMatterVariant0(matterVariant);
+        this.checkInfinite();
     }
 }
