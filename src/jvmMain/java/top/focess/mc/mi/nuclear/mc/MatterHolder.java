@@ -11,9 +11,9 @@ import java.util.Objects;
 public class MatterHolder implements FocessSerializable {
 
     protected final boolean isFluid;
-    protected Matter matter;
+    private Matter matter;
     private long amount;
-    protected Map<String, Object> tag;
+    private Map<String, Object> tag;
     protected long maxAmount = 0;
 
     // only for blank matterVariant, if not blank, there is nothing changed
@@ -23,21 +23,14 @@ public class MatterHolder implements FocessSerializable {
 
     public MatterHolder(@NonNull MatterVariant matterVariant, long amount) {
         this.isFluid = matterVariant instanceof FluidVariant;
-        this.matter = matterVariant.getMatter();
-        this.tag = new HashMap<>(matterVariant.getTag());
-        if (matterVariant instanceof ItemVariant && matterVariant.getMatter() != null)
-            this.maxAmount = ((ItemVariant) matterVariant).getItem().getMaxCount();
-        else if (matterVariant instanceof FluidVariant)
-            this.maxAmount = 999999 * 81000L;
+        this.setMatterVariant0(matterVariant);
         this.setAmount(amount);
     }
 
-    protected MatterHolder(boolean isFluid, Matter matter, long amount, Map<String, Object> tag, long maxAmount) {
+    protected MatterHolder(boolean isFluid, MatterVariant matterVariant, long amount) {
         this.isFluid = isFluid;
-        this.matter = matter;
+        this.setMatterVariant0(matterVariant);
         this.amount = amount;
-        this.tag = tag;
-        this.maxAmount = maxAmount;
     }
 
     public void setAmount(long amount) {
@@ -51,8 +44,7 @@ public class MatterHolder implements FocessSerializable {
     }
 
     public void setMatterVariant(@NonNull MatterVariant matterVariant, long amount) {
-        this.matter = matterVariant.getMatter();
-        this.tag = new HashMap<>(matterVariant.getTag());
+        this.setMatterVariant0(matterVariant);
         this.setAmount(amount);
     }
 
@@ -66,6 +58,17 @@ public class MatterHolder implements FocessSerializable {
     public void setMatterVariant(@NonNull MatterVariant matterVariant) {
         this.setMatterVariant(matterVariant, this.amount);
     }
+
+    protected void setMatterVariant0(@NonNull MatterVariant matterVariant) {
+        this.matter = matterVariant.getMatter();
+        this.tag = new HashMap<>(matterVariant.getTag());
+        if (matterVariant instanceof ItemVariant && matterVariant.getMatter() != null)
+            this.maxAmount = ((ItemVariant) matterVariant).getItem().getMaxCount();
+        else if (matterVariant instanceof FluidVariant)
+            this.maxAmount = 999999 * 81000L;
+        else this.maxAmount = 0;
+    }
+
 
     public long getAmount() {
         return amount;
@@ -117,20 +120,16 @@ public class MatterHolder implements FocessSerializable {
     public Map<String, Object> serialize() {
         Map<String,Object> map = new HashMap<>();
         map.put("isFluid", isFluid);
-        map.put("matter", matter);
+        map.put("matterVariant", getMatterVariant());
         map.put("amount", amount);
-        map.put("tag", tag);
-        map.put("maxAmount", maxAmount);
         return map;
     }
 
     public static MatterHolder deserialize(Map<String, Object> map) {
         return new MatterHolder(
                 (boolean)map.get("isFluid"),
-                (Matter)map.get("matter"),
-                (long) map.get("amount"),
-                (Map<String, Object>) map.get("tag"),
-                (long) map.get("maxAmount")
+                (MatterVariant) map.get("matterVariant"),
+                (long) map.get("amount")
         );
     }
 }

@@ -3,7 +3,6 @@ package top.focess.mc.mi.nuclear.mc;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -15,8 +14,8 @@ public class InputMatterHolder extends MatterHolder {
         super(isFluid ? FluidVariant.blank() : ItemVariant.blank());
     }
 
-    public InputMatterHolder(boolean infinite, boolean isFluid, Matter matter, long amount, Map<String, Object> tag, long maxAmount) {
-        super(isFluid, matter, amount, tag, maxAmount);
+    public InputMatterHolder(boolean infinite, boolean isFluid,MatterVariant matterVariant ,long amount) {
+        super(isFluid, matterVariant, amount);
         this.infinite = infinite;
     }
 
@@ -25,7 +24,7 @@ public class InputMatterHolder extends MatterHolder {
     }
 
     public long tryExtract(MatterVariant variant, long actual) {
-        if (this.matter != variant.getMatter() || !this.tag.equals(variant.getTag()))
+        if (!this.getMatterVariant().equals(variant))
             return 0;
         if (this.infinite)
             return actual;
@@ -33,7 +32,7 @@ public class InputMatterHolder extends MatterHolder {
     }
 
     public long extract(MatterVariant variant, long actual) {
-        if (this.matter != variant.getMatter() || !this.tag.equals(variant.getTag()))
+        if (!this.getMatterVariant().equals(variant))
             return 0;
         if (this.infinite)
             return actual;
@@ -43,8 +42,7 @@ public class InputMatterHolder extends MatterHolder {
     }
 
     public void setMatterVariant(boolean infinite, @NotNull MatterVariant matterVariant, long amount) {
-        this.matter = matterVariant.getMatter();
-        this.tag = new HashMap<>(matterVariant.getTag());
+        this.setMatterVariant0(matterVariant);
         this.infinite = infinite;
         this.setAmount(amount);
         this.checkInfinite();
@@ -52,8 +50,9 @@ public class InputMatterHolder extends MatterHolder {
 
     private void checkInfinite() {
         if (this.infinite) {
-            Objects.requireNonNull(this.matter);
-            super.setAmount(this.maxAmount);
+            if (!this.getMatterVariant().isBlank())
+                super.setAmount(this.maxAmount);
+            else throw new IllegalStateException("Infinite matter can't have blank matter variant");
         }
     }
 
@@ -76,10 +75,8 @@ public class InputMatterHolder extends MatterHolder {
         return new InputMatterHolder(
                 (boolean) map.get("infinite"),
                 (boolean)map.get("isFluid"),
-                (Matter)map.get("matter"),
-                (long) map.get("amount"),
-                (Map<String, Object>) map.get("tag"),
-                (long) map.get("maxAmount")
+                (MatterVariant) map.get("matterVariant"),
+                (long) map.get("amount")
         );
     }
 }

@@ -135,8 +135,8 @@ fun simulationSelector(window: SimulationSelectorWindowState) = Window(
 ) {
 
     val nuclearHatch = window.nuclearHatch
-    var matterVariant: MatterVariant by remember { mutableStateOf(window.nuclearHatch.inventory.input.matterVariant) }
-    var amount: Long by remember{mutableStateOf(window.nuclearHatch.inventory.input.amount / 81000)}
+    var matterVariant by remember { mutableStateOf(window.nuclearHatch.inventory.input.matterVariant) }
+    var amount by remember{mutableStateOf(window.nuclearHatch.inventory.input.amount / 81000)}
     var isFluid by remember { mutableStateOf(nuclearHatch.isFluid) }
     var isInfinite by remember { mutableStateOf(nuclearHatch.inventory.input.isInfinite) }
     var outputCount by remember {mutableStateOf(nuclearHatch.inventory.outputCount)}
@@ -326,13 +326,21 @@ fun simulationSelector(window: SimulationSelectorWindowState) = Window(
                 if (!isFluid)
                     for (item in Constant.ITEMS) {
                         key(item) {
-                            simulationCell(window.lang, item, matterVariant.matter == item) { matterVariant = it }
+                            simulationCell(window.lang, item, matterVariant.matter == item) {
+                                matterVariant = it
+                                if (amount == 0L)
+                                    amount = 1
+                            }
                         }
                     }
                 else
                     for (fluid in Constant.FLUIDS) {
                         key(fluid) {
-                            simulationCell(window.lang, fluid, matterVariant.matter == fluid) { matterVariant = it }
+                            simulationCell(window.lang, fluid, matterVariant.matter == fluid) {
+                                matterVariant = it
+                                if (amount == 0L)
+                                    amount = 1
+                            }
                         }
                     }
             }

@@ -27,6 +27,8 @@ public class ItemVariant extends MatterVariant {
     }
 
     public static ItemVariant of(Item item, @NonNull Map<String, Object> tag) {
+        if (item == null)
+            return blank();
         return new ItemVariant(item, tag);
     }
 

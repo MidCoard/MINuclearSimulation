@@ -13,7 +13,7 @@ public class FluidVariant extends MatterVariant {
         super(matter);
     }
 
-    public static MatterVariant blank() {
+    public static FluidVariant blank() {
         return FluidVariant.of(null);
     }
 
@@ -22,6 +22,8 @@ public class FluidVariant extends MatterVariant {
     }
 
     public static FluidVariant of(Fluid fluid, @NonNull Map<String, Object> tag) {
+        if (fluid == null)
+            return blank();
         return new FluidVariant(fluid, tag);
     }
 
