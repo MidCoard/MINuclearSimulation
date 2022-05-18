@@ -11,10 +11,11 @@ public class MINuclearInventory implements FocessSerializable {
     private final InputMatterHolder input;
     private final List<OutputMatterHolder> outputMatterHolders = new ArrayList<>();
 
-    private int outputCount = 100;
+    private int outputCount;
 
     public MINuclearInventory(boolean isFluid) {
         this.input = new InputMatterHolder(isFluid);
+        this.setOutputCount(2);
     }
 
     public InputMatterHolder getInput() {
@@ -22,7 +23,7 @@ public class MINuclearInventory implements FocessSerializable {
     }
 
     public List<OutputMatterHolder> getOutput() {
-        return this.outputMatterHolders.subList(0, outputMatterHolders.size());
+        return this.outputMatterHolders.subList(0, outputCount);
     }
 
     // return the amount that has been inserted
@@ -70,7 +71,8 @@ public class MINuclearInventory implements FocessSerializable {
 
     public void setOutputCount(int outputCount) {
         this.outputCount = outputCount;
-        if (this.outputMatterHolders.size() > outputCount)
-            this.outputMatterHolders.subList(outputCount, outputMatterHolders.size()).clear();
+        if (this.outputMatterHolders.size() < outputCount)
+            while (this.outputMatterHolders.size() < outputCount)
+                this.outputMatterHolders.add(new OutputMatterHolder(this.input.isFluid()));
     }
 }

@@ -86,11 +86,6 @@ public class MatterHolder implements FocessSerializable {
         return isFluid;
     }
 
-    public void setMaxAmount(long maxAmount) {
-        this.maxAmount = maxAmount;
-        this.setAmount(this.amount);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

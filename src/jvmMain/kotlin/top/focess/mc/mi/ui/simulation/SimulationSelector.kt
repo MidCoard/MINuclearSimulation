@@ -2,6 +2,9 @@ package top.focess.mc.mi.ui.simulation
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -22,10 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import aztech.modern_industrialization.machines.blockentities.hatches.NuclearHatch
-import top.focess.mc.mi.nuclear.mc.FluidVariant
-import top.focess.mc.mi.nuclear.mc.ItemVariant
-import top.focess.mc.mi.nuclear.mc.Matter
-import top.focess.mc.mi.nuclear.mc.MatterVariant
+import top.focess.mc.mi.nuclear.mc.*
 import top.focess.mc.mi.nuclear.mi.Texture
 import top.focess.mc.mi.ui.lang.Lang
 import top.focess.mc.mi.ui.theme.DefaultTheme
@@ -136,10 +136,11 @@ fun simulationSelector(window: SimulationSelectorWindowState) = Window(
 
     val nuclearHatch = window.nuclearHatch
     var matterVariant by remember { mutableStateOf(window.nuclearHatch.inventory.input.matterVariant) }
-    var amount by remember{mutableStateOf(window.nuclearHatch.inventory.input.amount / 81000)}
+    var amount by remember{mutableStateOf(window.nuclearHatch.inventory.input.amount / 81)}
     var isFluid by remember { mutableStateOf(nuclearHatch.isFluid) }
     var isInfinite by remember { mutableStateOf(nuclearHatch.inventory.input.isInfinite) }
-    var outputCount by remember {mutableStateOf(nuclearHatch.inventory.outputCount)}
+    var outputCount by remember { mutableStateOf(nuclearHatch.inventory.outputCount) }
+
 
 
     MaterialTheme(colors = DefaultTheme.default) {
@@ -215,7 +216,7 @@ fun simulationSelector(window: SimulationSelectorWindowState) = Window(
                         enabled = !isInfinite,
                         onValueChange = {
                             amount = if (it.trim().isEmpty()) 0 else try {
-                                it.trim().toLong()
+                                it.trim().toLong().coerceAtLeast(0)
                             } catch (e: Exception) {
                                 amount
                             }
@@ -241,9 +242,18 @@ fun simulationSelector(window: SimulationSelectorWindowState) = Window(
                     Button(
                         modifier = Modifier.align(Alignment.CenterVertically).padding(10.dp, 5.dp),
                         onClick = {
-                            val hatch = if (matterVariant is FluidVariant && window.nuclearHatch.isFluid) window.nuclearHatch else NuclearHatch(matterVariant is FluidVariant)
+                            val hatch = if (matterVariant is FluidVariant == window.nuclearHatch.isFluid) window.nuclearHatch else NuclearHatch(matterVariant is FluidVariant)
+                            if (matterVariant is FluidVariant != window.nuclearHatch.isFluid) {
+                                hatch.inventory.outputCount = outputCount
+                                for (i in 0 until outputCount) {
+                                    val holder = hatch.inventory.output[i]
+                                    holder.outputMaxAmount =
+                                        window.nuclearHatch.inventory.output[i].outputMaxAmount * if (window.nuclearHatch.isFluid) 1/81 else 81
+                                    holder.takeout = window.nuclearHatch.inventory.output[i].takeout * if (window.nuclearHatch.isFluid) 1/81 else 81
+                                }
+                            }
                             if (hatch.isFluid)
-                                hatch.inventory.input.setMatterVariant(isInfinite, matterVariant, amount * 81000L)
+                                hatch.inventory.input.setMatterVariant(isInfinite, matterVariant, amount * 81L)
                             else hatch.inventory.input.setMatterVariant(isInfinite,matterVariant, amount)
                             window.updateNuclearHatch(hatch)
                             window.close()
@@ -273,10 +283,11 @@ fun simulationSelector(window: SimulationSelectorWindowState) = Window(
                         modifier = Modifier.padding(horizontal = 10.dp).align(Alignment.CenterVertically),
                         onValueChange = {
                             outputCount = if (it.trim().isEmpty()) 0 else try {
-                                it.trim().toInt()
+                                it.trim().toInt().coerceAtLeast(0)
                             } catch (e: Exception) {
                                 outputCount
                             }
+                            nuclearHatch.inventory.outputCount = outputCount
                         },
                         colors = DefaultTheme.textFieldDefault()
                     )
@@ -299,6 +310,22 @@ fun simulationSelector(window: SimulationSelectorWindowState) = Window(
                             window.close()
                         },
                         content = { Text(window.lang.get("simulation", "selector", "empty-output")) }
+                    )
+                }
+
+                Box {
+                    val listState = rememberLazyListState()
+                    LazyColumn(state = listState) {
+                        items(items = nuclearHatch.inventory.output) {
+                            Item(window.lang, it)
+                        }
+                    }
+
+                    VerticalScrollbar(
+                        modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+                        adapter = rememberScrollbarAdapter(
+                            scrollState = listState
+                        )
                     )
                 }
             }
@@ -339,11 +366,61 @@ fun simulationSelector(window: SimulationSelectorWindowState) = Window(
                             simulationCell(window.lang, fluid, matterVariant.matter == fluid) {
                                 matterVariant = it
                                 if (amount == 0L)
-                                    amount = 1
+                                    amount = 1000
                             }
                         }
                     }
             }
+        }
+    }
+}
+
+@Composable
+fun Item(lang:Lang, output:OutputMatterHolder) {
+    var takeout by remember { mutableStateOf(output.takeout) }
+    var maxAmount by remember { mutableStateOf(output.outputMaxAmount) }
+    Box{
+        Row{
+            Text(text = lang.get("simulation", "selector", "max-count"),
+                modifier = Modifier.padding(horizontal = 10.dp).align(Alignment.CenterVertically),
+                color = Color.Black)
+            OutlinedTextField(
+                if (output.isFluid)
+                (maxAmount / 81).toString() else maxAmount.toString(),
+                modifier = Modifier.padding(horizontal = 10.dp).align(Alignment.CenterVertically),
+                onValueChange = {
+                    maxAmount = if (it.trim().isEmpty()) 0 else try {
+                        if (output.isFluid)
+                            it.trim().toLong().coerceAtLeast(-1)  * 81
+                        else
+                            it.trim().toLong().coerceAtLeast(-1)
+                    } catch (e: Exception) {
+                        maxAmount
+                    }
+                    output.outputMaxAmount = maxAmount
+                },
+                colors = DefaultTheme.textFieldDefault()
+            )
+            Text(text = lang.get("simulation", "selector", "takeout"),
+                modifier = Modifier.padding(horizontal = 10.dp).align(Alignment.CenterVertically),
+                color = Color.Black)
+            OutlinedTextField(
+                if (output.isFluid)
+                    (takeout / 81).toString() else takeout.toString(),
+                modifier = Modifier.padding(horizontal = 10.dp).align(Alignment.CenterVertically),
+                onValueChange = {
+                    takeout = if (it.trim().isEmpty()) 0 else try {
+                        if (output.isFluid)
+                            it.trim().toLong().coerceAtLeast(0) * 81
+                        else
+                            it.trim().toLong().coerceAtLeast(0)
+                    } catch (e: Exception) {
+                        takeout
+                    }
+                    output.takeout = takeout
+                },
+                colors = DefaultTheme.textFieldDefault()
+            )
         }
     }
 }
