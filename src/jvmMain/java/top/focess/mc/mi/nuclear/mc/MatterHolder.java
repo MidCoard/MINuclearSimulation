@@ -1,6 +1,7 @@
 package top.focess.mc.mi.nuclear.mc;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 import top.focess.util.serialize.FocessSerializable;
 
 import java.util.HashMap;
@@ -13,7 +14,6 @@ public class MatterHolder implements FocessSerializable {
     private Matter matter;
     private long amount;
     private Map<String, Object> tag;
-
     private boolean infinite = false;
 
     public MatterHolder(@NonNull MatterVariant matterVariant) {
@@ -37,9 +37,9 @@ public class MatterHolder implements FocessSerializable {
     }
 
     public void setMatterVariant(@NonNull MatterVariant matterVariant, long amount) {
-        this.matter = matterVariant.getMatter();
         if (this.infinite)
             return;
+        this.matter = matterVariant.getMatter();
         this.tag = new HashMap<>(matterVariant.getTag());
         this.amount = amount;
         if (matterVariant instanceof ItemVariant && matterVariant.getMatter() != null)
@@ -72,9 +72,9 @@ public class MatterHolder implements FocessSerializable {
     }
 
     public void setMatterVariant(@NonNull MatterVariant matterVariant) {
-        this.matter = matterVariant.getMatter();
         if (infinite)
             return;
+        this.matter = matterVariant.getMatter();
         this.tag = new HashMap<>(matterVariant.getTag());
     }
 
@@ -83,7 +83,7 @@ public class MatterHolder implements FocessSerializable {
             if (this.getMatterVariant() instanceof ItemVariant)
                 return this.matter == null ? 0 : ((ItemVariant) this.getMatterVariant()).getItem().getMaxCount();
             else
-                return this.matter == null ? 0 : 999999L;
+                return this.matter == null ? 0 : 999999 * 81000L;
         return amount;
     }
 
@@ -140,5 +140,27 @@ public class MatterHolder implements FocessSerializable {
 
     public void setInfinite(boolean infinite) {
         this.infinite = infinite;
+        if (this.infinite)
+            if (this.getMatterVariant() instanceof ItemVariant)
+                this.amount =  this.matter == null ? 0 : ((ItemVariant) this.getMatterVariant()).getItem().getMaxCount();
+            else
+                this.amount =  this.matter == null ? 0 : 999999 * 81000L;
+    }
+
+    public boolean isFluid() {
+        return isFluid;
+    }
+
+    public void setMatterVariant(boolean infinite, @NotNull MatterVariant matterVariant, long amount) {
+        this.infinite = infinite;
+        this.matter = matterVariant.getMatter();
+        this.tag = new HashMap<>(matterVariant.getTag());
+        if (this.infinite)
+            if (this.getMatterVariant() instanceof ItemVariant)
+                this.amount =  this.matter == null ? 0 : ((ItemVariant) this.getMatterVariant()).getItem().getMaxCount();
+            else
+                this.amount =  this.matter == null ? 0 : 999999 * 81000L;
+        else
+            this.amount = amount;
     }
 }

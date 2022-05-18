@@ -23,11 +23,15 @@
  */
 package aztech.modern_industrialization.machines.components;
 
+import com.google.common.collect.Maps;
+import org.jetbrains.annotations.Nullable;
 import top.focess.mc.mi.nuclear.mc.Fluid;
 import top.focess.mc.mi.nuclear.mc.FluidVariant;
 import top.focess.mc.mi.nuclear.mc.Fluids;
 import top.focess.mc.mi.nuclear.mc.MatterHolder;
 import top.focess.mc.mi.nuclear.mi.MINuclearInventory;
+
+import java.util.Map;
 
 public class SteamHeaterComponent extends TemperatureComponent {
 
@@ -93,8 +97,28 @@ public class SteamHeaterComponent extends TemperatureComponent {
             long extracted = input.extract(waterKey, steamProduction / STEAM_TO_WATER);
             if (output.output(steamKey, extracted * STEAM_TO_WATER) != extracted * STEAM_TO_WATER)
                 throw new IllegalStateException("Steam Component : Logic bug: failed to insert");
+            else {
+                double euProduced = extracted * STEAM_TO_WATER * euPerSteamMb / 81d;
+                decreaseTemperature(euProduced / euPerDegree);
+                return euProduced;
+            }
         }
         return 0;
+    }
 
+    @Nullable
+    @Override
+    public Map<String, Object> serialize() {
+        Map<String, Object> map = Maps.newHashMap();
+        map.put("maxEuProduction", maxEuProduction);
+        map.put("euPerDegree", euPerDegree);
+        map.put("acceptLowPressure", acceptLowPressure);
+        map.put("acceptHighPressure", acceptHighPressure);
+        return map;
+    }
+
+    public static SteamHeaterComponent deserialize(Map<String, Object> map) {
+        return new SteamHeaterComponent((double) map.get("temperatureMax"), (long) map.get("maxEuProduction"),
+                (long) map.get("euPerDegree"), (boolean) map.get("acceptLowPressure"), (boolean) map.get("acceptHighPressure"));
     }
 }

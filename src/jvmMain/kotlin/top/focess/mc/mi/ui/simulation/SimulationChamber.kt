@@ -281,7 +281,7 @@ fun inputView(lang: Lang, holder: MatterHolder) {
                     lang.get("simulation", "input"),
                     modifier = Modifier.align(Alignment.Center).fillMaxSize(),
                 )
-                Text(text = if(holder.isInfinite) lang.get("simulation","infinite") else holder.amount.toString(),
+                Text(text = if(holder.isInfinite) lang.get("simulation","infinite") else if (!holder.isFluid) holder.amount.toString() else ((holder.amount / 81000).toString() + "B(" + holder.amount % 81000 / 81 + "mb[" + holder.amount % 81000 % 81 + "/81])"),
                     style = TextStyle(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold),
@@ -354,7 +354,7 @@ fun outputView(lang: Lang, holders: List<MatterHolder>) {
                         lang.get("simulation", "output"),
                         modifier = Modifier.align(Alignment.Center).fillMaxSize(),
                     )
-                    Text(text = if(holder.isInfinite) lang.get("simulation","infinite") else holder.amount.toString(),
+                    Text(text = if(holder.isInfinite) lang.get("simulation","infinite") else if (!holder.isFluid) holder.amount.toString() else ((holder.amount / 81000).toString() + "B(" + holder.amount % 81000 / 81 + "mb[" + holder.amount % 81000 % 81 + "/81])"),
                         style = TextStyle(
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold),

@@ -51,6 +51,4 @@ public interface INuclearTile extends INuclearTileData, FocessSerializable {
     int neutronGenerationTick(INuclearGrid grid);
 
     void nuclearTick(INuclearGrid grid);
-
-    void tick();
 }

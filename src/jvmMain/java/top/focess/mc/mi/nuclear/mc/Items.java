@@ -6,8 +6,6 @@ import aztech.modern_industrialization.nuclear.NuclearComponentItem;
 import aztech.modern_industrialization.nuclear.NuclearConstant;
 
 public class Items {
-
-
     public static final Item CARBON_LARGE_PLATE = NuclearAbsorbable
             .of("carbon_large_plate", 2500, 2 * NuclearConstant.BASE_HEAT_CONDUCTION,
                     INeutronBehaviour.of(NuclearConstant.ScatteringType.MEDIUM, NuclearConstant.CARBON,

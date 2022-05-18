@@ -55,6 +55,8 @@
       "confirm": "确认",
       "cancel": "取消",
       "infinite": "无限",
+      "empty-input": "清空输入",
+      "empty-output": "清空输出",
       "tooltip": {
         "item": "切换到该类型会导致输出物品丢失",
         "fluid": "切换到该类型会导致输出流体丢失"

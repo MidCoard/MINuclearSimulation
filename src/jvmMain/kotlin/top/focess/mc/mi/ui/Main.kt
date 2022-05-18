@@ -80,8 +80,9 @@ fun Simulator(lang: Lang, globalState: GlobalState, globalAction: GlobalAction) 
 @Preview
 fun main() =
     application {
-
+        Class.forName("top.focess.mc.mi.nuclear.mc.Items")
         Class.forName("top.focess.mc.mi.nuclear.mi.MIItems")
+        Class.forName("top.focess.mc.mi.nuclear.mc.Fluids")
         val icon = painterResource("logo.png")
         var lang by remember { mutableStateOf(Lang.default) }
         val globalState by remember { mutableStateOf(GlobalState(lang)) }

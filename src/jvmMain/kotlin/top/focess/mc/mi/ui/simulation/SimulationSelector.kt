@@ -23,6 +23,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import aztech.modern_industrialization.machines.blockentities.hatches.NuclearHatch
 import top.focess.mc.mi.nuclear.mc.FluidVariant
+import top.focess.mc.mi.nuclear.mc.ItemVariant
 import top.focess.mc.mi.nuclear.mc.Matter
 import top.focess.mc.mi.nuclear.mc.MatterVariant
 import top.focess.mc.mi.nuclear.mi.Texture
@@ -135,7 +136,7 @@ fun simulationSelector(window: SimulationSelectorWindowState) = Window(
 
     val nuclearHatch = window.nuclearHatch
     var matterVariant: MatterVariant by remember { mutableStateOf(window.nuclearHatch.inventory.input().matterVariant) }
-    var amount: Long by remember{mutableStateOf(window.nuclearHatch.inventory.input().amount)}
+    var amount: Long by remember{mutableStateOf(window.nuclearHatch.inventory.input().amount / 81000)}
     var isFluid by remember { mutableStateOf(nuclearHatch.isFluid) }
     var isInfinite by remember { mutableStateOf(nuclearHatch.inventory.input().isInfinite) }
 
@@ -240,8 +241,9 @@ fun simulationSelector(window: SimulationSelectorWindowState) = Window(
                         modifier = Modifier.align(Alignment.CenterVertically).padding(10.dp, 5.dp),
                         onClick = {
                             val hatch = if (matterVariant is FluidVariant && window.nuclearHatch.isFluid) window.nuclearHatch else NuclearHatch(matterVariant is FluidVariant)
-                            hatch.inventory.input().isInfinite = isInfinite
-                            hatch.inventory.input().setMatterVariant(matterVariant, amount)
+                            if (hatch.isFluid)
+                                hatch.inventory.input().setMatterVariant(isInfinite, matterVariant, amount * 81000L)
+                            else hatch.inventory.input().setMatterVariant(isInfinite,matterVariant, amount)
                             window.updateNuclearHatch(hatch)
                             window.close()
                         },
@@ -254,6 +256,27 @@ fun simulationSelector(window: SimulationSelectorWindowState) = Window(
                             window.close()
                         },
                         content = { Text(window.lang.get("simulation", "selector", "cancel")) }
+                    )
+                }
+
+                Row {
+                    Button(
+                        modifier = Modifier.align(Alignment.CenterVertically).padding(10.dp, 5.dp),
+                        onClick = {
+                            nuclearHatch.inventory.input().isInfinite = false
+                            nuclearHatch.inventory.input().setMatterVariant(if (nuclearHatch.isFluid) FluidVariant.blank() else ItemVariant.blank(), 0)
+                            window.close()
+                        },
+                        content = { Text(window.lang.get("simulation", "selector", "empty-input")) }
+                    )
+
+                    Button(
+                        modifier = Modifier.align(Alignment.CenterVertically).padding(10.dp, 5.dp),
+                        onClick = {
+                            nuclearHatch.inventory.output.clear()
+                            window.close()
+                        },
+                        content = { Text(window.lang.get("simulation", "selector", "empty-output")) }
                     )
                 }
             }

@@ -65,18 +65,18 @@ public class NuclearHatch implements INuclearTile {
         return inventory;
     }
 
-    public final void tick() {
-        if (isFluid) {
-            fluidNeutronProductTick(1, true);
-        } else {
-            ItemVariant itemVariant = (ItemVariant) this.getVariant();
-            if (!itemVariant.isBlank() && itemVariant.getItem() instanceof NuclearAbsorbable abs) {
-                if (abs.getNeutronProduct() != null) {
-                    this.inventory.output(abs.getNeutronProduct(), abs.getNeutronProductAmount());
-                }
-            }
-        }
-    }
+//    public final void tick() {
+//        if (isFluid) {
+//            fluidNeutronProductTick(1, true);
+//        } else {
+//            ItemVariant itemVariant = (ItemVariant) this.getVariant();
+//            if (!itemVariant.isBlank() && itemVariant.getItem() instanceof NuclearAbsorbable abs) {
+//                if (abs.getNeutronProduct() != null) {
+//                    this.inventory.output(abs.getNeutronProduct(), abs.getNeutronProductAmount());
+//                }
+//            }
+//         }
+//    }
 
     @Override
     public double getTemperature() {

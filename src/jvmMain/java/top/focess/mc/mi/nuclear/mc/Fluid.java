@@ -26,7 +26,7 @@ public class Fluid extends Matter {
         for (Fluid fluid : FLUIDS)
             if (fluid.getNamespace().equals(namespace) && fluid.getName().equals(name))
                 return fluid;
-        return null;
+        throw new IllegalArgumentException("Fluid not found!");
     }
 
     public Color getColor() {
