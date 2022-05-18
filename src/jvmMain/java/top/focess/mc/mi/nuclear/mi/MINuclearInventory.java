@@ -70,8 +70,7 @@ public class MINuclearInventory implements FocessSerializable {
 
     public void setOutputCount(int outputCount) {
         this.outputCount = outputCount;
-        if (this.outputMatterHolders.size() < outputCount)
-            while (this.outputMatterHolders.size() < outputCount)
-                this.outputMatterHolders.add(new OutputMatterHolder(this.input.isFluid()));
+        while (this.outputMatterHolders.size() < outputCount)
+            this.outputMatterHolders.add(new OutputMatterHolder(this.input.isFluid()));
     }
 }

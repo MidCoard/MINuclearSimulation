@@ -307,7 +307,8 @@ fun simulationSelector(window: SimulationSelectorWindowState) = Window(
                     Button(
                         modifier = Modifier.align(Alignment.CenterVertically).padding(10.dp, 5.dp),
                         onClick = {
-                            nuclearHatch.inventory.output.clear()
+                            for (holder in nuclearHatch.inventory.output)
+                                holder.empty()
                             window.close()
                         },
                         content = { Text(window.lang.get("simulation", "selector", "empty-output")) }
