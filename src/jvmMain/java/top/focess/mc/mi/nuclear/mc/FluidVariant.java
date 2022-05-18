@@ -30,4 +30,8 @@ public class FluidVariant extends MatterVariant {
     public Fluid getFluid() {
         return (Fluid) this.getMatter();
     }
+
+    public static FluidVariant deserialize(@NonNull Map<String, Object> map) {
+        return FluidVariant.of((Fluid) map.get("matter"), (Map<String, Object>) map.get("tag"));
+    }
 }

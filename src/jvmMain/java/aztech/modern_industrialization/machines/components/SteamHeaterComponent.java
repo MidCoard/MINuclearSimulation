@@ -97,7 +97,7 @@ public class SteamHeaterComponent extends TemperatureComponent {
                 long actual = output / STEAM_TO_WATER;
                 if (actual != input.extract(waterKey, actual))
                     throw new IllegalStateException("Extract failed");
-                else if (output != outputInventory.tryOutput(steamKey, output))
+                else if (output != outputInventory.output(steamKey, output))
                     throw new IllegalStateException("Output failed");
                 else {
                     double euProduced = extracted * STEAM_TO_WATER * euPerSteamMb / 81d;
@@ -117,11 +117,15 @@ public class SteamHeaterComponent extends TemperatureComponent {
         map.put("euPerDegree", euPerDegree);
         map.put("acceptLowPressure", acceptLowPressure);
         map.put("acceptHighPressure", acceptHighPressure);
+        map.put("temperatureMax", temperatureMax);
+        map.put("temperature", getTemperature());
         return map;
     }
 
     public static SteamHeaterComponent deserialize(Map<String, Object> map) {
-        return new SteamHeaterComponent((double) map.get("temperatureMax"), (long) map.get("maxEuProduction"),
+        SteamHeaterComponent ret = new SteamHeaterComponent((double) map.get("temperatureMax"), (long) map.get("maxEuProduction"),
                 (long) map.get("euPerDegree"), (boolean) map.get("acceptLowPressure"), (boolean) map.get("acceptHighPressure"));
+        ret.setTemperature((double) map.get("temperature"));
+        return ret;
     }
 }

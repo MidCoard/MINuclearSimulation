@@ -2,13 +2,14 @@ package top.focess.mc.mi.nuclear.mc;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.Nullable;
+import top.focess.util.serialize.FocessSerializable;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public abstract class MatterVariant {
+public abstract class MatterVariant implements FocessSerializable {
 
     private final Matter matter;
     private final Map<String, Object> tag;
@@ -72,5 +73,14 @@ public abstract class MatterVariant {
             return "Empty";
         else
             return this.matter.toString() + ":" + this.tag;
+    }
+
+    @Nullable
+    @Override
+    public Map<String, Object> serialize() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("matter", this.matter);
+        map.put("tag", this.tag);
+        return map;
     }
 }

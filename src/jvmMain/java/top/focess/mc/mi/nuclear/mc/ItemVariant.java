@@ -36,4 +36,8 @@ public class ItemVariant extends MatterVariant {
         return (Item) this.getMatter();
     }
 
+    public static ItemVariant deserialize(Map<String,Object> map) {
+        return ItemVariant.of((Item) map.get("matter"), (Map<String, Object>) map.get("tag"));
+    }
+
 }
