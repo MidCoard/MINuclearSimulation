@@ -34,7 +34,7 @@ public class NuclearSimulation implements FocessSerializable {
                 if (isValid.test(i, j)) {
                     MatterVariant matterVariant = variantSupplier.apply(i, j);
                     NuclearHatch nuclearHatch = new NuclearHatch(matterVariant instanceof FluidVariant);
-                    nuclearHatch.getInventory().input().setMatterVariant(matterVariant, 1);
+                    nuclearHatch.getInventory().getInput().setMatterVariant(matterVariant, 1);
                     tiles[i][j] = nuclearHatch;
                 }
         this.nuclearGrid = new NuclearGrid(size, new IntegerHistoryComponent(new String[]{"euProduction", "euFuelConsumption"}, 300), tiles);

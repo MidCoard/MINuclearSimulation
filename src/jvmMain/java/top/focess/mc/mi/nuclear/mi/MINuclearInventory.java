@@ -1,9 +1,6 @@
 package top.focess.mc.mi.nuclear.mi;
 
-import top.focess.mc.mi.nuclear.mc.FluidVariant;
-import top.focess.mc.mi.nuclear.mc.ItemVariant;
-import top.focess.mc.mi.nuclear.mc.MatterHolder;
-import top.focess.mc.mi.nuclear.mc.MatterVariant;
+import top.focess.mc.mi.nuclear.mc.*;
 import top.focess.util.serialize.FocessSerializable;
 
 import java.util.ArrayList;
@@ -11,44 +8,69 @@ import java.util.List;
 
 public class MINuclearInventory implements FocessSerializable {
 
-    private final List<MatterHolder> matters = new ArrayList<>();
+    private final InputMatterHolder input;
+    private final List<OutputMatterHolder> outputMatterHolders = new ArrayList<>();
+
+    private int outputCount = 100;
 
     public MINuclearInventory(boolean isFluid) {
-        for (int i = 0; i < 2; i++)
-            if (isFluid)
-                matters.add(new MatterHolder(FluidVariant.blank()));
-            else
-                matters.add(new MatterHolder(ItemVariant.blank()));
+        this.input = new InputMatterHolder(isFluid);
     }
 
-    public MatterHolder input() {
-        return matters.get(0);
+    public InputMatterHolder getInput() {
+        return input;
     }
 
-    public List<MatterHolder> getOutput() {
-        return this.matters.subList(1, matters.size());
+    public List<OutputMatterHolder> getOutput() {
+        return this.outputMatterHolders.subList(0, outputMatterHolders.size());
     }
 
+    // return the amount that has been inserted
+    public long tryOutput(MatterVariant matterVariant, long amount) {
+        long before = amount;
+        List<OutputMatterHolder> copy = new ArrayList<>(outputMatterHolders.stream().map(OutputMatterHolder::copy).toList());
+        for (OutputMatterHolder outputMatterHolder : copy) {
+            amount = outputMatterHolder.insertMatterVariant(matterVariant, amount);
+            if (amount == 0)
+                break;
+        }
+        if (amount != 0)
+            while (copy.size() < this.outputCount) {
+                OutputMatterHolder outputMatterHolder = new OutputMatterHolder(this.input.isFluid());
+                amount = outputMatterHolder.insertMatterVariant(matterVariant, amount);
+                copy.add(outputMatterHolder);
+                if (amount == 0)
+                    break;
+            }
+        return before - amount;
+    }
+
+    // just output, ignore the amount
     public long output(MatterVariant matterVariant, long amount) {
-        for (int i = 1; i < matters.size(); i++)
-            if (matters.get(i).addMatterVariant(matterVariant, amount))
-                return amount;
-        this.matters.add(new MatterHolder(matterVariant, amount));
-        return amount;
+        long before = amount;
+        for (OutputMatterHolder outputMatterHolder : this.outputMatterHolders) {
+            amount = outputMatterHolder.insertMatterVariant(matterVariant, amount);
+            if (amount == 0)
+                break;
+        }
+        if (amount != 0)
+            while (this.outputMatterHolders.size() < this.outputCount) {
+                OutputMatterHolder outputMatterHolder = new OutputMatterHolder(this.input.isFluid());
+                amount = outputMatterHolder.insertMatterVariant(matterVariant, amount);
+                this.outputMatterHolders.add(outputMatterHolder);
+                if (amount == 0)
+                    break;
+            }
+        return before - amount;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        MINuclearInventory that = (MINuclearInventory) o;
-
-        return matters.equals(that.matters);
+    public int getOutputCount() {
+        return outputCount;
     }
 
-    @Override
-    public int hashCode() {
-        return matters.hashCode();
+    public void setOutputCount(int outputCount) {
+        this.outputCount = outputCount;
+        if (this.outputMatterHolders.size() > outputCount)
+            this.outputMatterHolders.subList(outputCount, outputMatterHolders.size()).clear();
     }
 }

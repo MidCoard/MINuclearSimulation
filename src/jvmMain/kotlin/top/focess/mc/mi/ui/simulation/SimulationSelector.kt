@@ -135,10 +135,10 @@ fun simulationSelector(window: SimulationSelectorWindowState) = Window(
 ) {
 
     val nuclearHatch = window.nuclearHatch
-    var matterVariant: MatterVariant by remember { mutableStateOf(window.nuclearHatch.inventory.input().matterVariant) }
-    var amount: Long by remember{mutableStateOf(window.nuclearHatch.inventory.input().amount / 81000)}
+    var matterVariant: MatterVariant by remember { mutableStateOf(window.nuclearHatch.inventory.getInput().matterVariant) }
+    var amount: Long by remember{mutableStateOf(window.nuclearHatch.inventory.getInput().amount / 81000)}
     var isFluid by remember { mutableStateOf(nuclearHatch.isFluid) }
-    var isInfinite by remember { mutableStateOf(nuclearHatch.inventory.input().isInfinite) }
+    var isInfinite by remember { mutableStateOf(nuclearHatch.inventory.getInput().isInfinite) }
 
 
     MaterialTheme(colors = DefaultTheme.default) {
@@ -242,8 +242,8 @@ fun simulationSelector(window: SimulationSelectorWindowState) = Window(
                         onClick = {
                             val hatch = if (matterVariant is FluidVariant && window.nuclearHatch.isFluid) window.nuclearHatch else NuclearHatch(matterVariant is FluidVariant)
                             if (hatch.isFluid)
-                                hatch.inventory.input().setMatterVariant(isInfinite, matterVariant, amount * 81000L)
-                            else hatch.inventory.input().setMatterVariant(isInfinite,matterVariant, amount)
+                                hatch.inventory.getInput().setMatterVariant(isInfinite, matterVariant, amount * 81000L)
+                            else hatch.inventory.getInput().setMatterVariant(isInfinite,matterVariant, amount)
                             window.updateNuclearHatch(hatch)
                             window.close()
                         },
@@ -260,11 +260,46 @@ fun simulationSelector(window: SimulationSelectorWindowState) = Window(
                 }
 
                 Row {
+
+                    Text(
+                        text = window.lang.get("simulation", "selector", "output"),
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                        color = Color.Black
+                    )
+
+                    OutlinedTextField(
+                        amount.toString(),
+                        modifier = Modifier.padding(horizontal = 10.dp).align(Alignment.CenterVertically),
+                        enabled = !isInfinite,
+                        onValueChange = {
+                            amount = if (it.trim().isEmpty()) 0 else try {
+                                it.trim().toLong()
+                            } catch (e: Exception) {
+                                amount
+                            }
+                        },
+                        colors = DefaultTheme.textFieldDefault()
+                    )
+
+                    Checkbox(
+                        checked = isInfinite,
+                        onCheckedChange = { isInfinite = it },
+                        modifier = Modifier.padding(horizontal = 10.dp).align(Alignment.CenterVertically),
+                        colors = DefaultTheme.checkboxDefault()
+                    )
+
+                    Text(
+                        text = window.lang.get("simulation", "selector", "infinite"),
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                        color = Color.Black
+                    )
+                }
+
+                Row {
                     Button(
                         modifier = Modifier.align(Alignment.CenterVertically).padding(10.dp, 5.dp),
                         onClick = {
-                            nuclearHatch.inventory.input().isInfinite = false
-                            nuclearHatch.inventory.input().setMatterVariant(if (nuclearHatch.isFluid) FluidVariant.blank() else ItemVariant.blank(), 0)
+                            nuclearHatch.inventory.getInput().setMatterVariant(false,if (nuclearHatch.isFluid) FluidVariant.blank() else ItemVariant.blank(), 0)
                             window.close()
                         },
                         content = { Text(window.lang.get("simulation", "selector", "empty-input")) }

@@ -25,7 +25,8 @@ import aztech.modern_industrialization.machines.components.NeutronHistoryCompone
 import aztech.modern_industrialization.machines.components.TemperatureComponent
 import aztech.modern_industrialization.nuclear.NeutronType
 import top.focess.mc.mi.nuclear.NuclearSimulation
-import top.focess.mc.mi.nuclear.mc.MatterHolder
+import top.focess.mc.mi.nuclear.mc.InputMatterHolder
+import top.focess.mc.mi.nuclear.mc.OutputMatterHolder
 import top.focess.mc.mi.nuclear.mi.MINuclearInventory
 import top.focess.mc.mi.nuclear.mi.Texture
 import top.focess.mc.mi.ui.lang.Lang
@@ -236,7 +237,7 @@ fun inventoryViewLayout(
 }
 
 @Composable
-fun inputView(lang: Lang, holder: MatterHolder) {
+fun inputView(lang: Lang, holder: InputMatterHolder) {
 
     Box(Modifier.border(1.dp, DefaultTheme.inputBoarder).fillMaxSize()) {
         if (!holder.matterVariant.isBlank && holder.amount != 0L) {
@@ -309,7 +310,7 @@ fun matterViewLayout(modifier: Modifier,how: Placeable.PlacementScope.(name:Meas
 }
 
 @Composable
-fun outputView(lang: Lang, holders: List<MatterHolder>) {
+fun outputView(lang: Lang, holders: List<OutputMatterHolder>) {
     for (holder in holders) {
         if (!holder.matterVariant.isBlank && holder.amount != 0L)
             Box(Modifier.border(1.dp, DefaultTheme.outputBoarder).fillMaxSize()) {
@@ -354,7 +355,7 @@ fun outputView(lang: Lang, holders: List<MatterHolder>) {
                         lang.get("simulation", "output"),
                         modifier = Modifier.align(Alignment.Center).fillMaxSize(),
                     )
-                    Text(text = if(holder.isInfinite) lang.get("simulation","infinite") else if (!holder.isFluid) holder.amount.toString() else ((holder.amount / 81000).toString() + "B(" + holder.amount % 81000 / 81 + "mb[" + holder.amount % 81000 % 81 + "/81])"),
+                    Text(text = if (!holder.isFluid) holder.amount.toString() else ((holder.amount / 81000).toString() + "B(" + holder.amount % 81000 / 81 + "mb[" + holder.amount % 81000 % 81 + "/81])"),
                         style = TextStyle(
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold),
@@ -392,7 +393,7 @@ fun InventoryView(lang: Lang, inventory: MINuclearInventory) {
                 }
             }
         }) {
-            inputView(lang, inventory.input())
+            inputView(lang, inventory.getInput())
             outputView(lang, inventory.output)
         }
     }

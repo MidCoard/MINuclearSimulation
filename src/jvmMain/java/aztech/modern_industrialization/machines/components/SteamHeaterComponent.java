@@ -25,10 +25,7 @@ package aztech.modern_industrialization.machines.components;
 
 import com.google.common.collect.Maps;
 import org.jetbrains.annotations.Nullable;
-import top.focess.mc.mi.nuclear.mc.Fluid;
-import top.focess.mc.mi.nuclear.mc.FluidVariant;
-import top.focess.mc.mi.nuclear.mc.Fluids;
-import top.focess.mc.mi.nuclear.mc.MatterHolder;
+import top.focess.mc.mi.nuclear.mc.*;
 import top.focess.mc.mi.nuclear.mi.MINuclearInventory;
 
 import java.util.Map;
@@ -67,7 +64,7 @@ public class SteamHeaterComponent extends TemperatureComponent {
     }
 
     // return eu produced
-    public double tick(MatterHolder fluidInputs, MINuclearInventory fluidOutputs) {
+    public double tick(InputMatterHolder fluidInputs, MINuclearInventory fluidOutputs) {
 
         double euProducedLowPressure = 0;
         if (acceptLowPressure) {
@@ -88,19 +85,25 @@ public class SteamHeaterComponent extends TemperatureComponent {
         return euProducedLowPressure + euProducedHighPressure;
     }
 
-    private double tryMakeSteam(MatterHolder input, MINuclearInventory output, Fluid water, Fluid steam, int euPerSteamMb) {
+    private double tryMakeSteam(InputMatterHolder input, MINuclearInventory outputInventory, Fluid water, Fluid steam, int euPerSteamMb) {
         FluidVariant waterKey = FluidVariant.of(water);
         FluidVariant steamKey = FluidVariant.of(steam);
 
         if (getTemperature() > 100d) {
             long steamProduction = (long) (81 * (getTemperature() - 100d) / (temperatureMax - 100d) * maxEuProduction / euPerSteamMb);
-            long extracted = input.extract(waterKey, steamProduction / STEAM_TO_WATER);
-            if (output.output(steamKey, extracted * STEAM_TO_WATER) != extracted * STEAM_TO_WATER)
-                throw new IllegalStateException("Steam Component : Logic bug: failed to insert");
-            else {
-                double euProduced = extracted * STEAM_TO_WATER * euPerSteamMb / 81d;
-                decreaseTemperature(euProduced / euPerDegree);
-                return euProduced;
+            long extracted = input.tryExtract(waterKey, steamProduction / STEAM_TO_WATER);
+            long output = outputInventory.tryOutput(steamKey, extracted * STEAM_TO_WATER);
+            if (output > 0) {
+                long actual = output / STEAM_TO_WATER;
+                if (actual != input.extract(waterKey, actual))
+                    throw new IllegalStateException("Extract failed");
+                else if (output != outputInventory.tryOutput(steamKey, output))
+                    throw new IllegalStateException("Output failed");
+                else {
+                    double euProduced = extracted * STEAM_TO_WATER * euPerSteamMb / 81d;
+                    decreaseTemperature(euProduced / euPerDegree);
+                    return euProduced;
+                }
             }
         }
         return 0;

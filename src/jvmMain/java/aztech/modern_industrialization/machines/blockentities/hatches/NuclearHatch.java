@@ -115,12 +115,12 @@ public class NuclearHatch implements INuclearTile {
 
     @Override
     public MatterVariant getVariant() {
-        return this.inventory.input().getMatterVariant();
+        return this.inventory.getInput().getMatterVariant();
     }
 
     @Override
     public long getVariantAmount() {
-        return this.inventory.input().getAmount();
+        return this.inventory.getInput().getAmount();
     }
 
     @Override
@@ -160,10 +160,14 @@ public class NuclearHatch implements INuclearTile {
                 }
 
                 if (abs.getRemainingDesintegrations(stack) == 0) {
-                    this.inventory.input().setMatterVariant(ItemVariant.blank(), 0);
-                    this.inventory.output(abs.getNeutronProduct(), abs.getNeutronProductAmount());
+                    long output = this.inventory.tryOutput(abs.getNeutronProduct(), abs.getNeutronProductAmount());
+                    if (output == abs.getNeutronProductAmount()) {
+                        this.inventory.getInput().setMatterVariant(ItemVariant.blank(), 0);
+                        if (output != this.inventory.output(abs.getNeutronProduct(), abs.getNeutronProductAmount()))
+                            throw new IllegalStateException("Output failed");
+                    }
                 } else {
-                    this.getInventory().input().setMatterVariant(ItemVariant.of(stack));
+                    this.getInventory().getInput().setMatterVariant(ItemVariant.of(stack));
                 }
 
             }
@@ -189,8 +193,15 @@ public class NuclearHatch implements INuclearTile {
                 }
 
                 if (simul || actualRecipe > 0) {
-                    long extracted = this.inventory.input().extract(component.getVariant(), actualRecipe);
-                    this.inventory.output(component.getNeutronProduct(), extracted * component.getNeutronProductAmount());
+                    long extracted = this.inventory.getInput().tryExtract(component.getVariant(), actualRecipe);
+                    long output = this.inventory.tryOutput(component.getNeutronProduct(), extracted * component.getNeutronProductAmount());
+                    if (output > 0) {
+                        long actual = output / component.getNeutronProductAmount();
+                        if (actual != this.inventory.getInput().extract(component.getVariant(), actual))
+                            throw new IllegalStateException("Extract failed");
+                        else if (output != this.inventory.output(component.getNeutronProduct(), output))
+                            throw new IllegalStateException("Output failed");
+                    }
                 }
             }
         }
@@ -200,7 +211,7 @@ public class NuclearHatch implements INuclearTile {
         if (!isFluid) {
             this.getComponent().ifPresent((component) -> {
                 if (component.getMaxTemperature() < this.getTemperature()) {
-                    this.inventory.input().empty();
+                    this.inventory.getInput().empty();
                 }
             });
         }
@@ -211,7 +222,7 @@ public class NuclearHatch implements INuclearTile {
         fluidNeutronProductTick(randIntFromDouble(neutronHistory.getAverageReceived(NeutronType.BOTH), RANDOM), false);
 
         if (isFluid) {
-            double euProduced = ((SteamHeaterComponent) nuclearReactorComponent).tick(inventory.input(), inventory);
+            double euProduced = ((SteamHeaterComponent) nuclearReactorComponent).tick(inventory.getInput(), inventory);
             grid.registerEuProduction(euProduced);
         }
 
