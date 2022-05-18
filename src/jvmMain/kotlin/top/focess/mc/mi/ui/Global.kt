@@ -100,8 +100,8 @@ class GlobalAction(private val lang: Lang, private val state: GlobalState) {
                 Duration.ofMillis(50)
             )
             state.updateTask = state.scheduler.runTimer({
-                state.isStart = false;
-                state.isStart = true;
+                state.isStart = false
+                state.isStart = true
             }, Duration.ZERO, Duration.ofSeconds(1))
             state.isStart = true
         }

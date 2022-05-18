@@ -393,7 +393,7 @@ fun InventoryView(lang: Lang, inventory: MINuclearInventory) {
                 }
             }
         }) {
-            inputView(lang, inventory.getInput())
+            inputView(lang, inventory.input)
             outputView(lang, inventory.output)
         }
     }
