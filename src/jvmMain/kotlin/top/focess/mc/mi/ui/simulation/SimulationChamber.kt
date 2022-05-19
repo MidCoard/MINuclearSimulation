@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.Placeable
@@ -151,7 +150,7 @@ fun NuclearSimulationCell(
 ) = TooltipArea(tooltip = {
         Surface(
             modifier = Modifier.shadow(4.dp),
-            color = Color(255, 255, 210),
+            color = MaterialTheme.colors.surface,
             shape = RoundedCornerShape(4.dp)
         ) {
             Text(
@@ -160,7 +159,7 @@ fun NuclearSimulationCell(
                     if (isStart) "nuclear-hatch-tooltip-disable" else "nuclear-hatch-tooltip-enable"
                 ),
                 modifier = DefaultTheme.defaultPadding(),
-                color = if (isStart) MaterialTheme.colors.error else MaterialTheme.colors.onPrimary
+                color = if (isStart) MaterialTheme.colors.error else MaterialTheme.colors.onBackground
             )
         }
     }) {

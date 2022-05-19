@@ -1,7 +1,6 @@
 package top.focess.mc.mi.ui// Copyright 2000-2021 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,7 +24,7 @@ import top.focess.mc.mi.ui.theme.DefaultTheme
 @Composable
 fun SimulatorView(lang: Lang, globalState: GlobalState, globalAction: GlobalAction) {
 
-    MaterialTheme(colors = if(isSystemInDarkTheme()) DefaultTheme.dark else DefaultTheme.default) {
+    MaterialTheme(colors = DefaultTheme.getDefault()) {
         Row(Modifier.background(MaterialTheme.colors.background)) {
             Column(Modifier.fillMaxWidth(0.2f)) {
                 GeneralPanel(lang, globalState.isStart, globalState.simulation, globalState.tickTask, globalAction)
@@ -96,6 +95,7 @@ fun WindowView(
         title = "${lang.get("title")} ${globalState.name} ${if (globalState.isSaved) "" else "*"}",
         icon = icon,
         state = state,
+        focusable = true,
     ) {
 
         SimulatorView(lang, globalState, globalAction)
@@ -163,6 +163,19 @@ fun WindowView(
                     saveAndExit()
                 })
             }
+            Menu(lang.get("menu-bar","theme","name"), mnemonic = 'T') {
+                Item(lang.get("menu-bar","theme","dark"), mnemonic = 'D',
+                    enabled = !DefaultTheme.isThemeDark(),
+                    onClick = {
+                    DefaultTheme.setDefaultColor(DefaultTheme.dark)
+                })
+                Item(lang.get("menu-bar","theme","light"), mnemonic = 'L',
+                    enabled = DefaultTheme.isThemeDark(),
+                    onClick = {
+                    DefaultTheme.setDefaultColor(DefaultTheme.light)
+                })
+            }
+
             Menu(lang.get("menu-bar", "language", "name"), mnemonic = 'L') {
                 Item(lang.get("menu-bar", "language", "chinese"), enabled = lang != Lang.zh_CN){ updateLang(Lang.zh_CN) }
                 Item(lang.get("menu-bar", "language", "english"), enabled = lang != Lang.en_US){ updateLang(Lang.en_US) }

@@ -11,7 +11,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.unit.Constraints
@@ -94,17 +93,16 @@ fun simulationSelectorCellLayout(
 @Composable
 fun SimulationCell(lang: Lang, matter: Matter, selected: Boolean, updateMatterVariant: (MatterVariant) -> Unit) {
     val texture = Texture.get(matter)
-    Box(modifier = DefaultTheme.selectedBorder(selected).fillMaxSize()
-        .background(MaterialTheme.colors.secondary)
+    Box(modifier = DefaultTheme.selectedBorderAndBackground(selected).fillMaxSize()
         .clickable {
             updateMatterVariant(MatterVariant.of(matter))
         }) {
         Column {
 
-            Row(Modifier.fillMaxHeight(0.25f)) {
+            Row {
                 Text(
                     lang.get("matter", matter.namespace, matter.name),
-                    style = DefaultTheme.smallerTextStyle(),
+                    style = DefaultTheme.midSmallTextStyle(),
                     modifier = DefaultTheme.defaultPadding()
                 )
             }
@@ -112,7 +110,7 @@ fun SimulationCell(lang: Lang, matter: Matter, selected: Boolean, updateMatterVa
                 Image(
                     bitmap = loadImageBitmap(texture.inputStream),
                     contentDescription = matter.toString(),
-                    modifier = DefaultTheme.defaultPadding().fillMaxSize(1f)
+                    modifier = DefaultTheme.squarePadding().fillMaxSize()
                 )
             }
         }
@@ -144,10 +142,10 @@ fun SelectorOverview(
                 tooltip = {
                     Surface(
                         modifier = Modifier.shadow(4.dp),
-                        color = Color(255, 255, 210),
+                        color = MaterialTheme.colors.surface,
                         shape = RoundedCornerShape(4.dp),
                     ) {
-                        if (isFluid)
+                        if (nuclearHatch.isFluid)
                             Text(
                                 text = lang.get("simulation", "selector", "tooltip", "fluid"),
                                 modifier = DefaultTheme.defaultPadding(),
@@ -167,10 +165,10 @@ fun SelectorOverview(
                 tooltip = {
                     Surface(
                         modifier = Modifier.shadow(4.dp),
-                        color = Color(255, 255, 210),
+                        color = MaterialTheme.colors.surface,
                         shape = RoundedCornerShape(4.dp),
                     ) {
-                        if (!isFluid)
+                        if (!nuclearHatch.isFluid)
                             Text(
                                 text = lang.get("simulation", "selector", "tooltip", "item"),
                                 modifier = DefaultTheme.defaultPadding(),
@@ -182,7 +180,7 @@ fun SelectorOverview(
             ) {
                 Button(
                     onClick = { updateIsFluid(true) },
-                    enabled = isFluid.not(),
+                    enabled = !isFluid,
                     content = { Text(lang.get("simulation", "selector", "fluid")) }
                 )
             }
@@ -229,19 +227,20 @@ fun SelectorOverview(
 
         }
 
-        Box {
+        Box(Modifier.fillMaxHeight(0.5f)) {
             val listState = rememberLazyListState()
             LazyColumn(state = listState) {
                 items(items = inventory.output) {
-                    Item(lang, it)
+                    OutputStatus(lang, it)
                 }
             }
 
             VerticalScrollbar(
-                modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(0.5f),
+                modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
                 adapter = rememberScrollbarAdapter(
                     scrollState = listState
-                )
+                ),
+                style = DefaultTheme.defaultScrollbar()
             )
         }
 
@@ -312,8 +311,8 @@ fun SimulationSelector(window: SimulationSelectorWindowState) = Window(
     title = window.lang.get("simulation", "selector", "name"),
     onCloseRequest = { window.close() },
     focusable = true,
-    alwaysOnTop = true,
     state = window.state,
+    alwaysOnTop = true,
 ) {
 
     val nuclearHatch = window.nuclearHatch
@@ -321,7 +320,7 @@ fun SimulationSelector(window: SimulationSelectorWindowState) = Window(
     var amount by remember { mutableStateOf(nuclearHatch.inventory.input.equalAmount) }
     var isFluid by remember { mutableStateOf(nuclearHatch.isFluid) }
 
-    MaterialTheme(colors = if (isSystemInDarkTheme()) DefaultTheme.dark else DefaultTheme.default) {
+    MaterialTheme(colors = DefaultTheme.getDefault()) {
 
         Row(Modifier.fillMaxSize().background(MaterialTheme.colors.background)) {
             Column(Modifier.fillMaxWidth(0.4f)) {
@@ -364,7 +363,7 @@ fun SimulationSelector(window: SimulationSelectorWindowState) = Window(
 }
 
 @Composable
-fun Item(lang: Lang, output: OutputMatterHolder) {
+fun OutputStatus(lang: Lang, output: OutputMatterHolder) {
     var takeout by remember { mutableStateOf(output.equalTakeout) }
     var maxAmount by remember { mutableStateOf(output.equalOutputMaxAmount) }
     Row {

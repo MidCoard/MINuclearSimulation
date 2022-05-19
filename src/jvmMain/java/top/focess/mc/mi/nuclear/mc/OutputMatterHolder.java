@@ -13,12 +13,13 @@ public class OutputMatterHolder extends MatterHolder{
 
     public OutputMatterHolder(boolean isFluid) {
         super(isFluid ? FluidVariant.blank() : ItemVariant.blank());
+        this.setEqualOutputMaxAmount(-1);
     }
 
     private OutputMatterHolder(boolean isFluid, MatterVariant matterVariant, long amount, long takeout,long outputMaxAmount) {
         super(isFluid, matterVariant, amount);
         this.takeout = takeout;
-        this.setEqualOutputMaxAmount(-1);
+        this.outputMaxAmount = outputMaxAmount;
     }
 
     // return the rest amount of the matter

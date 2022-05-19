@@ -1,7 +1,11 @@
 package top.focess.mc.mi.ui.theme
 
+import androidx.compose.foundation.ScrollbarStyle
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,7 +21,7 @@ object DefaultTheme {
     fun defaultTextField() = TextFieldDefaults.outlinedTextFieldColors(
         textColor = MaterialTheme.colors.onBackground,
         unfocusedBorderColor = MaterialTheme.colors.secondaryVariant,
-        backgroundColor = MaterialTheme.colors.secondary
+        backgroundColor = MaterialTheme.colors.secondary,
     )
 
     @Composable
@@ -36,6 +40,9 @@ object DefaultTheme {
 
     @Composable
     fun defaultPadding() = Modifier.padding(10.dp,5.dp)
+
+    @Composable
+    fun squarePadding() = Modifier.padding(10.dp)
 
     @Composable
     fun smallTextStyle() = TextStyle(
@@ -58,10 +65,36 @@ object DefaultTheme {
     )
 
     @Composable
+    fun midSmallTextStyle() = TextStyle(
+        fontSize = 12.sp,
+        fontStyle = FontStyle.Normal,
+        color = MaterialTheme.colors.onBackground
+    )
+
+    @Composable
     fun selectedBorder(selected: Boolean) = if (selected) selectedBorder() else defaultBorder()
 
+    @Composable
+    fun selectedBorderAndBackground(selected: Boolean) = if(selected) selectedBorder(selected).background(color = MaterialTheme.colors.primary) else selectedBorder(selected).background(color = MaterialTheme.colors.secondary)
+
+    @Composable
+    fun defaultScrollbar() = ScrollbarStyle(
+        hoverColor = MaterialTheme.colors.secondaryVariant,
+        unhoverColor = MaterialTheme.colors.secondaryVariant.copy(0.5f),
+        minimalHeight = 16.dp,
+        thickness = 8.dp,
+        shape = RoundedCornerShape(4.dp),
+        hoverDurationMillis = 300,
+    )
+
+    private var default:Colors? = null;
+
+    fun setDefaultColor(colors: Colors) {
+        default = colors
+    }
+
     private val lightBlue = Color(0xFFD4EBF2)
-    private val littleLightBlue = Color(0xFF7AC1D7)
+    private val littleLightBlue = Color(0xFF3FA6C5)
     private val deepLightBlue = Color(0xFF99D0E0)
     private val textColor = Color(0xFF1E1E1E);
 
@@ -72,18 +105,27 @@ object DefaultTheme {
 
     private val lightGray = Color(0xFF7B7B7B)
 
-    val default = lightColors(
+
+    val light = lightColors(
         background = lightBlue,
-        primary = deepLightBlue,
+        primary = littleLightBlue,
         onBackground = textColor,
-        secondary = littleLightBlue,
-        secondaryVariant = Color.Black.copy(alpha = 0.5f)
+        secondary = deepLightBlue,
+        secondaryVariant = Color.Black.copy(alpha = 0.5f),
     )
+
     val dark = darkColors(
         background = darkBlue,
         primary = deepDarkBlue,
         onBackground = lightTextColor,
         secondary = lightDarkBlue,
-        secondaryVariant = lightGray
+        secondaryVariant = lightGray,
     )
+
+    @Composable
+    fun isThemeDark() = if (default != null) default == dark else isSystemInDarkTheme()
+
+    @Composable
+    fun getDefault() = default ?: if (isSystemInDarkTheme()) dark else light
+
 }

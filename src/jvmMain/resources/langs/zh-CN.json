@@ -20,6 +20,11 @@
       "name": "语言",
       "english": "英语",
       "chinese": "中文"
+    },
+    "theme": {
+      "name": "主题",
+      "light": "亮色",
+      "dark": "暗色"
     }
   },
   "dialog": {
