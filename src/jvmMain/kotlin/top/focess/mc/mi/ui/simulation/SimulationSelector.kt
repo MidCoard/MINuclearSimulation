@@ -136,7 +136,7 @@ fun simulationSelector(window: SimulationSelectorWindowState) = Window(
 
     val nuclearHatch = window.nuclearHatch
     var matterVariant by remember { mutableStateOf(window.nuclearHatch.inventory.input.matterVariant) }
-    var amount by remember{mutableStateOf(window.nuclearHatch.inventory.input.amount / 81)}
+    var amount by remember {mutableStateOf(if (nuclearHatch.isFluid)window.nuclearHatch.inventory.input.amount/81 else window.nuclearHatch.inventory.input.amount)}
     var isFluid by remember { mutableStateOf(nuclearHatch.isFluid) }
     var isInfinite by remember { mutableStateOf(nuclearHatch.inventory.input.isInfinite) }
     var outputCount by remember { mutableStateOf(nuclearHatch.inventory.outputCount) }
