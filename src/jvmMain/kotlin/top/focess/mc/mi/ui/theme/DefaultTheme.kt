@@ -1,7 +1,6 @@
 package top.focess.mc.mi.ui.theme
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -15,25 +14,15 @@ import androidx.compose.ui.unit.sp
 object DefaultTheme {
 
     @Composable
-    fun defaultTextField() = if (isSystemInDarkTheme()) darkTextField() else lightTextField()
-
-    @Composable
-    fun lightTextField() = TextFieldDefaults.outlinedTextFieldColors(
+    fun defaultTextField() = TextFieldDefaults.outlinedTextFieldColors(
         textColor = MaterialTheme.colors.onBackground,
         unfocusedBorderColor = MaterialTheme.colors.secondaryVariant,
         backgroundColor = MaterialTheme.colors.secondary
     )
 
     @Composable
-    fun darkTextField() = TextFieldDefaults.outlinedTextFieldColors(
-        textColor = MaterialTheme.colors.onBackground,
-        unfocusedBorderColor = MaterialTheme.colors.secondaryVariant,
-        backgroundColor = MaterialTheme.colors.secondary
-    )
-
-    @Composable
-    fun checkboxDefault() = CheckboxDefaults.colors(
-        uncheckedColor = Color.Black
+    fun defaultCheckBox() = CheckboxDefaults.colors(
+        uncheckedColor = MaterialTheme.colors.secondary
     )
 
     @Composable

@@ -89,4 +89,8 @@ public class InputMatterHolder extends MatterHolder {
         super.setMatterVariant0(matterVariant);
         this.checkInfinite();
     }
+
+    public long getEqualAmount() {
+        return isFluid ? this.getAmount() / 81 : this.getAmount();
+    }
 }

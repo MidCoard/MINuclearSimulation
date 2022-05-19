@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,7 +14,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.res.loadImageBitmap
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -25,13 +23,25 @@ import aztech.modern_industrialization.machines.blockentities.hatches.NuclearHat
 import top.focess.mc.mi.nuclear.mc.*
 import top.focess.mc.mi.nuclear.mi.Texture
 import top.focess.mc.mi.ui.lang.Lang
+import top.focess.mc.mi.ui.textfield.IntTextField
+import top.focess.mc.mi.ui.textfield.LongTextField
 import top.focess.mc.mi.ui.theme.DefaultTheme
 
 class SimulationSelectorState {
     val windows = mutableStateListOf<SimulationSelectorWindowState>()
     fun newWindow(lang: Lang, x: Int, y: Int, nuclearHatch: NuclearHatch, updateNuclearHatch: (NuclearHatch?) -> Unit) {
         if (windows.firstOrNull { it.x == x && it.y == y } == null)
-            windows.add(SimulationSelectorWindowState(lang, x, y, nuclearHatch, updateNuclearHatch, WindowState(size = DpSize(1200.dp, 900.dp)), windows::remove))
+            windows.add(
+                SimulationSelectorWindowState(
+                    lang,
+                    x,
+                    y,
+                    nuclearHatch,
+                    updateNuclearHatch,
+                    WindowState(size = DpSize(1200.dp, 900.dp)),
+                    windows::remove
+                )
+            )
     }
 }
 
@@ -82,13 +92,13 @@ fun simulationSelectorCellLayout(
 }
 
 @Composable
-fun SimulationCell(lang: Lang, matter: Matter, selected: Boolean, updateMatterVariant: (MatterVariant) -> Unit){
+fun SimulationCell(lang: Lang, matter: Matter, selected: Boolean, updateMatterVariant: (MatterVariant) -> Unit) {
     val texture = Texture.get(matter)
     Box(modifier = DefaultTheme.selectedBorder(selected).fillMaxSize()
         .background(MaterialTheme.colors.secondary)
         .clickable {
             updateMatterVariant(MatterVariant.of(matter))
-    }) {
+        }) {
         Column {
 
             Row(Modifier.fillMaxHeight(0.25f)) {
@@ -124,23 +134,29 @@ fun SelectorOverview(
 ) {
     var isInfinite by remember { mutableStateOf(nuclearHatch.inventory.input.isInfinite) }
     var outputCount by remember { mutableStateOf(nuclearHatch.inventory.outputCount) }
+    val inventory = nuclearHatch.inventory
+
+
     Column {
 
         Row {
-            TooltipArea(tooltip = {
-                Surface(
-                    modifier = Modifier.shadow(4.dp),
-                    color = Color(255, 255, 210),
-                    shape = RoundedCornerShape(4.dp),
-                ) {
-                    if (isFluid)
-                        Text(
-                            text = lang.get("simulation", "selector", "tooltip", "fluid"),
-                            modifier = DefaultTheme.defaultPadding(),
-                            color = MaterialTheme.colors.error
-                        )
-                } },
-                modifier = DefaultTheme.defaultPadding().align(Alignment.CenterVertically)) {
+            TooltipArea(
+                tooltip = {
+                    Surface(
+                        modifier = Modifier.shadow(4.dp),
+                        color = Color(255, 255, 210),
+                        shape = RoundedCornerShape(4.dp),
+                    ) {
+                        if (isFluid)
+                            Text(
+                                text = lang.get("simulation", "selector", "tooltip", "fluid"),
+                                modifier = DefaultTheme.defaultPadding(),
+                                color = MaterialTheme.colors.error
+                            )
+                    }
+                },
+                modifier = DefaultTheme.defaultPadding().align(Alignment.CenterVertically)
+            ) {
                 Button(
                     onClick = { updateIsFluid(false) },
                     enabled = isFluid,
@@ -162,36 +178,32 @@ fun SelectorOverview(
                             )
                     }
                 },
-                modifier = DefaultTheme.defaultPadding().align(Alignment.CenterVertically)) {
-                    Button(
-                        onClick = { updateIsFluid(true) },
-                        enabled = isFluid.not(),
-                        content = { Text(lang.get("simulation", "selector", "fluid")) }
-                    )
+                modifier = DefaultTheme.defaultPadding().align(Alignment.CenterVertically)
+            ) {
+                Button(
+                    onClick = { updateIsFluid(true) },
+                    enabled = isFluid.not(),
+                    content = { Text(lang.get("simulation", "selector", "fluid")) }
+                )
             }
         }
 
         Row {
-            OutlinedTextField(
-                amount.toString(),
-                modifier = DefaultTheme.defaultPadding().fillMaxWidth(0.6f).align(Alignment.CenterVertically),
+
+            LongTextField(
+                value = amount,
+                modifier = DefaultTheme.defaultPadding().align(Alignment.CenterVertically),
+                colors = DefaultTheme.defaultTextField(),
                 enabled = !isInfinite,
-                onValueChange = {
-                    updateAmount(if (it.trim().isEmpty()) 0 else try {
-                        it.trim().toLong().coerceAtLeast(0)
-                    } catch (e: Exception) {
-                        amount
-                    })
-                },
                 label = { Text(lang.get("simulation", "selector", "input-amount")) },
-                colors = DefaultTheme.defaultTextField()
+                onValueChange = { updateAmount(it) }
             )
 
             Checkbox(
                 checked = isInfinite,
                 onCheckedChange = { isInfinite = it },
-                modifier = Modifier.padding(horizontal = 10.dp).align(Alignment.CenterVertically),
-                colors = DefaultTheme.checkboxDefault()
+                modifier = DefaultTheme.defaultPadding().align(Alignment.CenterVertically),
+                colors = DefaultTheme.defaultCheckBox()
             )
 
             Text(
@@ -205,14 +217,17 @@ fun SelectorOverview(
             Button(
                 modifier = DefaultTheme.defaultPadding().align(Alignment.CenterVertically),
                 onClick = {
-                    val hatch = if (matterVariant is FluidVariant == nuclearHatch.isFluid) nuclearHatch else NuclearHatch(matterVariant is FluidVariant)
+                    val hatch =
+                        if (matterVariant is FluidVariant == nuclearHatch.isFluid) nuclearHatch else NuclearHatch(
+                            matterVariant is FluidVariant
+                        )
                     if (matterVariant is FluidVariant != nuclearHatch.isFluid) {
-                        hatch.inventory.outputCount = outputCount
-                        for (i in 0 until outputCount) {
+                        hatch.inventory.outputCount = inventory.outputCount
+                        for (i in 0 until hatch.inventory.outputCount) {
                             val holder = hatch.inventory.output[i]
                             holder.outputMaxAmount =
-                                nuclearHatch.inventory.output[i].outputMaxAmount * if (isFluid) 1/81 else 81
-                            holder.takeout = nuclearHatch.inventory.output[i].takeout * if (isFluid) 1/81 else 81
+                                inventory.output[i].outputMaxAmount * if (isFluid) 1 / 81 else 81
+                            holder.takeout = inventory.output[i].takeout * if (isFluid) 1 / 81 else 81
                         }
                     }
                     if (hatch.isFluid)
@@ -232,44 +247,37 @@ fun SelectorOverview(
         }
 
         Row {
-            var text by remember { mutableStateOf("") }
 
-            OutlinedTextField(
-//                outputCount.toString()
-                text
-                ,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
-                modifier = Modifier.padding(horizontal = 10.dp).align(Alignment.CenterVertically),
+            IntTextField(value = outputCount,
+                modifier = DefaultTheme.defaultPadding().align(Alignment.CenterVertically),
                 label = { Text(lang.get("simulation", "selector", "output-count")) },
                 onValueChange = {
-                    println("text is :$it")
-                    text = it
-//                    outputCount = if (it.trim().isEmpty()) 0 else try {
-//                        it.trim().toInt().coerceAtLeast(0)
-//                    } catch (e: Exception) {
-//                        outputCount
-//                    }
-//                    outputCount =
-//                    nuclearHatch.inventory.outputCount = outputCount
+                    inventory.outputCount = it
+                    outputCount = it
                 },
                 colors = DefaultTheme.defaultTextField()
             )
+
         }
 
         Row {
             Button(
-                modifier = Modifier.align(Alignment.CenterVertically).padding(10.dp, 5.dp),
+                modifier = DefaultTheme.defaultPadding().align(Alignment.CenterVertically),
                 onClick = {
-                    nuclearHatch.inventory.input.setMatterVariant(false,if (isFluid) FluidVariant.blank() else ItemVariant.blank(), 0)
+                    inventory.input.setMatterVariant(
+                        false,
+                        if (isFluid) FluidVariant.blank() else ItemVariant.blank(),
+                        0
+                    )
                     closeWindow()
                 },
                 content = { Text(lang.get("simulation", "selector", "empty-input")) }
             )
 
             Button(
-                modifier = Modifier.align(Alignment.CenterVertically).padding(10.dp, 5.dp),
+                modifier = DefaultTheme.defaultPadding().align(Alignment.CenterVertically),
                 onClick = {
-                    for (holder in nuclearHatch.inventory.output)
+                    for (holder in inventory.output)
                         holder.empty()
                     closeWindow()
                 },
@@ -280,7 +288,7 @@ fun SelectorOverview(
         Box {
             val listState = rememberLazyListState()
             LazyColumn(state = listState) {
-                items(items = nuclearHatch.inventory.output) {
+                items(items = inventory.output) {
                     Item(lang, it)
                 }
             }
@@ -308,14 +316,23 @@ fun SimulationSelector(window: SimulationSelectorWindowState) = Window(
 
     val nuclearHatch = window.nuclearHatch
     var matterVariant by remember { mutableStateOf(nuclearHatch.inventory.input.matterVariant) }
-    var amount by remember {mutableStateOf(if (nuclearHatch.isFluid) nuclearHatch.inventory.input.amount / 81 else nuclearHatch.inventory.input.amount)}
+    var amount by remember { mutableStateOf(nuclearHatch.inventory.input.equalAmount) }
     var isFluid by remember { mutableStateOf(nuclearHatch.isFluid) }
 
     MaterialTheme(colors = if (isSystemInDarkTheme()) DefaultTheme.dark else DefaultTheme.default) {
-        
+
         Row(Modifier.fillMaxSize().background(MaterialTheme.colors.background)) {
             Column(Modifier.fillMaxWidth(0.4f)) {
-                SelectorOverview(window.lang, nuclearHatch, isFluid,matterVariant,amount, {isFluid = it}, {amount = it}, {window.updateNuclearHatch(it)}, {window.close()})
+                SelectorOverview(
+                    window.lang,
+                    nuclearHatch,
+                    isFluid,
+                    matterVariant,
+                    amount,
+                    { isFluid = it },
+                    { amount = it },
+                    { window.updateNuclearHatch(it) },
+                    { window.close() })
             }
 
             Column {
@@ -347,49 +364,32 @@ fun SimulationSelector(window: SimulationSelectorWindowState) = Window(
 }
 
 @Composable
-fun Item(lang:Lang, output:OutputMatterHolder) {
+fun Item(lang: Lang, output: OutputMatterHolder) {
     var takeout by remember { mutableStateOf(output.takeout) }
     var maxAmount by remember { mutableStateOf(output.outputMaxAmount) }
-    Row{
-        Text(text = lang.get("simulation", "selector", "max-count"),
-            modifier = Modifier.padding(horizontal = 10.dp).align(Alignment.CenterVertically),
-            color = Color.Black)
-        OutlinedTextField(
-            if (output.isFluid)
-            (maxAmount / 81).toString() else maxAmount.toString(),
-            modifier = Modifier.padding(horizontal = 10.dp).align(Alignment.CenterVertically).fillMaxWidth(0.3f),
+    Row {
+        LongTextField(
+           value =  if (output.isFluid)
+                (maxAmount / 81) else maxAmount,
+            modifier = DefaultTheme.defaultPadding().align(Alignment.CenterVertically).fillMaxWidth(0.5f),
             onValueChange = {
-                maxAmount = if (it.trim().isEmpty()) 0 else try {
-                    if (output.isFluid)
-                        it.trim().toLong().coerceAtLeast(-1)  * 81
-                    else
-                        it.trim().toLong().coerceAtLeast(-1)
-                } catch (e: Exception) {
-                    maxAmount
-                }
-                output.outputMaxAmount = maxAmount
+                maxAmount = it
+                output.outputMaxAmount = it
             },
+            label = {Text(lang.get("simulation", "selector", "max-count"))},
             colors = DefaultTheme.defaultTextField()
         )
-        Text(text = lang.get("simulation", "selector", "takeout"),
-            modifier = Modifier.padding(horizontal = 10.dp).align(Alignment.CenterVertically),
-            color = Color.Black)
-        OutlinedTextField(
+
+        LongTextField(
             if (output.isFluid)
-                (takeout / 81).toString() else takeout.toString(),
-            modifier = Modifier.padding(horizontal = 10.dp).align(Alignment.CenterVertically),
+                (takeout / 81) else takeout,
+            modifier = DefaultTheme.defaultPadding().align(Alignment.CenterVertically),
             onValueChange = {
-                takeout = if (it.trim().isEmpty()) 0 else try {
-                    if (output.isFluid)
-                        it.trim().toLong().coerceAtLeast(0) * 81
-                    else
-                        it.trim().toLong().coerceAtLeast(0)
-                } catch (e: Exception) {
-                    takeout
-                }
-                output.takeout = takeout
+                takeout = it
+                output.takeout = it
             },
-            colors = DefaultTheme.defaultTextField()
+            colors = DefaultTheme.defaultTextField(),
+            label = {Text(text = lang.get("simulation", "selector", "takeout"))}
         )
     }
 }
