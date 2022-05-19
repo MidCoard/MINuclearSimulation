@@ -3,6 +3,7 @@ package top.focess.mc.mi.ui.panel
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -14,10 +15,17 @@ import top.focess.mc.mi.ui.lang.Lang
 import top.focess.scheduler.Task
 
 @Composable
-fun GeneralPanel(lang: Lang, isStart: Boolean, simulation: NuclearSimulation?, tickTask: Task?, action: GlobalAction) {
-    Surface(Modifier.padding(10.dp, 5.dp)) {
+fun GeneralPanel(
+    lang: Lang,
+    isStart: Boolean,
+    simulation: NuclearSimulation?,
+    tickTask: Task?,
+    action: GlobalAction
+) {
+    Surface(Modifier.padding(10.dp, 5.dp), color = MaterialTheme.colors.background) {
         Row {
             Button(
+                modifier = Modifier.padding(5.dp),
                 enabled = !isStart && simulation != null,
                 onClick = {
                     action.start()
@@ -26,6 +34,7 @@ fun GeneralPanel(lang: Lang, isStart: Boolean, simulation: NuclearSimulation?, t
             }
 
             Button(
+                modifier = Modifier.padding(5.dp),
                 enabled = isStart && tickTask != null,
                 onClick = {
                     action.stop()

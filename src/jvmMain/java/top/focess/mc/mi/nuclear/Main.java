@@ -36,4 +36,5 @@ public class Main {
         NuclearSimulation simulation1 = yamlConfiguration1.get("simulation");
         System.out.println(simulation.equals(simulation1));
     }
+
 }

@@ -14,25 +14,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.Placeable
-import androidx.compose.ui.res.loadImageBitmap
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import aztech.modern_industrialization.machines.blockentities.hatches.NuclearHatch
 import aztech.modern_industrialization.machines.components.NeutronHistoryComponent
 import aztech.modern_industrialization.machines.components.TemperatureComponent
-import aztech.modern_industrialization.nuclear.NeutronType
 import top.focess.mc.mi.nuclear.NuclearSimulation
-import top.focess.mc.mi.nuclear.mc.InputMatterHolder
-import top.focess.mc.mi.nuclear.mc.OutputMatterHolder
 import top.focess.mc.mi.nuclear.mi.MINuclearInventory
-import top.focess.mc.mi.nuclear.mi.Texture
+import top.focess.mc.mi.ui.*
 import top.focess.mc.mi.ui.lang.Lang
-import top.focess.mc.mi.ui.showTag
-import top.focess.mc.mi.ui.substring
 import top.focess.mc.mi.ui.theme.DefaultTheme
+import top.focess.mc.mi.ui.view.InputView
+import top.focess.mc.mi.ui.view.OutputView
+import top.focess.mc.mi.ui.view.inventoryViewLayout
 
 @Composable
 fun SimulationChamber(
@@ -43,10 +37,30 @@ fun SimulationChamber(
     updateNuclearHatch: (Int, Int, NuclearHatch?) -> Unit
 ) {
     if (simulation != null)
-        nuclearSimulationView(lang, isStart, selectorState, simulation, updateNuclearHatch)
+        NuclearSimulationView(lang, isStart, selectorState, simulation, updateNuclearHatch)
     else
-        emptyView(lang)
+        EmptyView(lang)
 
+}
+
+@Composable
+fun EmptyView(lang: Lang) {
+    Box(Modifier.fillMaxSize()) {
+        Column(Modifier.align(Alignment.Center)) {
+            Icon(
+                Icons.Default.Info,
+                contentDescription = "No Opened Simulation",
+                tint = LocalContentColor.current.copy(alpha = 0.60f),
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+
+            Text(
+                lang.get("simulation", "no-simulation"),
+                style = DefaultTheme.defaultTextStyle(),
+                modifier = Modifier.align(Alignment.CenterHorizontally).padding(16.dp)
+            )
+        }
+    }
 }
 
 @Composable
@@ -61,20 +75,7 @@ fun nuclearSimulationLayout(
 }
 
 @Composable
-fun nuclearSimulationCellLayout(
-    modifier: Modifier,
-    how: Placeable.PlacementScope.(inventory: Measurable, neutron: Measurable, temperature: Measurable, constraints: Constraints) -> Unit,
-    children: @Composable () -> Unit
-) = Layout({ children() }, modifier) {
-        measurables, constraints ->
-    require(measurables.size == 3)
-    layout(constraints.maxWidth, constraints.maxHeight) {
-        how(measurables[0],measurables[1],measurables[2], constraints)
-    }
-}
-
-@Composable
-fun nuclearSimulationView(
+fun NuclearSimulationView(
     lang: Lang,
     isStart: Boolean,
     selectorState: SimulationSelectorState,
@@ -96,7 +97,7 @@ fun nuclearSimulationView(
         // one row and n Columns
         // each Column has n elements
         repeat(simulation.nuclearType.size) { x: Int ->
-            if (simulation.nuclearType.column.test(x))
+            if (simulation.nuclearType.limitation.test(x))
                 Column {
                     nuclearSimulationLayout(Modifier.fillMaxSize(), { measurables, constraints ->
                         measurables.forEachIndexed { index, measurable ->
@@ -111,8 +112,9 @@ fun nuclearSimulationView(
                         }
                     }) {
                         repeat(simulation.nuclearType.size) { y: Int ->
+                            if (simulation.nuclearType.limitation.test(y))
                             if (simulation.nuclearGrid.getNuclearTile(x, y).isPresent) {
-                                nuclearSimulationCell(
+                                NuclearSimulationCell(
                                     lang,
                                     x, y,
                                     isStart,
@@ -121,7 +123,7 @@ fun nuclearSimulationView(
                                 ) {
                                     updateNuclearHatch(x, y, it)
                                 }
-                            }
+                            } else EmptyNuclearSimulationCell()
                         }
                     }
                 }
@@ -130,30 +132,13 @@ fun nuclearSimulationView(
 }
 
 @Composable
-fun emptyView(lang: Lang) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(Modifier.align(Alignment.Center)) {
-            Icon(
-                Icons.Default.Info,
-                contentDescription = null,
-                tint = LocalContentColor.current.copy(alpha = 0.60f),
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-
-            Text(
-                lang.get("simulation", "no-simulation"),
-                color = LocalContentColor.current.copy(alpha = 0.60f),
-                fontSize = 20.sp,
-                modifier = Modifier.align(Alignment.CenterHorizontally).padding(16.dp)
-            )
-        }
-    }
+fun EmptyNuclearSimulationCell() {
+    Box(Modifier.fillMaxSize()) {}
 }
-
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun nuclearSimulationCell(
+fun NuclearSimulationCell(
     lang: Lang,
     x: Int,
     y: Int,
@@ -187,215 +172,27 @@ fun nuclearSimulationCell(
                         selectorState.newWindow(lang, x, y, nuclearHatch, updateNuclearHatch)
                 }
         ) {
-            nuclearSimulationCellLayout(
-                Modifier.fillMaxSize(),
-                {
-                    inventory, neutron, temperature, constraints ->
-                    inventory.measure(
-                        constraints.copy(
-                            minWidth = constraints.maxWidth,
-                            maxWidth = constraints.maxWidth,
-                            maxHeight = constraints.maxHeight * 7 / 12,
-                            minHeight = constraints.maxHeight * 7 / 12
-                        )
-                    ).place(0, 0)
-                    neutron.measure(
-                        constraints.copy(
-                            maxWidth = constraints.maxWidth,
-                            minWidth = constraints.maxWidth,
-                            maxHeight = constraints.maxHeight / 4,
-                            minHeight = constraints.maxHeight / 4
-                        )
-                    ).place(0, constraints.maxHeight * 7 / 12)
-                    temperature.measure(
-                        constraints.copy(
-                            maxWidth = constraints.maxWidth,
-                            minWidth = constraints.maxWidth,
-                            maxHeight = constraints.maxHeight / 6,
-                            minHeight = constraints.maxHeight / 6
-                        )
-                    ).place(0, constraints.maxHeight * 5 / 6)
+            Column(Modifier.fillMaxWidth()) {
+                Row(Modifier.fillMaxHeight(0.6f)){
+                    InventoryView(lang, nuclearHatch.inventory)
                 }
-            ) {
-                InventoryView(lang, nuclearHatch.inventory)
-                NeutronView(lang, nuclearHatch.neutronHistory)
-                TemperatureView(lang, nuclearHatch.nuclearReactorComponent)
+                Row(Modifier.fillMaxHeight(0.5f)) {
+                    NeutronView(lang, nuclearHatch.neutronHistory)
+                }
+                Row {
+                    TemperatureView(lang, nuclearHatch.nuclearReactorComponent)
+                }
             }
         }
     }
 }
-@Composable
-fun inventoryViewLayout(
-    modifier: Modifier,
-    how: Placeable.PlacementScope.(measurables: List<Measurable>, constraints: Constraints) -> Unit,
-    children: @Composable () -> Unit
-) = Layout({ children() }, modifier) {
-        measurables, constraints ->
-    layout(constraints.maxWidth, constraints.maxHeight) {
-        how(measurables, constraints)
-    }
-}
-
-@Composable
-fun inputView(lang: Lang, holder: InputMatterHolder) {
-
-    Box(Modifier.border(1.dp, DefaultTheme.inputBoarder).fillMaxSize()) {
-        if (!holder.matterVariant.isBlank && holder.amount != 0L) {
-            val texture = Texture.get(holder.matterVariant.matter!!)
-            matterViewLayout(Modifier.fillMaxSize(),
-                {
-                        name, image, amount, constraints ->
-                    name.measure(
-                        Constraints(
-                            minWidth = constraints.maxWidth,
-                            maxWidth =  constraints.maxWidth,
-                            minHeight =  constraints.maxHeight / 3,
-                            maxHeight = constraints.maxHeight / 3
-                        )
-                    ).place(0,0)
-                    image.measure(
-                        Constraints(
-                            minWidth = constraints.maxWidth,
-                            maxWidth =  constraints.maxWidth,
-                            minHeight =  constraints.maxHeight / 3,
-                            maxHeight = constraints.maxHeight / 3
-                        )
-                    ).place(0,constraints.maxHeight/3)
-                    amount.measure(
-                        Constraints(
-                            minWidth = constraints.maxWidth,
-                            maxWidth =  constraints.maxWidth,
-                            minHeight =  constraints.maxHeight / 3,
-                            maxHeight = constraints.maxHeight / 3
-                        )
-                    ).place(0,constraints.maxHeight * 2/3)
-                }) {
-                Text(
-                    lang.get("matter",holder.matterVariant.matter!!.namespace,holder.matterVariant.matter!!.name) + showTag(holder.matterVariant.tag),
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold),
-                    modifier = Modifier.padding(10.dp,5.dp)
-                )
-                Image(
-                    bitmap = loadImageBitmap(texture.inputStream),
-                    lang.get("simulation", "input"),
-                    modifier = Modifier.align(Alignment.Center).fillMaxSize(),
-                )
-                Text(text = if(holder.isInfinite) lang.get("simulation","infinite") else if (!holder.isFluid) holder.amount.toString() else ((holder.amount / 81000).toString() + "B(" + holder.amount % 81000 / 81 + "mb[" + holder.amount % 81000 % 81 + "/81])"),
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold),
-                    modifier = Modifier.padding(10.dp,5.dp))
-            }
-        } else {
-            Text(
-                modifier = Modifier.align(Alignment.Center).padding(10.dp,5.dp),
-                text = lang.get("simulation", "empty"),
-                style = TextStyle(
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold)
-            )
-        }
-    }
-}
-
-@Composable
-fun matterViewLayout(modifier: Modifier,how: Placeable.PlacementScope.(name:Measurable,image:Measurable,amount:Measurable, constraints: Constraints) -> Unit,children: @Composable () -> Unit) = Layout({ children() }, modifier) {
-        measurables, constraints ->
-    require(measurables.size == 3)
-    layout(constraints.maxWidth, constraints.maxHeight) {
-        how(measurables[0],measurables[1],measurables[2], constraints)
-    }
-}
-
-@Composable
-fun outputView(lang: Lang, holders: List<OutputMatterHolder>) {
-    for (holder in holders) {
-        val matterVariant = holder.matterVariant
-        if (!matterVariant.isBlank && holder.amount != 0L)
-            Box(Modifier.border(1.dp, DefaultTheme.outputBoarder).fillMaxSize()) {
-                val texture = Texture.get(matterVariant.matter!!)
-                matterViewLayout(Modifier.fillMaxSize(),
-                    {
-                        name, image, amount, constraints ->
-                        name.measure(
-                            Constraints(
-                                minWidth = constraints.maxWidth,
-                                maxWidth =  constraints.maxWidth,
-                                minHeight =  constraints.maxHeight / 3,
-                                maxHeight = constraints.maxHeight / 3
-                            )
-                        ).place(0,0)
-                        image.measure(
-                            Constraints(
-                                minWidth = constraints.maxWidth,
-                                maxWidth =  constraints.maxWidth,
-                                minHeight =  constraints.maxHeight / 3,
-                                maxHeight = constraints.maxHeight / 3
-                            )
-                        ).place(0,constraints.maxHeight/3)
-                        amount.measure(
-                            Constraints(
-                                minWidth = constraints.maxWidth,
-                                maxWidth =  constraints.maxWidth,
-                                minHeight =  constraints.maxHeight / 3,
-                                maxHeight = constraints.maxHeight / 3
-                            )
-                        ).place(0,constraints.maxHeight * 2/3)
-                    }) {
-                    Text(
-                        lang.get("matter",matterVariant.matter!!.namespace, matterVariant.matter!!.name) + showTag(holder.tag),
-                        style = TextStyle(
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold),
-                        modifier = Modifier.padding(10.dp,5.dp)
-                    )
-                    Image(
-                        bitmap = loadImageBitmap(texture.inputStream),
-                        lang.get("simulation", "output"),
-                        modifier = Modifier.align(Alignment.Center).fillMaxSize(),
-                    )
-                    Text(text = if (!holder.isFluid) holder.amount.toString() else ((holder.amount / 81000).toString() + "B(" + holder.amount % 81000 / 81 + "mb[" + holder.amount % 81000 % 81 + "/81])"),
-                        style = TextStyle(
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold),
-                        modifier = Modifier.padding(10.dp,5.dp))
-                }
-            }
-    }
-}
-
-const val ROW_VIEW_COUNT = 3
 
 @Composable
 fun InventoryView(lang: Lang, inventory: MINuclearInventory) {
     Box {
-        inventoryViewLayout(Modifier.fillMaxSize(),{
-            measurables, constraints ->
-            val rowCount = if (measurables.size % ROW_VIEW_COUNT == 0) measurables.size / ROW_VIEW_COUNT else measurables.size / ROW_VIEW_COUNT + 1
-            for (i in 0 until rowCount) {
-                for (j in 0 until ROW_VIEW_COUNT) {
-                    val index = i * ROW_VIEW_COUNT + j
-                    val nowRowViewCount = if (i == rowCount - 1) measurables.size - i * ROW_VIEW_COUNT else ROW_VIEW_COUNT
-                    if (index < measurables.size) {
-                        measurables[index].measure(
-                            Constraints(
-                                minWidth = constraints.maxWidth / nowRowViewCount,
-                                maxWidth = constraints.maxWidth / nowRowViewCount,
-                                minHeight = (constraints.maxWidth / nowRowViewCount).coerceAtMost(constraints.maxHeight / rowCount),
-                                maxHeight = (constraints.maxWidth / nowRowViewCount).coerceAtMost(constraints.maxHeight / rowCount)
-                            )
-                        ).place(
-                            j * constraints.maxWidth / nowRowViewCount,
-                            i * (constraints.maxWidth / nowRowViewCount).coerceAtMost(constraints.maxHeight / rowCount)
-                        )
-                    } else break
-                }
-            }
-        }) {
-            inputView(lang, inventory.input)
-            outputView(lang, inventory.output)
+        inventoryViewLayout(3, Modifier.fillMaxSize()) {
+            InputView(lang, inventory.input)
+            OutputView(lang, inventory.output)
         }
     }
 }
@@ -407,21 +204,14 @@ fun TemperatureView(lang: Lang, temperatureComponent: TemperatureComponent) {
             Row {
                 LinearProgressIndicator(
                     progress = (temperatureComponent.temperature / temperatureComponent.temperatureMax).toFloat(),
-                    modifier = Modifier.fillMaxWidth().padding(10.dp)
+                    modifier = Modifier.padding(10.dp).fillMaxWidth()
                 )
             }
             Row {
                 Text(
-                    text = lang.get(
-                        "simulation",
-                        "temperature"
-                    ) + ": " + (if (temperatureComponent.temperature.toString().length  > 6) temperatureComponent.temperature.toString()
-                        .substring(0, 6) else temperatureComponent.temperature.toString()) + "/" + temperatureComponent.temperatureMax.toString(),
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    modifier = Modifier.padding(10.dp, 5.dp)
+                    text = showTemperature(lang, temperatureComponent),
+                    style = DefaultTheme.smallTextStyle(),
+                    modifier = DefaultTheme.defaultPadding()
                 )
             }
         }
@@ -434,71 +224,27 @@ fun NeutronView(lang: Lang, neutronHistory: NeutronHistoryComponent) {
         Column {
             Row(Modifier.fillMaxWidth()) {
                 Text(
-                    text = lang.get(
-                        "simulation",
-                        "neutron", "generation"
-                    ) + ": " + substring(neutronHistory.averageGeneration.toString(), 6),
-                    style = TextStyle(
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    modifier = Modifier.padding(10.dp, 5.dp)
+                    text = showNeutronGeneration(lang, neutronHistory),
+                    style = DefaultTheme.smallerTextStyle(),
+                    modifier = DefaultTheme.defaultPadding()
                 )
                 Text(
-                    text = lang.get(
-                        "simulation",
-                        "neutron", "receive"
-                    ) + ": " + substring(neutronHistory.getAverageReceived(NeutronType.BOTH).toString(), 6)
-                            + "(" + lang.get(
-                        "simulation",
-                        "neutron",
-                        "fast"
-                    ) + ": " + substring(neutronHistory.getAverageReceived(NeutronType.FAST).toString(), 6)
-                            + "," + lang.get(
-                        "simulation",
-                        "neutron",
-                        "thermal"
-                    ) + ": " + substring(neutronHistory.getAverageReceived(NeutronType.THERMAL).toString(), 6) + ")",
-                    style = TextStyle(
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    modifier = Modifier.padding(10.dp, 5.dp)
+                    text = showNeutronReceive(lang, neutronHistory),
+                    style = DefaultTheme.smallerTextStyle(),
+                    modifier = DefaultTheme.defaultPadding()
                 )
             }
 
             Row(Modifier.fillMaxWidth()) {
                 Text(
-                    text = lang.get(
-                        "simulation",
-                        "neutron", "flux"
-                    ) + ": " + substring(neutronHistory.getAverageFlux(NeutronType.BOTH).toString(), 6)
-                            + "(" + lang.get(
-                        "simulation",
-                        "neutron",
-                        "fast"
-                    ) + ": " + substring(neutronHistory.getAverageFlux(NeutronType.FAST).toString(), 6)
-                            + "," + lang.get(
-                        "simulation",
-                        "neutron",
-                        "thermal"
-                    ) + ": " + substring(neutronHistory.getAverageFlux(NeutronType.THERMAL).toString(), 6) + ")",
-                    style = TextStyle(
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    modifier = Modifier.padding(10.dp, 5.dp)
+                    text = showNeutronFlux(lang, neutronHistory),
+                    style = DefaultTheme.smallerTextStyle(),
+                    modifier = DefaultTheme.defaultPadding()
                 )
                 Text(
-                    text = lang.get(
-                        "simulation",
-                        "neutron", "eu-generation"
-                    ) + ": " + substring(neutronHistory.averageEuGeneration.toString(), 6),
-                    style = TextStyle(
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                    modifier = Modifier.padding(10.dp, 5.dp)
+                    text = showAvgEUGeneration(lang, neutronHistory),
+                    style = DefaultTheme.smallerTextStyle(),
+                    modifier = DefaultTheme.defaultPadding()
                 )
             }
         }

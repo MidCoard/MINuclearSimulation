@@ -1,8 +1,9 @@
 package top.focess.mc.mi.ui// Copyright 2000-2021 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
@@ -24,12 +25,13 @@ import top.focess.mc.mi.ui.theme.DefaultTheme
 @Composable
 fun SimulatorView(lang: Lang, globalState: GlobalState, globalAction: GlobalAction) {
 
-    MaterialTheme(colors = DefaultTheme.default) {
-        Row(Modifier.fillMaxSize()) {
-            Column(Modifier.fillMaxWidth(0.1f)) {
+    MaterialTheme(colors = if(isSystemInDarkTheme()) DefaultTheme.dark else DefaultTheme.default) {
+        Row(Modifier.background(MaterialTheme.colors.background)) {
+            Column(Modifier.fillMaxWidth(0.2f)) {
                 GeneralPanel(lang, globalState.isStart, globalState.simulation, globalState.tickTask, globalAction)
             }
-            Column(Modifier.fillMaxWidth(0.8f)) {
+            // next width is divided by the rest of the width
+            Column(Modifier.fillMaxWidth(0.75f)) {
                 SimulationChamber(
                     lang,
                     globalState.isStart,
@@ -40,7 +42,7 @@ fun SimulatorView(lang: Lang, globalState: GlobalState, globalAction: GlobalActi
                         globalState.simulation!!.nuclearGrid.setNuclearTile(x, y, it)
                 }
             }
-            Column() {
+            Column {
                 ObserverPanel(lang, globalState.simulation, globalState.itemInventory, globalState.fluidInventory)
             }
         }
@@ -93,8 +95,9 @@ fun WindowView(
         },
         title = "${lang.get("title")} ${globalState.name} ${if (globalState.isSaved) "" else "*"}",
         icon = icon,
-        state = state
+        state = state,
     ) {
+
         SimulatorView(lang, globalState, globalAction)
 
         if (globalState.saveDialog.isAwaiting) {
