@@ -2,6 +2,7 @@ package top.focess.mc.mi.ui// Copyright 2000-2021 JetBrains s.r.o. and contribut
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
@@ -11,6 +12,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import top.focess.mc.mi.ui.dialog.FileDialog
+import top.focess.mc.mi.ui.dialog.NuclearTypeDialog
 import top.focess.mc.mi.ui.lang.Lang
 import top.focess.mc.mi.ui.panel.GeneralPanel
 import top.focess.mc.mi.ui.panel.ObserverPanel
@@ -22,12 +25,11 @@ import top.focess.mc.mi.ui.theme.DefaultTheme
 fun SimulatorView(lang: Lang, globalState: GlobalState, globalAction: GlobalAction) {
 
     MaterialTheme(colors = DefaultTheme.default) {
-        Row {
-
-            Column(Modifier.fillMaxWidth(0.2f)) {
+        Row(Modifier.fillMaxSize()) {
+            Column(Modifier.fillMaxWidth(0.1f)) {
                 GeneralPanel(lang, globalState.isStart, globalState.simulation, globalState.tickTask, globalAction)
             }
-            Column(Modifier.fillMaxWidth(0.6f)) {
+            Column(Modifier.fillMaxWidth(0.8f)) {
                 SimulationChamber(
                     lang,
                     globalState.isStart,
@@ -38,7 +40,7 @@ fun SimulatorView(lang: Lang, globalState: GlobalState, globalAction: GlobalActi
                         globalState.simulation!!.nuclearGrid.setNuclearTile(x, y, it)
                 }
             }
-            Column(Modifier.fillMaxWidth(0.2f)) {
+            Column() {
                 ObserverPanel(lang, globalState.simulation, globalState.itemInventory, globalState.fluidInventory)
             }
         }
