@@ -3,6 +3,7 @@ package top.focess.mc.mi.ui
 import aztech.modern_industrialization.machines.components.NeutronHistoryComponent
 import aztech.modern_industrialization.machines.components.TemperatureComponent
 import aztech.modern_industrialization.nuclear.NeutronType
+import top.focess.mc.mi.nuclear.mc.InputMatterHolder
 import top.focess.mc.mi.nuclear.mc.MatterHolder
 import top.focess.mc.mi.nuclear.mc.MatterVariant
 import top.focess.mc.mi.ui.lang.Lang
@@ -17,8 +18,10 @@ fun showTag(tag: Map<String, Any>): String {
     return tag.toString()
 }
 
-fun showAmount(holder: MatterHolder): String =
-    if (!holder.isFluid)
+fun showAmount(lang: Lang, holder: MatterHolder): String =
+    if (holder is InputMatterHolder && holder.isInfinite)
+        lang.get("simulation","infinite")
+    else if (!holder.isFluid)
         holder.amount.toString()
     else ((holder.amount / 81000).toString() + "B(" + holder.amount % 81000 / 81 + "mb[" + holder.amount % 81000 % 81 + "/81])")
 

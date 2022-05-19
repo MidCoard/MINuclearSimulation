@@ -19,7 +19,7 @@ import top.focess.mc.mi.ui.lang.Lang
 import top.focess.mc.mi.ui.panel.GeneralPanel
 import top.focess.mc.mi.ui.panel.ObserverPanel
 import top.focess.mc.mi.ui.simulation.SimulationChamber
-import top.focess.mc.mi.ui.simulation.simulationSelector
+import top.focess.mc.mi.ui.simulation.SimulationSelector
 import top.focess.mc.mi.ui.theme.DefaultTheme
 
 @Composable
@@ -223,7 +223,7 @@ fun main() =
         // nuclear selector windows
         for (window in globalState.selectorState.windows)
             key(window) {
-                simulationSelector(window)
+                SimulationSelector(window)
             }
 
         Simulator(icon, lang, globalState, globalAction, state, scope) { lang = it }

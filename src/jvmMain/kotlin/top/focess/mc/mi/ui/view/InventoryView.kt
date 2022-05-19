@@ -69,7 +69,7 @@ fun MatterView(lang: Lang, holder: MatterHolder, matterVariant: MatterVariant, t
             modifier = Modifier.fillMaxSize(),
         )
     }
-    Text(text = showAmount(holder),
+    Text(text = showAmount(lang, holder),
         style = DefaultTheme.smallTextStyle(),
         modifier = DefaultTheme.defaultPadding()
     )
@@ -81,7 +81,7 @@ fun OutputView(lang: Lang, holders: List<OutputMatterHolder>) {
     for (holder in holders) {
         val matterVariant = holder.matterVariant
         if (!matterVariant.isBlank && holder.amount != 0L)
-            Column (DefaultTheme.outputBorder().fillMaxSize()) {
+            Column (Modifier.fillMaxSize()) {
                 MatterView(lang, holder, matterVariant, holder.tag)
             }
     }
@@ -90,7 +90,7 @@ fun OutputView(lang: Lang, holders: List<OutputMatterHolder>) {
 @Composable
 fun InputView(lang: Lang, holder: InputMatterHolder) {
     val matterVariant = holder.matterVariant
-    Column(DefaultTheme.inputBorder().fillMaxSize()) {
+    Column(Modifier.fillMaxSize()) {
         if (!matterVariant.isBlank && holder.amount != 0L) {
             MatterView(lang, holder, matterVariant, holder.tag)
         } else {

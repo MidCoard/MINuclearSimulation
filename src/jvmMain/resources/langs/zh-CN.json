@@ -57,7 +57,8 @@
       "infinite": "无限",
       "empty-input": "清空输入",
       "empty-output": "清空输出",
-      "output-count": "输出数量",
+      "input-amount": "输入数量",
+      "output-count": "输出槽数量",
       "max-count": "最大数量",
       "takeout": "取出量",
       "tooltip": {

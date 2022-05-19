@@ -1,6 +1,9 @@
 package top.focess.mc.mi.ui.simulation
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.TooltipArea
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -40,7 +43,6 @@ fun SimulationChamber(
         NuclearSimulationView(lang, isStart, selectorState, simulation, updateNuclearHatch)
     else
         EmptyView(lang)
-
 }
 
 @Composable
@@ -50,7 +52,7 @@ fun EmptyView(lang: Lang) {
             Icon(
                 Icons.Default.Info,
                 contentDescription = "No Opened Simulation",
-                tint = LocalContentColor.current.copy(alpha = 0.60f),
+                tint = MaterialTheme.colors.onBackground,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
 
@@ -113,17 +115,17 @@ fun NuclearSimulationView(
                     }) {
                         repeat(simulation.nuclearType.size) { y: Int ->
                             if (simulation.nuclearType.limitation.test(y))
-                            if (simulation.nuclearGrid.getNuclearTile(x, y).isPresent) {
-                                NuclearSimulationCell(
-                                    lang,
-                                    x, y,
-                                    isStart,
-                                    selectorState,
-                                    simulation.nuclearGrid.getNuclearTile(x, y).get() as NuclearHatch
-                                ) {
-                                    updateNuclearHatch(x, y, it)
-                                }
-                            } else EmptyNuclearSimulationCell()
+                                if (simulation.nuclearGrid.getNuclearTile(x, y).isPresent) {
+                                    NuclearSimulationCell(
+                                        lang,
+                                        x, y,
+                                        isStart,
+                                        selectorState,
+                                        simulation.nuclearGrid.getNuclearTile(x, y).get() as NuclearHatch
+                                    ) {
+                                        updateNuclearHatch(x, y, it)
+                                    }
+                                } else EmptyNuclearSimulationCell()
                         }
                     }
                 }
@@ -146,8 +148,7 @@ fun NuclearSimulationCell(
     selectorState: SimulationSelectorState,
     nuclearHatch: NuclearHatch,
     updateNuclearHatch: (NuclearHatch?) -> Unit
-) = Surface {
-    TooltipArea(tooltip = {
+) = TooltipArea(tooltip = {
         Surface(
             modifier = Modifier.shadow(4.dp),
             color = Color(255, 255, 210),
@@ -158,15 +159,14 @@ fun NuclearSimulationCell(
                     "simulation",
                     if (isStart) "nuclear-hatch-tooltip-disable" else "nuclear-hatch-tooltip-enable"
                 ),
-                modifier = Modifier.padding(10.dp),
-                color = if (isStart) Color.Red else Color.Black
+                modifier = DefaultTheme.defaultPadding(),
+                color = if (isStart) MaterialTheme.colors.error else MaterialTheme.colors.onPrimary
             )
         }
     }) {
         Box(
             modifier = Modifier.fillMaxSize()
-                .background(DefaultTheme.simulationCell)
-                .border(1.dp, DefaultTheme.simulationCellBoarder)
+                .background(MaterialTheme.colors.secondary)
                 .clickable {
                     if (!isStart)
                         selectorState.newWindow(lang, x, y, nuclearHatch, updateNuclearHatch)
@@ -185,7 +185,6 @@ fun NuclearSimulationCell(
             }
         }
     }
-}
 
 @Composable
 fun InventoryView(lang: Lang, inventory: MINuclearInventory) {

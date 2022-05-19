@@ -43,6 +43,8 @@ public class InputMatterHolder extends MatterHolder {
     }
 
     public void setMatterVariant(boolean infinite, @NotNull MatterVariant matterVariant, long amount) {
+        if (infinite && matterVariant.isBlank())
+            return;
         this.infinite = infinite;
         this.setMatterVariant0(matterVariant);
         this.setAmount(amount);
