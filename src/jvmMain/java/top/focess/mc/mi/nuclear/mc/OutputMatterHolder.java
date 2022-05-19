@@ -55,9 +55,9 @@ public class OutputMatterHolder extends MatterHolder{
         return new OutputMatterHolder(
                 (boolean)map.get("isFluid"),
                 (MatterVariant) map.get("matterVariant"),
-                (long) map.get("amount"),
-                (long) map.get("takeout"),
-                (long) map.get("outputMaxAmount")
+                Long.parseLong(map.get("amount").toString()),
+                Long.parseLong(map.get("takeout").toString()),
+                Long.parseLong(map.get("outputMaxAmount").toString())
         );
     }
 

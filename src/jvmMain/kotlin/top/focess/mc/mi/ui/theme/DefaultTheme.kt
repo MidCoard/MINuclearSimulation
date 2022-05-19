@@ -87,7 +87,7 @@ object DefaultTheme {
         hoverDurationMillis = 300,
     )
 
-    private var default:Colors? = null;
+    private var default:Colors? = null
 
     fun setDefaultColor(colors: Colors) {
         default = colors
@@ -96,7 +96,7 @@ object DefaultTheme {
     private val lightBlue = Color(0xFFD4EBF2)
     private val littleLightBlue = Color(0xFF3FA6C5)
     private val deepLightBlue = Color(0xFF99D0E0)
-    private val textColor = Color(0xFF1E1E1E);
+    private val textColor = Color(0xFF1E1E1E)
 
     private val darkBlue = Color(0xFF050E11)
     private val lightDarkBlue = Color(0xFF0A1B20)

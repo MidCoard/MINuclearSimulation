@@ -6,8 +6,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyShortcut
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.*
 import kotlinx.coroutines.CoroutineScope
@@ -75,6 +78,7 @@ fun ApplicationScope.TrayView(
         }
     )
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun WindowView(
     icon: Painter,
@@ -86,6 +90,7 @@ fun WindowView(
     new: () -> Unit,
     open: () -> Unit,
     save: () -> Unit,
+    saveAs: () -> Unit,
     saveAndExit: () -> Unit
 ) =
     Window(
@@ -95,7 +100,7 @@ fun WindowView(
         title = "${lang.get("title")} ${globalState.name} ${if (globalState.isSaved) "" else "*"}",
         icon = icon,
         state = state,
-        focusable = true,
+        focusable = true
     ) {
 
         SimulatorView(lang, globalState, globalAction)
@@ -132,7 +137,8 @@ fun WindowView(
 
         MenuBar {
             Menu(lang.get("menu-bar", "simulation", "name"), mnemonic = 'S') {
-                Item(lang.get("menu-bar", "simulation", "new"), mnemonic = 'N') {
+                Item(lang.get("menu-bar", "simulation", "new"), mnemonic = 'N',
+                shortcut = KeyShortcut(Key.N, ctrl = true)) {
                     new()
                 }
                 Item(lang.get("menu-bar", "simulation", "open"), mnemonic = 'O') {
@@ -141,9 +147,17 @@ fun WindowView(
                 Item(
                     lang.get("menu-bar", "simulation", "save"),
                     mnemonic = 'S',
-                    enabled = !globalState.isSaved
+                    enabled = !globalState.isSaved,
+                    shortcut = KeyShortcut(Key.S, ctrl = true)
                 ) {
                     save()
+                }
+                Item(
+                    lang.get("menu-bar", "simulation", "save-as"),
+                    mnemonic = 'A',
+                    enabled = globalState.simulation != null
+                ) {
+                    saveAs()
                 }
                 Item(
                     lang.get("menu-bar", "simulation", "start"),
@@ -201,12 +215,13 @@ fun ApplicationScope.Simulator(
         exitApplication()
     }
     fun open() = scope.launch { globalAction.open() }
+    fun saveAs() = scope.launch { globalAction.saveAs() }
 
     if (state.isMinimized)
         TrayView(icon, lang, state) { saveAndExit() }
 
     if (!state.isMinimized)
-        WindowView(icon, lang, globalState, globalAction, state, updateLang, {new()}, {open()}, {save()}, {saveAndExit()})
+        WindowView(icon, lang, globalState, globalAction, state, updateLang, {new()}, {open()}, {save()},{saveAs()}, {saveAndExit()})
 }
 
 @Preview

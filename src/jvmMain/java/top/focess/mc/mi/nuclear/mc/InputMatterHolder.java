@@ -80,7 +80,7 @@ public class InputMatterHolder extends MatterHolder {
                 (boolean) map.get("infinite"),
                 (boolean)map.get("isFluid"),
                 (MatterVariant) map.get("matterVariant"),
-                (long) map.get("amount")
+                Long.parseLong(map.get("amount").toString())
         );
     }
 

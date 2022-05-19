@@ -1,13 +1,124 @@
 {
+  "title": "MINuclearSimulator",
   "quit": "Quit",
+  "unopened": "unopened file",
+  "unsaved": "unsaved file",
+  "open-fail": "Fail to open file",
+  "tray": {
+    "maximize": "Maximize"
+  },
   "menu-bar": {
-    "file": {
-      "name": "File"
+    "simulation": {
+      "name": "Simulation",
+      "new": "New",
+      "open": "Open",
+      "save": "Save",
+      "save-as": "Save as",
+      "start": "Start",
+      "stop": "Stop"
     },
     "language": {
       "name": "Language",
       "english": "English",
       "chinese": "Chinese"
+    },
+    "theme": {
+      "name": "Theme",
+      "light": "Light",
+      "dark": "Dark"
+    }
+  },
+  "dialog": {
+    "file": {
+      "choose-file": "Choose file"
+    },
+    "simulation": {
+      "title": "Select Correct Simulation Type",
+      "name": "Please select a correct simulation"
+    }
+  },
+  "simulation": {
+    "no-simulation": "No Opened Simulation",
+    "empty": "Empty",
+    "input": "Input",
+    "output": "Output",
+    "nuclear-hatch-tooltip-enable": "Edit this reactor's products/fluid type",
+    "nuclear-hatch-tooltip-disable": "Cannot edit it while it is running!",
+    "infinite": "Infinite",
+    "temperature": "Temperature",
+    "neutron": {
+      "generation": "Generation",
+      "eu-generation": "EU Generation",
+      "receive": "Receive",
+      "flux": "Flux",
+      "fast": "Fast",
+      "thermal": "Thermal"
+    },
+    "selector": {
+      "name": "Select Item/Fluid",
+      "item": "Item",
+      "fluid": "Fluid",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "infinite": "Infinite",
+      "empty-input": "Empty Input",
+      "empty-output": "Empty Output",
+      "input-amount": "Amount",
+      "output-count": "Output Stack Size",
+      "max-count": "Max Stack Size",
+      "takeout": "Takeout per tick",
+      "tooltip": {
+        "item": "change to this type will cause the output item to be lost",
+        "fluid": "change to this type will cause the output fluid to be lost"
+      }
+    }
+  },
+  "observer": {
+    "tick": "Running ticks",
+    "clear": "Clear"
+  },
+  "general": {
+    "start": "Start",
+    "stop": "Stop"
+  },
+  "matter": {
+    "minecraft": {
+      "water": "Water"
+    },
+    "modern-industrialization": {
+      "steam": "Steam",
+      "heavy_water": "Heavy Water",
+      "heavy_water_steam": "Heavy Water Steam",
+      "high_pressure_water": "High Pressure Water",
+      "high_pressure_steam": "High Pressure Steam",
+      "high_pressure_heavy_water": "High Pressure Heavy Water",
+      "high_pressure_heavy_water_steam": "High Pressure Heavy Water Steam",
+      "deuterium": "Deuterium",
+      "tritium": "Tritium",
+      "large_heat_exchanger": "Large Heat Exchanger",
+      "small_heat_exchanger": "Small Heat Exchanger",
+      "carbon_large_plate": "Carbon Large Plate",
+      "cadmium_fuel_rod": "Cadmium Fuel Rod",
+      "u_fuel_rod": "U Fuel Rod",
+      "u_fuel_rod_depleted": "U Fuel Rod Depleted",
+      "u_fuel_rod_double": "U Fuel Rod Double",
+      "u_fuel_rod_quad": "U Fuel Rod Quad",
+      "leu_fuel_rod": "LEU Fuel Rod",
+      "leu_fuel_rod_depleted": "LEU Fuel Rod Depleted",
+      "leu_fuel_rod_double": "LEU Fuel Rod Double",
+      "leu_fuel_rod_quad": "LEU Fuel Rod Quad",
+      "heu_fuel_rod": "HEU Fuel Rod",
+      "heu_fuel_rod_depleted": "HEU Fuel Rod Depleted",
+      "heu_fuel_rod_double": "HEU Fuel Rod Double",
+      "heu_fuel_rod_quad": "HEU Fuel Rod Quad",
+      "le_mox_fuel_rod": "LE MOX Fuel Rod",
+      "le_mox_fuel_rod_depleted": "LE MOX Fuel Rod Depleted",
+      "le_mox_fuel_rod_double": "LE MOX Fuel Rod Double",
+      "le_mox_fuel_rod_quad": "LE MOX Fuel Rod Quad",
+      "he_mox_fuel_rod": "HE MOX Fuel Rod",
+      "he_mox_fuel_rod_depleted": "HE MOX Fuel Rod Depleted",
+      "he_mox_fuel_rod_double": "HE MOX Fuel Rod Double",
+      "he_mox_fuel_rod_quad": "HE MOX Fuel Rod Quad"
     }
   }
 }

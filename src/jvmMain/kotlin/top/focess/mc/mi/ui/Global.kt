@@ -66,6 +66,14 @@ class GlobalAction(private val lang: Lang, private val state: GlobalState) {
         state.isSaved = true
     }
 
+    suspend fun saveAs() {
+        val path = state.saveDialog.awaitResult() ?: return
+        state.file = path.toFile()
+        state.name = path.fileName.toString()
+        state.isSaved = false
+        save()
+    }
+
     suspend fun new() {
         if (!state.isSaved)
             this.save()

@@ -9,8 +9,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.unit.Constraints
@@ -118,7 +122,7 @@ fun SimulationCell(lang: Lang, matter: Matter, selected: Boolean, updateMatterVa
 }
 
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
 fun SelectorOverview(
     lang: Lang,
     nuclearHatch: NuclearHatch,
@@ -134,8 +138,35 @@ fun SelectorOverview(
     var outputCount by remember { mutableStateOf(nuclearHatch.inventory.outputCount) }
     val inventory = nuclearHatch.inventory
 
+    fun confirm() {
+        val hatch =
+            if (matterVariant is FluidVariant == nuclearHatch.isFluid) nuclearHatch else NuclearHatch(
+                matterVariant is FluidVariant
+            )
+        if (matterVariant is FluidVariant != nuclearHatch.isFluid) {
+            hatch.inventory.outputCount = inventory.outputCount
+            for (i in 0 until hatch.inventory.outputCount) {
+                val holder = hatch.inventory.output[i]
+                val targetHolder = inventory.output[i]
+                holder.equalOutputMaxAmount = targetHolder.equalOutputMaxAmount
+                holder.equalTakeout = targetHolder.equalTakeout
+            }
+        }
+        if (hatch.isFluid)
+            hatch.inventory.input.setMatterVariant(isInfinite, matterVariant, amount * 81L)
+        else hatch.inventory.input.setMatterVariant(isInfinite, matterVariant, amount)
+        updateNuclearHatch(hatch)
+        closeWindow()
+    }
 
-    Column {
+
+    Column(Modifier.onKeyEvent {
+        if (it.key == Key.Enter) {
+            confirm()
+            return@onKeyEvent true
+        }
+        return@onKeyEvent false
+    }) {
 
         Row {
             TooltipArea(
@@ -208,7 +239,9 @@ fun SelectorOverview(
 
             Text(
                 text = lang.get("simulation", "selector", "infinite"),
-                modifier = Modifier.align(Alignment.CenterVertically),
+                modifier = Modifier.align(Alignment.CenterVertically).clickable {
+                    isInfinite = !isInfinite
+                },
                 style = DefaultTheme.defaultTextStyle()
             )
         }
@@ -273,24 +306,7 @@ fun SelectorOverview(
             Button(
                 modifier = DefaultTheme.defaultPadding().align(Alignment.CenterVertically),
                 onClick = {
-                    val hatch =
-                        if (matterVariant is FluidVariant == nuclearHatch.isFluid) nuclearHatch else NuclearHatch(
-                            matterVariant is FluidVariant
-                        )
-                    if (matterVariant is FluidVariant != nuclearHatch.isFluid) {
-                        hatch.inventory.outputCount = inventory.outputCount
-                        for (i in 0 until hatch.inventory.outputCount) {
-                            val holder = hatch.inventory.output[i]
-                            val targetHolder = inventory.output[i]
-                            holder.equalOutputMaxAmount = targetHolder.equalOutputMaxAmount
-                            holder.equalTakeout = targetHolder.equalTakeout
-                        }
-                    }
-                    if (hatch.isFluid)
-                        hatch.inventory.input.setMatterVariant(isInfinite, matterVariant, amount * 81L)
-                    else hatch.inventory.input.setMatterVariant(isInfinite, matterVariant, amount)
-                    updateNuclearHatch(hatch)
-                    closeWindow()
+                    confirm()
                 },
                 content = { Text(lang.get("simulation", "selector", "confirm")) }
             )
@@ -312,7 +328,7 @@ fun SimulationSelector(window: SimulationSelectorWindowState) = Window(
     onCloseRequest = { window.close() },
     focusable = true,
     state = window.state,
-    alwaysOnTop = true,
+    alwaysOnTop = true
 ) {
 
     val nuclearHatch = window.nuclearHatch
