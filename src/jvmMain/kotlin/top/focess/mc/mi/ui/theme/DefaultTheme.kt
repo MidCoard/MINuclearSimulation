@@ -22,7 +22,9 @@ object DefaultTheme {
 
     @Composable
     fun defaultCheckBox() = CheckboxDefaults.colors(
-        uncheckedColor = MaterialTheme.colors.secondary
+        uncheckedColor = MaterialTheme.colors.secondaryVariant,
+        checkedColor = MaterialTheme.colors.secondary,
+        checkmarkColor = MaterialTheme.colors.primary
     )
 
     @Composable

@@ -9,7 +9,7 @@ import java.util.Objects;
 public class OutputMatterHolder extends MatterHolder{
 
     private long takeout = 0;
-    private long outputMaxAmount = -1;
+    private long outputMaxAmount;
 
     public OutputMatterHolder(boolean isFluid) {
         super(isFluid ? FluidVariant.blank() : ItemVariant.blank());
@@ -18,7 +18,7 @@ public class OutputMatterHolder extends MatterHolder{
     private OutputMatterHolder(boolean isFluid, MatterVariant matterVariant, long amount, long takeout,long outputMaxAmount) {
         super(isFluid, matterVariant, amount);
         this.takeout = takeout;
-        this.outputMaxAmount = outputMaxAmount;
+        this.setEqualOutputMaxAmount(-1);
     }
 
     // return the rest amount of the matter
@@ -63,13 +63,17 @@ public class OutputMatterHolder extends MatterHolder{
     @Override
     public void setAmount(long amount) {
         long temp = this.maxAmount;
-        this.maxAmount = (outputMaxAmount <= -1 ? this.maxAmount : outputMaxAmount);
+        this.maxAmount = (outputMaxAmount < 0 ? this.maxAmount : outputMaxAmount);
         super.setAmount(amount);
         this.maxAmount = temp;
     }
 
     public long getTakeout() {
         return takeout;
+    }
+
+    public long getEqualTakeout() {
+        return this.isFluid ? this.takeout / 81 : this.takeout;
     }
 
     public void setTakeout(long takeout) {
@@ -83,6 +87,19 @@ public class OutputMatterHolder extends MatterHolder{
 
     public long getOutputMaxAmount() {
         return outputMaxAmount;
+    }
+
+    public long getEqualOutputMaxAmount() {
+        return this.isFluid ? this.outputMaxAmount / 81 : this.outputMaxAmount;
+    }
+
+    public void setEqualOutputMaxAmount(long outputMaxAmount) {
+        this.outputMaxAmount = this.isFluid ? outputMaxAmount * 81 : outputMaxAmount;
+        this.setAmount(this.getAmount());
+    }
+
+    public void setEqualTakeout(long takeout) {
+        this.takeout = this.isFluid ? takeout * 81 : takeout;
     }
 
     public long extractAmount(long amount) {
