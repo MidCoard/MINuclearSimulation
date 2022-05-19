@@ -10,6 +10,8 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -153,17 +155,49 @@ fun NuclearSimulationCell(
             color = MaterialTheme.colors.surface,
             shape = RoundedCornerShape(4.dp)
         ) {
-            Text(
-                text = lang.get(
-                    "simulation",
-                    if (isStart) "nuclear-hatch-tooltip-disable" else "nuclear-hatch-tooltip-enable"
-                ),
-                modifier = DefaultTheme.defaultPadding(),
-                color = if (isStart) MaterialTheme.colors.error else MaterialTheme.colors.onBackground
-            )
+
+            fun checkEmpty() :Boolean {
+                if (!nuclearHatch.inventory.input.matterVariant.isBlank)
+                    return false
+                for (output in nuclearHatch.inventory.output)
+                    if (!output.matterVariant.isBlank)
+                        return false
+                return true
+            }
+
+            if (checkEmpty())
+                Text(
+                    text = lang.get(
+                        "simulation",
+                        if (isStart) "nuclear-hatch-tooltip-disable" else "nuclear-hatch-tooltip-enable"
+                    ),
+                    modifier = DefaultTheme.defaultPadding(),
+                    color = if (isStart) MaterialTheme.colors.error else MaterialTheme.colors.onBackground
+                )
+            else {
+                val holder by mutableStateOf(nuclearHatch.inventory.input)
+                val matterVariant by mutableStateOf(holder.matterVariant)
+                val tag by mutableStateOf(holder.tag)
+                val neutronHistory by mutableStateOf(nuclearHatch.neutronHistory)
+                val temperatureComponent by mutableStateOf(nuclearHatch.nuclearReactorComponent)
+                val output by mutableStateOf(nuclearHatch.inventory.output)
+                val show = showName(lang, matterVariant, tag) + " - " +
+                        showAmount(lang, holder) + "\n" +
+                        showNeutronGeneration(lang, neutronHistory) + " - " +
+                        showAvgEUGeneration(lang, neutronHistory) + "\n" +
+                        showNeutronReceive(lang, neutronHistory) + " - " +
+                        showNeutronFlux(lang, neutronHistory) + "\n" +
+                        showTemperature(lang, temperatureComponent) + "\n" +
+                        showOutput(lang, output)
+                Text(
+                    text = show.substring(0,show.length - 1),
+                    modifier = DefaultTheme.defaultPadding(),
+                    color = MaterialTheme.colors.onBackground
+                )
+            }
         }
     }) {
-        Box(
+        BoxWithConstraints(
             modifier = Modifier.fillMaxSize()
                 .background(MaterialTheme.colors.secondary)
                 .clickable {
@@ -171,23 +205,21 @@ fun NuclearSimulationCell(
                         selectorState.newWindow(lang, x, y, nuclearHatch, updateNuclearHatch)
                 }
         ) {
+            val height by mutableStateOf(maxHeight)
             Column(Modifier.fillMaxWidth()) {
-                Row(Modifier.fillMaxHeight(0.6f)){
-                    InventoryView(lang, nuclearHatch.inventory)
-                }
-                Row(Modifier.fillMaxHeight(0.5f)) {
+                InventoryView(lang, nuclearHatch.inventory)
+                if (height < 200.dp)
+                    NeutronView2(lang, nuclearHatch.neutronHistory)
+                else
                     NeutronView(lang, nuclearHatch.neutronHistory)
-                }
-                Row {
-                    TemperatureView(lang, nuclearHatch.nuclearReactorComponent)
-                }
+                TemperatureView(lang, nuclearHatch.nuclearReactorComponent)
             }
         }
     }
 
 @Composable
 fun InventoryView(lang: Lang, inventory: MINuclearInventory) {
-    Box {
+    Box(Modifier.fillMaxWidth().fillMaxHeight(0.6f)) {
         inventoryViewLayout(3, Modifier.fillMaxSize()) {
             InputView(lang, inventory.input)
             OutputView(lang, inventory.output)
@@ -199,18 +231,24 @@ fun InventoryView(lang: Lang, inventory: MINuclearInventory) {
 fun TemperatureView(lang: Lang, temperatureComponent: TemperatureComponent) {
     Box {
         Column {
-            Row {
-                LinearProgressIndicator(
-                    progress = (temperatureComponent.temperature / temperatureComponent.temperatureMax).toFloat(),
-                    modifier = Modifier.padding(10.dp).fillMaxWidth()
-                )
+            BoxWithConstraints {
+                if (maxHeight > 30.dp)
+                    Row {
+                        LinearProgressIndicator(
+                            progress = (temperatureComponent.temperature / temperatureComponent.temperatureMax).toFloat(),
+                            modifier = DefaultTheme.squarePadding().fillMaxWidth()
+                        )
+                    }
             }
-            Row {
-                Text(
-                    text = showTemperature(lang, temperatureComponent),
-                    style = DefaultTheme.smallTextStyle(),
-                    modifier = DefaultTheme.defaultPadding()
-                )
+            BoxWithConstraints {
+                if (maxWidth > 150.dp && maxHeight > 50.dp)
+                    Row {
+                        Text(
+                            text = showTemperature(lang, temperatureComponent),
+                            style = DefaultTheme.smallTextStyle(),
+                            modifier = DefaultTheme.defaultPadding()
+                        )
+                    }
             }
         }
     }
@@ -218,7 +256,9 @@ fun TemperatureView(lang: Lang, temperatureComponent: TemperatureComponent) {
 
 @Composable
 fun NeutronView(lang: Lang, neutronHistory: NeutronHistoryComponent) {
-    Box {
+    BoxWithConstraints {
+        val width by mutableStateOf(maxWidth)
+        val height by mutableStateOf(maxHeight)
         Column {
             Row(Modifier.fillMaxWidth()) {
                 Text(
@@ -226,25 +266,51 @@ fun NeutronView(lang: Lang, neutronHistory: NeutronHistoryComponent) {
                     style = DefaultTheme.smallerTextStyle(),
                     modifier = DefaultTheme.defaultPadding()
                 )
-                Text(
-                    text = showNeutronReceive(lang, neutronHistory),
-                    style = DefaultTheme.smallerTextStyle(),
-                    modifier = DefaultTheme.defaultPadding()
-                )
+                if (width > 300.dp)
+                    Text(
+                        text = showNeutronReceive(lang, neutronHistory),
+                        style = DefaultTheme.smallerTextStyle(),
+                        modifier = DefaultTheme.defaultPadding()
+                    )
             }
 
             Row(Modifier.fillMaxWidth()) {
                 Text(
-                    text = showNeutronFlux(lang, neutronHistory),
+                    text = showAvgEUGeneration(lang, neutronHistory),
                     style = DefaultTheme.smallerTextStyle(),
                     modifier = DefaultTheme.defaultPadding()
                 )
+                if (width > 300.dp)
+                    Text(
+                        text = showNeutronFlux(lang, neutronHistory),
+                        style = DefaultTheme.smallerTextStyle(),
+                        modifier = DefaultTheme.defaultPadding()
+                    )
+            }
+        }
+    }
+}
+
+@Composable
+fun NeutronView2(lang: Lang, neutronHistory: NeutronHistoryComponent) {
+    BoxWithConstraints {
+        val width by mutableStateOf(maxWidth)
+        if (maxHeight > 30.dp)
+        Column {
+            Row(Modifier.fillMaxWidth()) {
+                Text(
+                    text = showNeutronGeneration(lang, neutronHistory),
+                    style = DefaultTheme.smallerTextStyle(),
+                    modifier = DefaultTheme.defaultPadding()
+                )
+                if (width > 140.dp)
                 Text(
                     text = showAvgEUGeneration(lang, neutronHistory),
                     style = DefaultTheme.smallerTextStyle(),
                     modifier = DefaultTheme.defaultPadding()
                 )
             }
+
         }
     }
 }

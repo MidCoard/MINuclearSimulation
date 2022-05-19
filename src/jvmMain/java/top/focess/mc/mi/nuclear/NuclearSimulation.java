@@ -6,6 +6,7 @@ import aztech.modern_industrialization.machines.components.IsActiveComponent;
 import aztech.modern_industrialization.nuclear.INuclearTile;
 import aztech.modern_industrialization.nuclear.NuclearGridHelper;
 import com.google.common.collect.Maps;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.focess.mc.mi.nuclear.mc.FluidVariant;
 import top.focess.mc.mi.nuclear.mc.MatterVariant;
@@ -101,6 +102,7 @@ public class NuclearSimulation implements FocessSerializable {
         return nuclearGrid;
     }
 
+    @NotNull
     public IsActiveComponent getIsActive() {
         return isActive;
     }

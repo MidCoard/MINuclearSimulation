@@ -6,6 +6,7 @@ import aztech.modern_industrialization.nuclear.NeutronType
 import top.focess.mc.mi.nuclear.mc.InputMatterHolder
 import top.focess.mc.mi.nuclear.mc.MatterHolder
 import top.focess.mc.mi.nuclear.mc.MatterVariant
+import top.focess.mc.mi.nuclear.mc.OutputMatterHolder
 import top.focess.mc.mi.ui.lang.Lang
 
 fun String.substring0(end: Int) = if (this.length < end) this.substring(0) else this.substring(0, end)
@@ -43,3 +44,17 @@ fun showNeutronReceive(lang: Lang, neutronHistory: NeutronHistoryComponent) = la
 fun showNeutronFlux(lang: Lang, neutronHistory: NeutronHistoryComponent) = lang.get("simulation", "neutron", "flux") + ": " + neutronHistory.getAverageFlux(NeutronType.BOTH).toString().substring0(6) +
         "(" + lang.get("simulation", "neutron", "fast") + ": " + neutronHistory.getAverageFlux(NeutronType.FAST).toString().substring0(6) + "," +
         lang.get("simulation", "neutron", "thermal") + ": " + neutronHistory.getAverageFlux(NeutronType.THERMAL).toString().substring0(6) + ")"
+
+fun showOutput(lang: Lang, output: List<OutputMatterHolder>) :String {
+    var result = ""
+    for (outputHolder in output) {
+        val matterVariant = outputHolder.matterVariant
+        if (!matterVariant.isBlank) {
+            result += showName(lang, matterVariant, outputHolder.tag) + ": " + showAmount(
+                lang,
+                outputHolder
+            ) + "\n"
+        }
+    }
+    return result
+}

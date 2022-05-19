@@ -3,7 +3,6 @@ package top.focess.mc.mi.ui.view
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -58,21 +57,17 @@ fun inventoryViewLayout(
 fun MatterView(lang: Lang, holder: MatterHolder, matterVariant: MatterVariant, tag: Map<String,Any>)  {
     val texture = Texture.get(matterVariant.matter!!)
     Text(
-        showName(lang, matterVariant, holder.tag),
-        style = DefaultTheme.smallTextStyle(),
-        modifier = DefaultTheme.defaultPadding().fillMaxHeight(0.25f)
+        showName(lang, matterVariant, tag) + " - " + showAmount(lang, holder),
+        style = DefaultTheme.midSmallTextStyle(),
+        modifier = DefaultTheme.defaultPadding()
     )
-    Box(Modifier.fillMaxHeight(0.8f)) {
+    Box {
         Image(
             bitmap = loadImageBitmap(texture.inputStream),
             lang.get("simulation", "output"),
             modifier = Modifier.fillMaxSize(),
         )
     }
-    Text(text = showAmount(lang, holder),
-        style = DefaultTheme.smallTextStyle(),
-        modifier = DefaultTheme.defaultPadding()
-    )
 }
 
 
@@ -97,7 +92,7 @@ fun InputView(lang: Lang, holder: InputMatterHolder) {
             Text(
                 modifier = DefaultTheme.defaultPadding(),
                 text = lang.get("simulation", "empty"),
-                style = DefaultTheme.smallTextStyle()
+                style = DefaultTheme.midSmallTextStyle()
             )
         }
     }

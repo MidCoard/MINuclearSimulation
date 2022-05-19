@@ -31,7 +31,15 @@ fun ObserverPanel(
 
             Row {
                 Text(
-                    lang.get("observer", "tick") + ":" + (simulation?.tickCount ?: 0),
+                    lang.get("observer", "tick") + ": " + (simulation?.tickCount ?: 0),
+                    style = DefaultTheme.defaultTextStyle(),
+                    modifier = Modifier.padding(10.dp, 5.dp)
+                )
+            }
+
+            Row {
+                Text(
+                    lang.get("observer", "active", "name") + ": " +lang.get("observer", "active", if (simulation?.isActive?.isActive == true) "active" else "inactive"),
                     style = DefaultTheme.defaultTextStyle(),
                     modifier = Modifier.padding(10.dp, 5.dp)
                 )

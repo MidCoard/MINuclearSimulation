@@ -75,7 +75,12 @@
   },
   "observer": {
     "tick": "已运行游戏刻",
-    "clear": "清空"
+    "clear": "清空",
+    "active": {
+      "name": "活跃状态",
+      "active": "激活",
+      "inactive": "未激活"
+    }
   },
   "general": {
     "start": "开始",

@@ -75,7 +75,12 @@
   },
   "observer": {
     "tick": "Running ticks",
-    "clear": "Clear"
+    "clear": "Clear",
+    "active": {
+      "name": "Active Status",
+      "active": "Active",
+      "inactive": "Inactive"
+    }
   },
   "general": {
     "start": "Start",
