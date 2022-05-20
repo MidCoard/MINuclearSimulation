@@ -23,7 +23,9 @@ import androidx.compose.ui.unit.dp
 import aztech.modern_industrialization.machines.blockentities.hatches.NuclearHatch
 import aztech.modern_industrialization.machines.components.NeutronHistoryComponent
 import aztech.modern_industrialization.machines.components.TemperatureComponent
+import aztech.modern_industrialization.nuclear.NuclearComponentItem
 import top.focess.mc.mi.nuclear.NuclearSimulation
+import top.focess.mc.mi.nuclear.mc.InputMatterHolder
 import top.focess.mc.mi.nuclear.mi.MINuclearInventory
 import top.focess.mc.mi.ui.*
 import top.focess.mc.mi.ui.lang.Lang
@@ -187,7 +189,7 @@ fun NuclearSimulationCell(
                         showAvgEUGeneration(lang, neutronHistory) + "\n" +
                         showNeutronReceive(lang, neutronHistory) + " - " +
                         showNeutronFlux(lang, neutronHistory) + "\n" +
-                        showTemperature(lang, temperatureComponent) + "\n" +
+                        showTemperature(lang, holder, temperatureComponent) + "\n" +
                         showOutput(lang, output)
                 Text(
                     text = show.substring(0,show.length - 1),
@@ -212,7 +214,7 @@ fun NuclearSimulationCell(
                     NeutronView2(lang, nuclearHatch.neutronHistory)
                 else
                     NeutronView(lang, nuclearHatch.neutronHistory)
-                TemperatureView(lang, nuclearHatch.nuclearReactorComponent)
+                TemperatureView(lang, nuclearHatch.inventory.input, nuclearHatch.nuclearReactorComponent)
             }
         }
     }
@@ -228,14 +230,16 @@ fun InventoryView(lang: Lang, inventory: MINuclearInventory) {
 }
 
 @Composable
-fun TemperatureView(lang: Lang, temperatureComponent: TemperatureComponent) {
+fun TemperatureView(lang: Lang, holder: InputMatterHolder, temperatureComponent: TemperatureComponent) {
     Box {
         Column {
             BoxWithConstraints {
+                val matterVariant = holder.matterVariant
+                val maxTemperature = if (!matterVariant.isBlank && matterVariant.matter is NuclearComponentItem) (matterVariant.matter as NuclearComponentItem).maxTemperature.toDouble() else temperatureComponent.temperatureMax
                 if (maxHeight > 30.dp)
                     Row {
                         LinearProgressIndicator(
-                            progress = (temperatureComponent.temperature / temperatureComponent.temperatureMax).toFloat(),
+                            progress = (temperatureComponent.temperature / maxTemperature).toFloat(),
                             modifier = DefaultTheme.squarePadding().fillMaxWidth()
                         )
                     }
@@ -244,7 +248,7 @@ fun TemperatureView(lang: Lang, temperatureComponent: TemperatureComponent) {
                 if (maxWidth > 150.dp && maxHeight > 50.dp)
                     Row {
                         Text(
-                            text = showTemperature(lang, temperatureComponent),
+                            text = showTemperature(lang, holder, temperatureComponent),
                             style = DefaultTheme.smallTextStyle(),
                             modifier = DefaultTheme.defaultPadding()
                         )

@@ -128,4 +128,7 @@ object DefaultTheme {
     @Composable
     fun getDefault() = default ?: if (isSystemInDarkTheme()) dark else light
 
+    @Composable
+    fun defaultSlider() = SliderDefaults.colors()
+
 }

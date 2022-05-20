@@ -30,7 +30,7 @@ fun SimulatorView(lang: Lang, globalState: GlobalState, globalAction: GlobalActi
     MaterialTheme(colors = DefaultTheme.getDefault()) {
         Row(Modifier.background(MaterialTheme.colors.background)) {
             Column(Modifier.fillMaxWidth(0.2f)) {
-                GeneralPanel(lang, globalState.isStart, globalState.simulation, globalState.tickTask, globalAction)
+                GeneralPanel(lang, globalState.isStart, globalState.isInfinite, globalState.simulation, globalState.tickRate, globalAction, { globalState.tickRate = it },{globalState.isInfinite = it})
             }
             // next width is divided by the rest of the width
             Column(Modifier.fillMaxWidth(0.75f)) {
@@ -255,5 +255,29 @@ fun main() =
             }
 
         Simulator(icon, lang, globalState, globalAction, state, scope) { lang = it }
+
+        Thread {
+            while (true) {
+                try {
+                    if (globalState.isInfinite && globalState.isStart) {
+                        globalState.simulation!!.tick()
+                        val nuclearGrid = globalState.simulation!!.nuclearGrid
+                        for (i in 0 until nuclearGrid.sizeX)
+                            for (j in 0 until nuclearGrid.sizeY)
+                                if (nuclearGrid.getNuclearTile(i, j).isPresent)
+                                    for (holder in nuclearGrid.getNuclearTile(i, j).get().inventory.output) {
+                                        val variant = holder.matterVariant
+                                        val amount = holder.extractAmount(holder.takeout)
+                                        if (holder.isFluid) {
+                                            if (globalState.fluidInventory.output(variant, amount) != amount)
+                                                throw IllegalStateException("Failed to output")
+                                        } else if (globalState.itemInventory.output(variant, amount) != amount)
+                                            throw IllegalStateException("Failed to output")
+                                    }
+                        globalState.isSaved = false
+                    }
+                } catch (ignored: Exception) {}
+            }
+        }.start()
 
     }

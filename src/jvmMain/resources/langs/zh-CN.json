@@ -84,9 +84,12 @@
   },
   "general": {
     "start": "开始",
-    "stop": "停止"
+    "stop": "停止",
+    "tick-rate": "游戏刻速率",
+    "infinite": "满速运行"
   },
   "matter": {
+    "empty": "空",
     "minecraft": {
       "water": "水"
     },

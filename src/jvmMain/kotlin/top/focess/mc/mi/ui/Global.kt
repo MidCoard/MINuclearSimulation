@@ -37,9 +37,11 @@ class GlobalState(lang: Lang) {
     var file: File? by mutableStateOf(null)
 
     var isStart by mutableStateOf(false)
+    var isInfinite by mutableStateOf(false)
     val scheduler = ThreadPoolScheduler(1, false, "TickManager")
     var tickTask: Task? = null
     var updateTask: Task? = null
+    var tickRate by mutableStateOf(20)
 
     val itemInventory by mutableStateOf(MINuclearInventory(false))
     val fluidInventory by mutableStateOf(MINuclearInventory(true))
@@ -106,27 +108,28 @@ class GlobalAction(private val lang: Lang, private val state: GlobalState) {
     fun start() {
         if (!state.isStart && state.simulation != null) {
             state.selectorState.windows.clear()
-            state.tickTask = state.scheduler.runTimer(
-                {
-                    state.simulation!!.tick()
-                    val nuclearGrid = state.simulation!!.nuclearGrid
-                    for (i in 0 until nuclearGrid.sizeX)
-                        for (j in 0 until nuclearGrid.sizeY)
-                            if (nuclearGrid.getNuclearTile(i, j).isPresent)
-                                for (holder in nuclearGrid.getNuclearTile(i, j).get().inventory.output) {
-                                    val variant = holder.matterVariant
-                                    val amount = holder.extractAmount(holder.takeout)
-                                    if (holder.isFluid) {
-                                        if (state.fluidInventory.output(variant, amount) != amount)
+            if (!state.isInfinite)
+                state.tickTask = state.scheduler.runTimer(
+                    {
+                        state.simulation!!.tick()
+                        val nuclearGrid = state.simulation!!.nuclearGrid
+                        for (i in 0 until nuclearGrid.sizeX)
+                            for (j in 0 until nuclearGrid.sizeY)
+                                if (nuclearGrid.getNuclearTile(i, j).isPresent)
+                                    for (holder in nuclearGrid.getNuclearTile(i, j).get().inventory.output) {
+                                        val variant = holder.matterVariant
+                                        val amount = holder.extractAmount(holder.takeout)
+                                        if (holder.isFluid) {
+                                            if (state.fluidInventory.output(variant, amount) != amount)
+                                                throw IllegalStateException("Failed to output")
+                                        } else if (state.itemInventory.output(variant, amount) != amount)
                                             throw IllegalStateException("Failed to output")
-                                    } else if (state.itemInventory.output(variant, amount) != amount)
-                                        throw IllegalStateException("Failed to output")
-                                }
-                    state.isSaved = false
-                },
-                Duration.ZERO,
-                Duration.ofMillis(50)
-            )
+                                    }
+                        state.isSaved = false
+                    },
+                    Duration.ZERO,
+                    Duration.ofMillis(1000L / state.tickRate)
+                )
             state.updateTask = state.scheduler.runTimer({
                 state.isStart = false
                 state.isStart = true
@@ -142,6 +145,11 @@ class GlobalAction(private val lang: Lang, private val state: GlobalState) {
             state.isSaved = false
             state.isStart = false
             state.tickTask = null
+            state.updateTask = null
+        } else if (state.isStart && state.isInfinite) {
+            state.isSaved = false
+            state.isStart = false
+            state.updateTask!!.cancel()
             state.updateTask = null
         }
     }

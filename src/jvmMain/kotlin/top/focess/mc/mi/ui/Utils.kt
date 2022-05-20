@@ -3,6 +3,7 @@ package top.focess.mc.mi.ui
 import aztech.modern_industrialization.machines.components.NeutronHistoryComponent
 import aztech.modern_industrialization.machines.components.TemperatureComponent
 import aztech.modern_industrialization.nuclear.NeutronType
+import aztech.modern_industrialization.nuclear.NuclearComponentItem
 import top.focess.mc.mi.nuclear.mc.InputMatterHolder
 import top.focess.mc.mi.nuclear.mc.MatterHolder
 import top.focess.mc.mi.nuclear.mc.MatterVariant
@@ -27,9 +28,15 @@ fun showAmount(lang: Lang, holder: MatterHolder): String =
     else ((holder.amount / 81000).toString() + "B(" + holder.amount % 81000 / 81 + "mb[" + holder.amount % 81000 % 81 + "/81])")
 
 fun showName(lang: Lang, matterVariant: MatterVariant, tag: Map<String, Any>): String =
-    lang.get("matter", matterVariant.matter!!.namespace, matterVariant.matter!!.name) + showTag(tag)
+    if (!matterVariant.isBlank) lang.get("matter", matterVariant.matter!!.namespace, matterVariant.matter!!.name) + showTag(tag) else lang.get("matter","empty")
 
-fun showTemperature(lang: Lang, temperatureComponent: TemperatureComponent) = lang.get("simulation", "temperature") + ": " + temperatureComponent.temperature.toString().substring0(6) + "/" + temperatureComponent.temperatureMax.toString()
+fun showTemperature(lang: Lang, holder: InputMatterHolder, temperatureComponent: TemperatureComponent): String {
+    val matterVariant = holder.matterVariant
+    var maxTemperature = temperatureComponent.temperatureMax
+    if (!matterVariant.isBlank && matterVariant.matter is NuclearComponentItem)
+        maxTemperature = (matterVariant.matter as NuclearComponentItem).maxTemperature.toDouble()
+    return lang.get("simulation", "temperature") + ": " + temperatureComponent.temperature.toString().substring0(6) + "/" + maxTemperature
+}
 
 fun showNeutronGeneration(lang: Lang, neutronHistory: NeutronHistoryComponent) = lang.get("simulation", "neutron", "generation") + ": " + neutronHistory.averageGeneration.toString().substring0(6)
 

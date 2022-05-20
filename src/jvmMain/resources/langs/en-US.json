@@ -84,9 +84,12 @@
   },
   "general": {
     "start": "Start",
-    "stop": "Stop"
+    "stop": "Stop",
+    "tick-rate": "Tick rate",
+    "infinite": "Full Speed"
   },
   "matter": {
+    "empty": "Empty",
     "minecraft": {
       "water": "Water"
     },
