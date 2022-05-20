@@ -24,7 +24,7 @@ public class InputMatterHolder extends MatterHolder {
         return infinite;
     }
 
-    public long tryExtract(MatterVariant variant, long actual) {
+    public long tryExtract(@NonNull MatterVariant variant, long actual) {
         if (!this.getMatterVariant().equals(variant))
             return 0;
         if (this.infinite)
@@ -32,7 +32,7 @@ public class InputMatterHolder extends MatterHolder {
         return Math.min(this.getAmount(), actual);
     }
 
-    public long extract(MatterVariant variant, long actual) {
+    public long extract(@NonNull MatterVariant variant, long actual) {
         if (!this.getMatterVariant().equals(variant))
             return 0;
         if (this.infinite)

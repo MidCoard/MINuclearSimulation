@@ -23,8 +23,6 @@
  */
 package aztech.modern_industrialization.nuclear;
 
-import aztech.modern_industrialization.machines.blockentities.hatches.NuclearHatch;
-
 import java.util.Optional;
 import java.util.Random;
 
@@ -53,7 +51,6 @@ public class NuclearGridHelper {
                 Optional<INuclearTile> maybeTile = grid.getNuclearTile(i, j);
                 if (maybeTile.isPresent()) {
                     INuclearTile tile = maybeTile.get();
-                    NuclearHatch hatch = (NuclearHatch) tile;
                     Optional<NuclearFuel> maybeFuel = tile.getFuel();
                     int neutronNumberPrime = tile.neutronGenerationTick(grid);
                     if (neutronNumberPrime > 0) {

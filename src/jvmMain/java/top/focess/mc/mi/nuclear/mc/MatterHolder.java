@@ -124,7 +124,7 @@ public class MatterHolder implements FocessSerializable {
         return new MatterHolder(
                 (boolean)map.get("isFluid"),
                 (MatterVariant) map.get("matterVariant"),
-                (long) map.get("amount")
+                Long.parseLong(map.get("amount").toString())
         );
     }
 }

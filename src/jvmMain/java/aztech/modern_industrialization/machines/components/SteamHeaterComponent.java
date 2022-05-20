@@ -123,8 +123,8 @@ public class SteamHeaterComponent extends TemperatureComponent {
     }
 
     public static SteamHeaterComponent deserialize(Map<String, Object> map) {
-        SteamHeaterComponent ret = new SteamHeaterComponent((double) map.get("temperatureMax"), (long) map.get("maxEuProduction"),
-                (long) map.get("euPerDegree"), (boolean) map.get("acceptLowPressure"), (boolean) map.get("acceptHighPressure"));
+        SteamHeaterComponent ret = new SteamHeaterComponent((double) map.get("temperatureMax"),  Long.parseLong(map.get("maxEuProduction").toString()),
+                Long.parseLong(map.get("euPerDegree").toString()), (boolean) map.get("acceptLowPressure"), (boolean) map.get("acceptHighPressure"));
         ret.setTemperature((double) map.get("temperature"));
         return ret;
     }

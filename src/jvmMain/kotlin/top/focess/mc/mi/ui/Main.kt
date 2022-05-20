@@ -24,6 +24,9 @@ import top.focess.mc.mi.ui.simulation.SimulationChamber
 import top.focess.mc.mi.ui.simulation.SimulationSelector
 import top.focess.mc.mi.ui.theme.DefaultTheme
 
+
+var gState: GlobalState? = null
+
 @Composable
 fun SimulatorView(lang: Lang, globalState: GlobalState, globalAction: GlobalAction) {
 
@@ -51,11 +54,12 @@ fun SimulatorView(lang: Lang, globalState: GlobalState, globalAction: GlobalActi
     }
 }
 
-fun init() {
+fun init(globalState: GlobalState) {
     //Use class forname to init the Items and Fluids
     Class.forName("top.focess.mc.mi.nuclear.mc.Items")
     Class.forName("top.focess.mc.mi.nuclear.mi.MIItems")
     Class.forName("top.focess.mc.mi.nuclear.mc.Fluids")
+    gState = globalState
 }
 
 @Composable
@@ -225,10 +229,38 @@ fun ApplicationScope.Simulator(
 }
 
 @Preview
-fun main() =
+fun main() {
+    Thread {
+        while (true) {
+            try {
+                if (gState != null) {
+                    val gState0 = gState!!
+                    if (gState0.isInfinite && gState0.isStart) {
+                        gState0.simulation!!.tick()
+                        val nuclearGrid = gState0.simulation!!.nuclearGrid
+                        for (i in 0 until nuclearGrid.sizeX)
+                            for (j in 0 until nuclearGrid.sizeY)
+                                if (nuclearGrid.getNuclearTile(i, j).isPresent)
+                                    for (holder in nuclearGrid.getNuclearTile(i, j).get().inventory.output) {
+                                        val variant = holder.matterVariant
+                                        val amount = holder.extractAmount(holder.takeout)
+                                        if (holder.isFluid) {
+                                            if (gState0.fluidInventory.output(variant, amount) != amount)
+                                                throw IllegalStateException("Failed to output")
+                                        } else if (gState0.itemInventory.output(variant, amount) != amount)
+                                            throw IllegalStateException("Failed to output")
+                                    }
+                        gState0.isSaved = false
+                    }
+                }
+                Thread.sleep(0)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }.start()
+    
     application {
-        // initialize Items and Fluids
-        init()
 
         // store the logo pic
         val icon = painterResource("logo.png")
@@ -237,10 +269,10 @@ fun main() =
         var lang by remember { mutableStateOf(Lang.default) }
 
         // store the global state
-        val globalState by remember { mutableStateOf(GlobalState(lang)) }
+        val globalState = remember { GlobalState(lang) }
 
         // store the global action
-        val globalAction by remember { mutableStateOf(GlobalAction(lang, globalState)) }
+        val globalAction = remember { GlobalAction(lang, globalState) }
 
         // the default window state and maximized the window
         val state = rememberWindowState(placement = WindowPlacement.Maximized)
@@ -254,30 +286,11 @@ fun main() =
                 SimulationSelector(window)
             }
 
+        // initialize Items and Fluids
+        LaunchedEffect(Unit) {
+            init(globalState)
+        }
+
         Simulator(icon, lang, globalState, globalAction, state, scope) { lang = it }
-
-        Thread {
-            while (true) {
-                try {
-                    if (globalState.isInfinite && globalState.isStart) {
-                        globalState.simulation!!.tick()
-                        val nuclearGrid = globalState.simulation!!.nuclearGrid
-                        for (i in 0 until nuclearGrid.sizeX)
-                            for (j in 0 until nuclearGrid.sizeY)
-                                if (nuclearGrid.getNuclearTile(i, j).isPresent)
-                                    for (holder in nuclearGrid.getNuclearTile(i, j).get().inventory.output) {
-                                        val variant = holder.matterVariant
-                                        val amount = holder.extractAmount(holder.takeout)
-                                        if (holder.isFluid) {
-                                            if (globalState.fluidInventory.output(variant, amount) != amount)
-                                                throw IllegalStateException("Failed to output")
-                                        } else if (globalState.itemInventory.output(variant, amount) != amount)
-                                            throw IllegalStateException("Failed to output")
-                                    }
-                        globalState.isSaved = false
-                    }
-                } catch (ignored: Exception) {}
-            }
-        }.start()
-
     }
+}

@@ -1,5 +1,6 @@
 package top.focess.mc.mi.nuclear.mi;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
 import top.focess.mc.mi.nuclear.mc.*;
 import top.focess.util.serialize.FocessSerializable;
 
@@ -27,7 +28,7 @@ public class MINuclearInventory implements FocessSerializable {
     }
 
     // return the amount that has been inserted
-    public long tryOutput(MatterVariant matterVariant, long amount) {
+    public long tryOutput(@NonNull MatterVariant matterVariant, long amount) {
         long before = amount;
         List<OutputMatterHolder> copy = new ArrayList<>(outputMatterHolders.stream().map(OutputMatterHolder::copy).toList());
         for (OutputMatterHolder outputMatterHolder : copy) {
@@ -46,7 +47,7 @@ public class MINuclearInventory implements FocessSerializable {
         return before - amount;
     }
 
-    public long output(MatterVariant matterVariant, long amount) {
+    public long output(@NonNull MatterVariant matterVariant, long amount) {
         long before = amount;
         for (OutputMatterHolder outputMatterHolder : this.outputMatterHolders) {
             amount = outputMatterHolder.insertMatterVariant(matterVariant, amount);

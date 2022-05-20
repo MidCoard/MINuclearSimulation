@@ -160,12 +160,15 @@ public class NuclearHatch implements INuclearTile {
                 }
 
                 if (abs.getRemainingDesintegrations(stack) == 0) {
-                    long output = this.inventory.tryOutput(abs.getNeutronProduct(), abs.getNeutronProductAmount());
-                    if (output == abs.getNeutronProductAmount()) {
+                    if (abs.getNeutronProduct() != null){
+                        long output = this.inventory.tryOutput(abs.getNeutronProduct(), abs.getNeutronProductAmount());
+                        if (output == abs.getNeutronProductAmount()) {
+                            this.inventory.getInput().setMatterVariant(ItemVariant.blank(), 0);
+                            if (output != this.inventory.output(abs.getNeutronProduct(), output))
+                                throw new IllegalStateException("Output failed");
+                        }
+                    } else
                         this.inventory.getInput().setMatterVariant(ItemVariant.blank(), 0);
-                        if (output != this.inventory.output(abs.getNeutronProduct(), output))
-                            throw new IllegalStateException("Output failed");
-                    }
                 } else {
                     this.getInventory().getInput().setMatterVariant(ItemVariant.of(stack));
                 }
