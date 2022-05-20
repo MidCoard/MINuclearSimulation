@@ -65,7 +65,7 @@ public class MatterHolder implements FocessSerializable {
         if (matterVariant instanceof ItemVariant && matterVariant.getMatter() != null)
             this.maxAmount = ((ItemVariant) matterVariant).getItem().getMaxCount();
         else if (matterVariant instanceof FluidVariant)
-            this.maxAmount = 1000000L * 81000L;
+            this.maxAmount = 100000000L * 81000L;
         else this.maxAmount = 0;
     }
 

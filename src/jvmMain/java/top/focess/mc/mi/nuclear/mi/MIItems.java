@@ -28,7 +28,7 @@ public class MIItems {
     public static final Item HE_MOX_FUEL_ROD_DOUBLE = of("he_mox_fuel_rod_double", "he_mox", NuclearConstant.HE_MOX, FuelRodType.DOUBLE);
     public static final Item HE_MOX_FUEL_ROD_QUAD = of("he_mox_fuel_rod_quad", "he_mox", NuclearConstant.HE_MOX, FuelRodType.QUAD);
 
-    public static final Item of(String name, String materialName, final NuclearConstant.IsotopeFuelParams params, FuelRodType type) {
+    public static Item of(String name, String materialName, final NuclearConstant.IsotopeFuelParams params, FuelRodType type) {
         if (type == FuelRodType.DEPLETED)
             return new Item("modern-industrialization", name);
         NuclearFuel.NuclearFuelParams fuelParams = new NuclearFuel.NuclearFuelParams(NuclearConstant.DESINTEGRATION_BY_ROD * type.size, params.maxTemp, params.tempLimitLow,
